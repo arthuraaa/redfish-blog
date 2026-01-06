@@ -1,4 +1,4 @@
-baseurl = "https://arthuraaa.github.io/redfish-blog/"
+baseurl = "http://www.axolol.fr/"
 title = "RedFish"
 theme = "hugo-coder"
 languagecode = "en"
@@ -78,3 +78,4 @@ style = "github-dark"
   name = "About"
   weight = 2
   url = "about/"
+
