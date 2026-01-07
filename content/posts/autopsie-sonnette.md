@@ -32,6 +32,7 @@ L'UART est un protocole de communication très courant pour le débogage. Il est
 En observant la carte, on remarque 4 trous alignés qui semblent correspondre à cette interface. Nous devons maintenant identifier le rôle de chaque broche.
 
 ![](/images/sonnette/Pasted_image_20260105214928.png)
+
 #### Identifier la masse (GND)
 
 Pour cela, nous allons utiliser un multimètre en mode **"Continuité"**. Dans ce mode, le multimètre sonne lorsque la r"sistance entre les connecteurs est à 0.
@@ -79,6 +80,7 @@ Quelques infos apparaissent ici, comme le nom de l'appareil (BELL11S), mais les 
 Le message "key up, to startup app" semble indiquer qu'il serait possible d'intercepter le démarrage en appuyant sur un bouton.
 
 En regardant de plus près la carte électronique, un bouton "Reset" est accessible. En le maintenant appuyé lors du démarrage, le comportement change et les logs deviennent beaucoup plus verbeux.
+
 ![](/images/sonnette/Pasted_image_20260105235830.png)
 
 
@@ -149,6 +151,7 @@ Pour ce faire, j'utilise un programmateur universel **T48**. C'est un outil mat�
 Afin d'interagir avec la mémoire sans avoir à la dessouder, j'utilise une pince de test, qui vient se fixer directement sur les broches du composant. La pince est reliée au T48, ce qui permet d'interfacer la puce avec le logiciel de gestion **Xgpro**.
 
 Je branche donc la pince sur la puce mémoire de l'appareil.
+
 ![](/images/sonnette/PXL_20251229_182745034.jpg)
 
 
@@ -203,6 +206,7 @@ Dans Ghidra, à l'importation du fichier, je configure donc :
 
 ### Décompilation
 La méthode la plus simple pour trouver une fonction d'authentification est de chercher les chaînes de caractères (strings) affichées lors du login. Je lance une recherche sur le mot "password".
+
 ![](/images/sonnette/Pasted_image_20260103111036.png)
 
 Deux résultats intéressants ressortent :
@@ -214,6 +218,7 @@ Je décide de me concentrer sur **"password err"**. Si je trouve l'endroit où c
 En demandant à Ghidra les références croisées (XREFS) vers cette string, je tombe sur une fonction unique.
 
 ![](/images/sonnette/Pasted_image_20260103111121.png)
+
 En double-cliquant dessus, j'atterris dans le désassembleur, et Ghidra me génère une vue décompilée en C
 
 ![](/images/sonnette/Pasted_image_20260103115520.png)
@@ -274,6 +279,7 @@ En appliquant cette logique à toute la suite d'octets,on trouve le mot de passe
 De retour sur la console UART, je redémarre la sonnette. Au prompt du mot de passe, je saisis : `pps_password`.
 
 **Succès !** L'accès au shell est déverrouillé. Le prompt change pour `pps #`.
+
 ![](/images/sonnette/Pasted_image_20260106001548.png)
 
 
@@ -285,6 +291,7 @@ Une méthode pour obtenir un accès shell root sur un système embarqué consist
 Je commence par afficher la configuration actuelle via la commande `printenv` :
 
 ![](/images/sonnette/Pasted_image_20260105234627.png)
+
 L'analyse des variables `bootargs` nous montre les paramètres passés au noyau. Je tente alors de les modifier pour injecter l'init manuellement :
 
 ![](/images/sonnette/Pasted_image_20260105234712.png)
@@ -354,6 +361,7 @@ Pour réaliser cette interface entre l'IA et Ghidra, j'utilise donc deux briques
 
 
 Plugin GhidraMCP sur Ghidra:
+
 ![](/images/sonnette/Pasted_image_20260106001939.png)
 
 
@@ -391,5 +399,9 @@ Je tente alors de me reconnecter à l'interface UART.
 Et là, à l'instant où la connexion série s'établit, je tombe directement sur un shell actif!
 
 ![](/images/sonnette/Pasted_image_20260105225747.png)
+
+
+Il semble donc que l'authentification réussie sur l'endpoint `/sys/console` ait agi comme un interrupteur, activant l'accès shell sur le port série qui était jusqu'alors bridé.
+
 
 A suivre...

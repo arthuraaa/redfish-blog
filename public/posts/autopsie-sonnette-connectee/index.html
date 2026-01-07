@@ -265,8 +265,8 @@
 <p><img src="/images/sonnette/uart_1_2.png" alt=""></p>
 <p>Quelques infos apparaissent ici, comme le nom de l&rsquo;appareil (BELL11S), mais les infos affichées restent limitées. De plus, aucune interaction ne semble possible avec l&rsquo;appareil : j&rsquo;ai beau taper des commandes &ldquo;help&rdquo; ou faire des &ldquo;retours chariot&rdquo; (Entrée), le terminal semble figé&hellip;</p>
 <p>Le message &ldquo;key up, to startup app&rdquo; semble indiquer qu&rsquo;il serait possible d&rsquo;intercepter le démarrage en appuyant sur un bouton.</p>
-<p>En regardant de plus près la carte électronique, un bouton &ldquo;Reset&rdquo; est accessible. En le maintenant appuyé lors du démarrage, le comportement change et les logs deviennent beaucoup plus verbeux.
-<img src="/images/sonnette/Pasted_image_20260105235830.png" alt=""></p>
+<p>En regardant de plus près la carte électronique, un bouton &ldquo;Reset&rdquo; est accessible. En le maintenant appuyé lors du démarrage, le comportement change et les logs deviennent beaucoup plus verbeux.</p>
+<p><img src="/images/sonnette/Pasted_image_20260105235830.png" alt=""></p>
 <p>Le message &ldquo;key down, to startup uboot&rdquo; s&rsquo;affiche, confirmant que le bouton Reset correspond bien à la touche d&rsquo;interruption attendue par le système.</p>
 <p>Cependant, on ne semble pas pouvoir accéder à un shell directement. Un mot de passe est demandé par l&rsquo;appareil lors du processus de boot: &ldquo;please input password::&rdquo;.</p>
 <p><img src="/images/sonnette/Pasted_image_20260103085039.png" alt=""></p>
@@ -318,8 +318,8 @@ En regardant la datasheet, on identifie la pin Data Out (pin 2).</p>
 <p>Les tentatives précédentes pour contourner le mot de passe ayant échoué, nous passons à la méthode forte : l&rsquo;extraction directe du firmware pour y dénicher le sésame.</p>
 <p>Pour ce faire, j&rsquo;utilise un programmateur universel <strong>T48</strong>. C&rsquo;est un outil matériel qui se branche en USB et permet de lire et écrire le contenu brut (&ldquo;Dump&rdquo;) de milliers de puces mémoire.</p>
 <p>Afin d&rsquo;interagir avec la mémoire sans avoir à la dessouder, j&rsquo;utilise une pince de test, qui vient se fixer directement sur les broches du composant. La pince est reliée au T48, ce qui permet d&rsquo;interfacer la puce avec le logiciel de gestion <strong>Xgpro</strong>.</p>
-<p>Je branche donc la pince sur la puce mémoire de l&rsquo;appareil.
-<img src="/images/sonnette/PXL_20251229_182745034.jpg" alt=""></p>
+<p>Je branche donc la pince sur la puce mémoire de l&rsquo;appareil.</p>
+<p><img src="/images/sonnette/PXL_20251229_182745034.jpg" alt=""></p>
 <p>Dans le logiciel, je sélectionne la référence exacte de la mémoire Flash identifiée sur la carte : la <strong>XM25QH64A</strong>.
 <img src="/images/sonnette/XPRO2.png" alt=""></p>
 <p>Je peux finalement lire le contenu de la puce:</p>
@@ -358,8 +358,8 @@ Le système charge donc le noyau à l&rsquo;adresse 0x40000000, c&rsquo;est donc
     <span class="sr-only">Link to heading</span>
   </a>
 </h3>
-<p>La méthode la plus simple pour trouver une fonction d&rsquo;authentification est de chercher les chaînes de caractères (strings) affichées lors du login. Je lance une recherche sur le mot &ldquo;password&rdquo;.
-<img src="/images/sonnette/Pasted_image_20260103111036.png" alt=""></p>
+<p>La méthode la plus simple pour trouver une fonction d&rsquo;authentification est de chercher les chaînes de caractères (strings) affichées lors du login. Je lance une recherche sur le mot &ldquo;password&rdquo;.</p>
+<p><img src="/images/sonnette/Pasted_image_20260103111036.png" alt=""></p>
 <p>Deux résultats intéressants ressortent :</p>
 <ol>
 <li><code>please input password::</code> (Le prompt)</li>
@@ -367,8 +367,8 @@ Le système charge donc le noyau à l&rsquo;adresse 0x40000000, c&rsquo;est donc
 </ol>
 <p>Je décide de me concentrer sur <strong>&ldquo;password err&rdquo;</strong>. Si je trouve l&rsquo;endroit où ce message est utilisé, je trouverai forcément la condition qui a échoué juste avant (la comparaison du mot de passe).</p>
 <p>En demandant à Ghidra les références croisées (XREFS) vers cette string, je tombe sur une fonction unique.</p>
-<p><img src="/images/sonnette/Pasted_image_20260103111121.png" alt="">
-En double-cliquant dessus, j&rsquo;atterris dans le désassembleur, et Ghidra me génère une vue décompilée en C</p>
+<p><img src="/images/sonnette/Pasted_image_20260103111121.png" alt=""></p>
+<p>En double-cliquant dessus, j&rsquo;atterris dans le désassembleur, et Ghidra me génère une vue décompilée en C</p>
 <p><img src="/images/sonnette/Pasted_image_20260103115520.png" alt=""></p>
 <p>La chaine semble être dans un printf.
 On suppose donc que la comparaison avec l&rsquo;entrée utilisateur et le mot de passe s’effectue juste avant.</p>
@@ -414,13 +414,13 @@ Pour déchiffrer le mot de passe, il suffit d&rsquo;effectuer l&rsquo;opération
   </a>
 </h3>
 <p>De retour sur la console UART, je redémarre la sonnette. Au prompt du mot de passe, je saisis : <code>pps_password</code>.</p>
-<p><strong>Succès !</strong> L&rsquo;accès au shell est déverrouillé. Le prompt change pour <code>pps #</code>.
-<img src="/images/sonnette/Pasted_image_20260106001548.png" alt=""></p>
+<p><strong>Succès !</strong> L&rsquo;accès au shell est déverrouillé. Le prompt change pour <code>pps #</code>.</p>
+<p><img src="/images/sonnette/Pasted_image_20260106001548.png" alt=""></p>
 <p>Cependant, en essayant des commandes classiques (<code>ls</code>, <code>pwd</code>), je me rends vite compte qu&rsquo;il ne s&rsquo;agit pas d&rsquo;un shell Linux standard, mais du shell interactif de <strong>U-Boot</strong></p>
 <p>Une méthode pour obtenir un accès shell root sur un système embarqué consiste à modifier les variables d&rsquo;environnement au démarrage afin de forcer l&rsquo;exécution d&rsquo;un shell (<code>/bin/sh</code>) à la place du programme initial.</p>
 <p>Je commence par afficher la configuration actuelle via la commande <code>printenv</code> :</p>
-<p><img src="/images/sonnette/Pasted_image_20260105234627.png" alt="">
-L&rsquo;analyse des variables <code>bootargs</code> nous montre les paramètres passés au noyau. Je tente alors de les modifier pour injecter l&rsquo;init manuellement :</p>
+<p><img src="/images/sonnette/Pasted_image_20260105234627.png" alt=""></p>
+<p>L&rsquo;analyse des variables <code>bootargs</code> nous montre les paramètres passés au noyau. Je tente alors de les modifier pour injecter l&rsquo;init manuellement :</p>
 <p><img src="/images/sonnette/Pasted_image_20260105234712.png" alt=""></p>
 <p>Malheureusement, la sonnette freeze au démarrage, ce qui laisse supposer que le système d&rsquo;exploitation n&rsquo;est pas un Linux standard ou qu&rsquo;il ne possède pas de binaire <code>/bin/sh</code> accessible.</p>
 <p>Il va falloir trouver une autre porte d&rsquo;entrée.</p>
@@ -482,8 +482,8 @@ Ce plugin transforme l&rsquo;instance de Ghidra en un serveur local. L&rsquo;IA 
 <p><strong>Le Client Claude Desktop (Linux) :</strong> L&rsquo;application officielle Claude n&rsquo;étant pas nativement disponible sous Linux, j&rsquo;utilise: <code>https://github.com/aaddrick/claude-desktop-debian</code></p>
 </li>
 </ol>
-<p>Plugin GhidraMCP sur Ghidra:
-<img src="/images/sonnette/Pasted_image_20260106001939.png" alt=""></p>
+<p>Plugin GhidraMCP sur Ghidra:</p>
+<p><img src="/images/sonnette/Pasted_image_20260106001939.png" alt=""></p>
 <p>Le prompt que j&rsquo;ai ensuite utilisé sur Claude est le suivant:</p>
 <div class="highlight"><pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-html" data-lang="html"><span style="display:flex;"><span>Agis comme un expert en rétro-ingénierie. Je suspecte que des identifiants &#34;Basic Auth&#34; (HTTP) sont codés en dur dans ce binaire. Utilise les outils Ghidra pour mener l&#39;enquête en suivant ces étapes :
 </span></span><span style="display:flex;"><span>
@@ -503,6 +503,7 @@ Ce plugin transforme l&rsquo;instance de Ghidra en un serveur local. L&rsquo;IA 
 <p>Je tente alors de me reconnecter à l&rsquo;interface UART.</p>
 <p>Et là, à l&rsquo;instant où la connexion série s&rsquo;établit, je tombe directement sur un shell actif!</p>
 <p><img src="/images/sonnette/Pasted_image_20260105225747.png" alt=""></p>
+<p>Il semble donc que l&rsquo;authentification réussie sur l&rsquo;endpoint <code>/sys/console</code> ait agi comme un interrupteur, activant l&rsquo;accès shell sur le port série qui était jusqu&rsquo;alors bridé.</p>
 <p>A suivre&hellip;</p>
 
       </div>
