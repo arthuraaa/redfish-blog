@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>
+  Autopsie d&#39;une sonnette connectée · RedFish
+</title>
+  <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
+
+
+
+
+<meta name="author" content="RedFish">
+<meta name="description" content="Analyse et root d&#39;une sonnette DiO Bell B01">
+<meta name="keywords" content="blog,cybersecurity,ctf,personal">
+
+
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Autopsie d&#39;une sonnette connectée">
+  <meta name="twitter:description" content="Analyse et root d&#39;une sonnette DiO Bell B01">
+
+<meta property="og:url" content="http://www.axolol.fr/posts/autopsie-sonnette-connectee/">
+  <meta property="og:site_name" content="RedFish">
+  <meta property="og:title" content="Autopsie d&#39;une sonnette connectée">
+  <meta property="og:description" content="Analyse et root d&#39;une sonnette DiO Bell B01">
+  <meta property="og:locale" content="en">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2026-01-07T00:25:35+01:00">
+    <meta property="article:modified_time" content="2026-01-07T00:25:35+01:00">
+    <meta property="article:tag" content="Hardware">
+    <meta property="article:tag" content="Hacking">
+    <meta property="article:tag" content="Uart">
+
+
+
+
+<link rel="canonical" href="http://www.axolol.fr/posts/autopsie-sonnette-connectee/">
+
+
+<link rel="preload" href="/fonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
+
+
+  
+  
+  <link rel="stylesheet" href="/css/coder.min.4b392a85107b91dbdabc528edf014a6ab1a30cd44cafcd5325c8efe796794fca.css" integrity="sha256-SzkqhRB7kdvavFKO3wFKarGjDNRMr81TJcjv55Z5T8o=" crossorigin="anonymous" media="screen" />
+
+
+
+
+
+
+  
+    
+    
+    <link rel="stylesheet" href="/css/coder-dark.min.a00e6364bacbc8266ad1cc81230774a1397198f8cfb7bcba29b7d6fcb54ce57f.css" integrity="sha256-oA5jZLrLyCZq0cyBIwd0oTlxmPjPt7y6KbfW/LVM5X8=" crossorigin="anonymous" media="screen" />
+  
+
+
+
+ 
+  
+    
+    <link rel="stylesheet" href="/css/custom.min.2803245832877bb7ca208c9e145ce41e2279c9534bf142e70b8ae9fa98ce1851.css" integrity="sha256-KAMkWDKHe7fKIIyeFFzkHiJ5yVNL8ULnC4rp&#43;pjOGFE=" crossorigin="anonymous" media="screen" />
+  
+
+
+
+
+
+<link rel="icon" type="image/svg+xml" href="/img/favicon.svg" sizes="any">
+<link rel="icon" type="image/png" href="/img/favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="/img/favicon-16x16.png" sizes="16x16">
+
+<link rel="apple-touch-icon" href="/images/apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+
+<link rel="manifest" href="/site.webmanifest">
+<link rel="mask-icon" href="/images/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+
+
+</head>
+
+
+
+
+
+
+<body class="preload-transitions colorscheme-auto">
+  
+<div class="float-container">
+    <a id="dark-mode-toggle" class="colorscheme-toggle">
+        <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+    </a>
+</div>
+
+
+  <main class="wrapper">
+    <nav class="navigation">
+  <section class="container">
+    
+    <a class="navigation-title" href="http://www.axolol.fr/">
+      RedFish
+    </a>
+    
+    
+      <input type="checkbox" id="menu-toggle" />
+      <label class="menu-button float-right" for="menu-toggle">
+        <i class="fa-solid fa-bars fa-fw" aria-hidden="true"></i>
+      </label>
+      <ul class="navigation-list">
+        
+          
+            <li class="navigation-item">
+              <a class="navigation-link " href="/posts/">Blog</a>
+            </li>
+          
+            <li class="navigation-item">
+              <a class="navigation-link " href="/about/">About</a>
+            </li>
+          
+        
+        
+      </ul>
+    
+  </section>
+</nav>
+
+
+    <div class="content">
+      
+  <section class="container post">
+    <article>
+      <header>
+        <div class="post-title">
+          <h1 class="title">
+            <a class="title-link" href="http://www.axolol.fr/posts/autopsie-sonnette-connectee/">
+              Autopsie d&#39;une sonnette connectée
+            </a>
+          </h1>
+        </div>
+        <div class="post-meta">
+          <div class="date">
+            <span class="posted-on">
+              <i class="fa-solid fa-calendar" aria-hidden="true"></i>
+              <time datetime="2026-01-07T00:25:35&#43;01:00">
+                January 7, 2026
+              </time>
+            </span>
+            <span class="reading-time">
+              <i class="fa-solid fa-clock" aria-hidden="true"></i>
+              14-minute read
+            </span>
+          </div>
+          <div class="authors">
+  <i class="fa-solid fa-user" aria-hidden="true"></i>
+    <a href="/authors/redfish/">RedFish</a></div>
+
+          <div class="categories">
+  <i class="fa-solid fa-folder" aria-hidden="true"></i>
+    <a href="/categories/writeup/">Writeup</a></div>
+
+          <div class="tags">
+  <i class="fa-solid fa-tag" aria-hidden="true"></i>
+    <span class="tag">
+      <a href="/tags/hardware/">Hardware</a>
+    </span>
+      <span class="separator">•</span>
+    <span class="tag">
+      <a href="/tags/hacking/">Hacking</a>
+    </span>
+      <span class="separator">•</span>
+    <span class="tag">
+      <a href="/tags/uart/">Uart</a>
+    </span></div>
+
+        </div>
+      </header>
+
+      <div class="post-content">
+        
+        <h3 id="avant-propos">
+  <strong>Avant-propos</strong>
+  <a class="heading-link" href="#avant-propos">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<p>Profitant de quelques jours de congés à Noël, j&rsquo;ai décidé d&rsquo;approfondir mes connaissances en <em>hardware hacking</em> en m&rsquo;attaquant à la sonnette <strong>DiO Bell B01</strong>. L&rsquo;objectif était de comprendre son fonctionnement interne et de tenter d&rsquo;obtenir un accès complet (root).</p>
+<p><em><strong>Ce rapport est avant tout un journal d&rsquo;expérimentation avec ses réussites et ses ratés. Il existe sûrement des méthodes plus optimisées pour arriver au même résultat, mais l&rsquo;essentiel ici était d&rsquo;apprendre.</strong></em></p>
+<h3 id="accès-au-port-série-uart">
+  Accès au port série (UART)
+  <a class="heading-link" href="#acc%c3%a8s-au-port-s%c3%a9rie-uart">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<p>L&rsquo;objectif est dans un premier temps d&rsquo;analyser la sonnette et d&rsquo;y trouver des ports de debug (uart) afin de s&rsquo;y connecter.</p>
+<p>L&rsquo;UART est un protocole de communication très courant pour le débogage. Il est généralement composé de 3 ou 4 broches :</p>
+<ul>
+<li><strong>GND (Ground) :</strong> La masse (référence 0V).</li>
+<li><strong>TX (Transmit) :</strong> Sert à <strong>envoyer</strong> des données (depuis la sonnette).</li>
+<li><strong>RX (Receive) :</strong> Sert à <strong>recevoir</strong> des données (vers la sonnette).</li>
+<li><strong>VCC :</strong> L&rsquo;alimentation</li>
+</ul>
+<p>En observant la carte, on remarque 4 trous alignés qui semblent correspondre à cette interface. Nous devons maintenant identifier le rôle de chaque broche.</p>
+<p><img src="/images/sonnette/Pasted_image_20260105214928.png" alt=""></p>
+<h4 id="identifier-la-masse-gnd">
+  Identifier la masse (GND)
+  <a class="heading-link" href="#identifier-la-masse-gnd">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h4>
+<p>Pour cela, nous allons utiliser un multimètre en mode <strong>&ldquo;Continuité&rdquo;</strong>. Dans ce mode, le multimètre sonne lorsque la resistance entre les connecteurs est à 0.</p>
+<ul>
+<li>On place la sonde noire du multimètre sur une masse connue de l&rsquo;appareil par exemple  le pôle négatif de l&rsquo;alimentation).</li>
+<li>Avec la sonde rouge, on teste les 4 broches inconnues une par une.</li>
+</ul>
+<p>Dès que le multimètre émet un bip, nous avons trouvé le GND.</p>
+<h4 id="identifier-tx-et-rx">
+  Identifier TX et RX
+  <a class="heading-link" href="#identifier-tx-et-rx">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h4>
+<p>Une fois le GND repéré, il faut différencier le TX du RX. Nous passons le multimètre en mode Voltmètre . Le principe est de tester les broches restantes <strong>pendant la phase de boot</strong> de la sonnette :</p>
+<ul>
+<li><strong>Identification du TX :</strong> Au démarrage, la sonnette envoie des logs de debug. La tension sur la broche TX va donc fluctuer rapidement (oscillation entre 0 et 3.3V) durant les premières secondes.</li>
+<li><strong>Identification du RX :</strong> Cette broche, en attente de données, reste stable à une tension haute.</li>
+</ul>
+<p>Cette méthode permet d&rsquo;identifier formellement le : GND, RX et TX.</p>
+<h3 id="connexion-via-un-arduino-uno-hack-usb-ttl">
+  Connexion via un Arduino UNO (Hack USB-TTL)
+  <a class="heading-link" href="#connexion-via-un-arduino-uno-hack-usb-ttl">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<p>Pour communiquer avec l&rsquo;interface UART de l&rsquo;appareil, un adaptateur USB vers TTL est normalement requis. Ce module sert de pont entre le port USB de l&rsquo;ordinateur et les broches série de la cible.</p>
+<p>N&rsquo;en ayant pas sous la main, je vais utiliser un Arduino UNO. Pour ce faire, il faut transformer l&rsquo;Arduino en convertisseur &ldquo;passif&rdquo; sans que son propre processeur n&rsquo;interfère avec les signaux. La manipulation consiste à relier la broche <strong>RESET</strong> de l&rsquo;Arduino à la broche <strong>GND</strong>. Cela a pour effet de maintenir le microcontrôleur principal en état de redémarrage permanent, le rendant inactif.</p>
+<p>On passe ensuite au câblage des  connecteurs. Les pins RX/TX sur le PCB de l&rsquo;Arduino correspondant aux lignes du convertisseur USB. On branche donc :</p>
+<ul>
+<li>La pin <strong>RX</strong> de la sonnette sur le <strong>RX</strong> de l&rsquo;Arduino (Pin 0).</li>
+<li>La pin <strong>TX</strong> de la sonnette sur le <strong>TX</strong> de l&rsquo;Arduino (Pin 1).</li>
+</ul>
+<p>Enfin, on relie le <strong>GND</strong> de l&rsquo;Arduino au <strong>GND</strong> de la sonnette pour avoir une masse commune.</p>
+<p><img src="/images/sonnette/Pasted_image_20260105235435.png" alt=""></p>
+<p><em><strong>Remarque: La sonnette étant déjà alimentée par sa propre source, il n&rsquo;est pas nécessaire de relier la broche VCC</strong></em></p>
+<p><img src="/images/sonnette/PXL_20251226_171538196.jpg" alt=""></p>
+<p>Sur le PC, on va utiliser l&rsquo;outil <strong>tio</strong> pour lire et communiquer avec le protocole UART.</p>
+<p><img src="/images/sonnette/uart_1_2.png" alt=""></p>
+<p>Quelques infos apparaissent ici, comme le nom de l&rsquo;appareil (BELL11S), mais les infos affichées restent limitées. De plus, aucune interaction ne semble possible avec l&rsquo;appareil : j&rsquo;ai beau taper des commandes &ldquo;help&rdquo; ou faire des &ldquo;retours chariot&rdquo; (Entrée), le terminal semble figé&hellip;</p>
+<p>Le message &ldquo;key up, to startup app&rdquo; semble indiquer qu&rsquo;il serait possible d&rsquo;intercepter le démarrage en appuyant sur un bouton.</p>
+<p>En regardant de plus près la carte électronique, un bouton &ldquo;Reset&rdquo; est accessible. En le maintenant appuyé lors du démarrage, le comportement change et les logs deviennent beaucoup plus verbeux.
+<img src="/images/sonnette/Pasted_image_20260105235830.png" alt=""></p>
+<p>Le message &ldquo;key down, to startup uboot&rdquo; s&rsquo;affiche, confirmant que le bouton Reset correspond bien à la touche d&rsquo;interruption attendue par le système.</p>
+<p>Cependant, on ne semble pas pouvoir accéder à un shell directemement. Un mot de passe est demandé par l&rsquo;appareil lors du processus de boot: &ldquo;please input password::&rdquo;.</p>
+<p><img src="/images/sonnette/Pasted_image_20260103085039.png" alt=""></p>
+<p>J&rsquo;ai testé plusieurs mots de passe par défaut couramment utilisés par les fabricants (&ldquo;admin&rdquo;, &ldquo;password&rdquo;, &ldquo;root&rdquo;, &ldquo;123456&rdquo;&hellip;),  sans succès&hellip;.</p>
+<p>Les logs indiquent  que le démarrage est géré par <strong>U-Boot</strong>. Puisque l&rsquo;accès console est verrouillé, nous allons devoir investiguer plus en profondeur pour contourner cette authentification.</p>
+<h3 id="tentative-de-bypass-du-mot-de-passe-boot">
+  Tentative de bypass du mot de passe boot
+  <a class="heading-link" href="#tentative-de-bypass-du-mot-de-passe-boot">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<p>La ligne suivante nous donne plus d&rsquo;informations sur l&rsquo;os et la puce de la sonnette:</p>
+<p><img src="/images/sonnette/Pasted_image_20260103090756.png" alt=""></p>
+<p>Le processeur est identifié comme un <strong>Hi3518EV300</strong>. Il s&rsquo;agit d&rsquo;une puce fabriquée par <strong>HiSilicon</strong> (une filiale de Huawei), très courante dans le monde des caméras IP.</p>
+<p>En  cherchant les mots de passes couramment utilisé par la marque HiSillicon, je suis tombé sur le github suivant:</p>
+<p><a href="https://gist.github.com/gabonator/74cdd6ab4f733ff047356198c781f27d"  class="external-link" target="_blank" rel="noopener">https://gist.github.com/gabonator/74cdd6ab4f733ff047356198c781f27d</a></p>
+<p>Plus d&rsquo;une cinquantaine de mots de passe y sont répertoriés pour les appareils HiSilicon. Malheureusement, après les avoir testés un par un, aucun ne fonctionne sur la sonnette.</p>
+<h3 id="la-méthode-fault-injection">
+  La méthode &ldquo;Fault Injection&rdquo;
+  <a class="heading-link" href="#la-m%c3%a9thode-fault-injection">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<p>En cherchant d&rsquo;autres vecteurs d&rsquo;attaque  je suis tombé sur une vidéo de <strong>Matt Brown</strong>: <a href="https://www.youtube.com/watch?v=F-G-7-qo7Xg"  class="external-link" target="_blank" rel="noopener">https://www.youtube.com/watch?v=F-G-7-qo7Xg</a> . Il y démontre comment contourner le prompt de mot de passe U-Boot via une attaque par <strong>Fault Injection</strong> (injection de fautes).</p>
+<p><strong>Le principe :</strong>
+L&rsquo;objectif est de corrompre la lecture des données pile au moment où U-Boot tente de charger le noyau Linux (Kernel) depuis la mémoire Flash vers la RAM.  Si U-boot n&rsquo;arrive pas a lire le noyau correctement, il se met en mode sécurité et permet d&rsquo;accéder à la console interactive que l&rsquo;on cherche a atteindre.</p>
+<p><strong>La pratique :</strong>
+Pour se faire, il relie la pin Data Out (DO) de la puce mémoire flash au GND pile au moment du chargement du noyau.</p>
+<p>Sur ma sonnette, la mémoire flash est la QH64A.
+En regardant la datasheet, on identifie la pin Data Out (pin 2).</p>
+<p><img src="/images/sonnette/Pasted_image_20260103201857.png" alt=""></p>
+<p>J’accroche directement un fil  sur la broche <strong>DO (Pin 2)</strong> de la mémoire Flash. L&rsquo;autre extrémité prête à être mise en contact  avec une zone de masse (<strong>GND</strong>) de la carte.</p>
+<p><img src="/images/sonnette/PXL_20251227_142550521.jpg" alt=""></p>
+<p>je  fais ensuite toucher le fil DO sur le GND  un peu avant qu&rsquo;il me demande d&rsquo;entrer mon mot de passe.</p>
+<p><img src="/images/sonnette/PXL_20251227_142210710.jpg" alt=""></p>
+<p>En court-circuitant la mémoire Flash juste avant le chargement du noyau, des erreurs apparaissent bien dans la console.
+<img src="/images/sonnette/UART_test_bypass.png" alt=""></p>
+<p>Le système affiche les valeurs des registres (signe d&rsquo;un crash), mais au lieu de me donner la main sur un shell, la puce finit systématiquement par redémarrer le CPU.</p>
+<p>Malgré de multiples tentatives en variant le timing, aucun shell n&rsquo;a pu être obtenu. La méthode de l&rsquo;injection de fautes ne semble donc pas fonctionner ici&hellip;.</p>
+<h3 id="cette-fois-ci-cest-la-bonne-">
+  Cette fois-ci c&rsquo;est la bonne !
+  <a class="heading-link" href="#cette-fois-ci-cest-la-bonne-">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<p>Les tentatives précédentes pour contourner le mot de passe ayant échoué, nous passons à la méthode forte : l&rsquo;extraction directe du firmware pour y dénicher le sésame.</p>
+<p>Pour ce faire, j&rsquo;utilise un programmateur universel <strong>T48</strong>. C&rsquo;est un outil matériel qui se branche en USB et permet de lire et écrire le contenu brut (&ldquo;Dump&rdquo;) de milliers de de puces mémoire.</p>
+<p>Afin d&rsquo;interagir avec la mémoire sans avoir à la dessouder, j&rsquo;utilise une pince de test, qui vient se fixer directement sur les broches du composant. La pince est reliée au T48, ce qui permet d&rsquo;interfacer la puce avec le logiciel de gestion <strong>Xgpro</strong>.</p>
+<p>Je branche donc la pince sur la puce mémoire de l&rsquo;appareil.
+<img src="/images/sonnette/PXL_20251229_182745034.jpg" alt=""></p>
+<p>Dans le logiciel, je sélectionne la référence exacte de la mémoire Flash identifiée sur la carte : la <strong>XM25QH64A</strong>.
+<img src="/images/sonnette/XPRO2.png" alt=""></p>
+<p>Je peux finalement lire le contenu de la puce:</p>
+<p><img src="/images/sonnette/XPRO3.png" alt=""></p>
+<p>J&rsquo;en extrais le firmware.  C&rsquo;est un  fichier binaire difficilement exploitable tel quel.</p>
+<p>En exécutant un binwalk sur notre fichier, il analyse les signatures hexadécimales pour identifier les différentes parties du firmware.</p>
+<p><img src="/images/sonnette/Pasted_image_20260103095509.png" alt=""></p>
+<p>On observe que le firmware est composé de 3 grandes sections :</p>
+<ul>
+<li><strong>u-boot.bin</strong> : Le bootloader.</li>
+<li><strong>app.img</strong> : Le noyau ou l&rsquo;application principale.</li>
+<li><strong>jffs2</strong> : Un système de fichiers compressé.</li>
+</ul>
+<p>Binwalk permet également d&rsquo;extraire automatiquement ces partitions pour nous permettre de les analyser individuellement via la commande : <code>binwalk -e XM25QH64A@SOIC8.BIN</code></p>
+<p>Une fois l&rsquo;extraction terminée, nous obtenons un dossier <code>_XM25QH64A@SOIC8.BIN.extracted</code> contenant les différentes partitions.</p>
+<p><img src="/images/sonnette/Pasted_image_20260103095926.png" alt=""></p>
+<p>La partition qui nous intéresse en priorité est <strong>u-boot.bin</strong>. C&rsquo;&rsquo;est le bootloader,qui nous demande le mot de passe.</p>
+<p>Pour l&rsquo;analyser, j&rsquo;utilise l&rsquo;outil <strong>Ghidra</strong></p>
+<p>Avant toute chose, il est important de voir <strong>l&rsquo;importance de la Base Address</strong> !</p>
+<p>Pour que Ghidra puisse comprendre les sauts  et les références aux variables, il est crucial de définir la &ldquo;Base Address&rdquo; (l&rsquo;adresse virtuelle de départ).
+Sans cela, Ghidra charge le binaire à l&rsquo;adresse <code>0x0000</code>, alors que dans la réalité, le processeur exécute ce code à une adresse bien spécifique en RAM. Si la base Adresse n&rsquo;est pas bonne, tous les pointeurs (ex: &ldquo;va chercher le texte à l&rsquo;adresse 0x40847D50&rdquo;) pointeront au mauvais endroit ou dans le vide .
+Pour trouver cette adresse, j&rsquo;analyse le fichier brut à la recherche  de la commande de démarrage (bootcmd).</p>
+<p><img src="/images/sonnette/Pasted_image_20260103102202.png" alt=""></p>
+<p>On voit ici que l&rsquo;adresse de départ du noyau est 0x40000000.
+Le système charge donc le noyau à l&rsquo;adresse 0x40000000, c&rsquo;est donc cette valeur que nous allons utiliser comme point de départ pour aligner le code.</p>
+<p>Dans Ghidra, à l&rsquo;importation du fichier, je configure donc :</p>
+<ul>
+<li><strong>Language :</strong> ARM:LE:32:Cortex:default (Le Hi3518EV300 est un Cortex A7 en <strong>Little Endian</strong>).</li>
+<li><strong>Base Address :</strong> 0x40000000.</li>
+</ul>
+<p><img src="/images/sonnette/ghidra2_1.png" alt=""></p>
+<h3 id="décompilation">
+  Décompilation
+  <a class="heading-link" href="#d%c3%a9compilation">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<p>La méthode la plus simple pour trouver une fonction d&rsquo;authentification est de chercher les chaînes de caractères (strings) affichées lors du login. Je lance une recherche sur le mot &ldquo;password&rdquo;.
+<img src="/images/sonnette/Pasted_image_20260103111036.png" alt=""></p>
+<p>Deux résultats intéressants ressortent :</p>
+<ol>
+<li><code>please input password::</code> (Le prompt)</li>
+<li><code>password err</code> (Le message d&rsquo;erreur)</li>
+</ol>
+<p>Je décide de me concentrer sur <strong>&ldquo;password err&rdquo;</strong>. Si je trouve l&rsquo;endroit où ce message est utilisé, je trouverai forcément la condition qui a échoué juste avant (la comparaison du mot de passe).</p>
+<p>En demandant à Ghidra les références croisées (XREFS) vers cette string, je tombe sur une fonction unique.</p>
+<p><img src="/images/sonnette/Pasted_image_20260103111121.png" alt="">
+En double-cliquant dessus, j&rsquo;atterris dans le désassembleur, et Ghidra me génère une vue décompilée en C</p>
+<p><img src="/images/sonnette/Pasted_image_20260103115520.png" alt=""></p>
+<p>La chaine semble être dans un printf.
+On suppose donc que la comparaison avec l&rsquo;entrée utilisateur et le mot de passe s’effectue juste avant.</p>
+<p>Après un peu de nettoyage et de renommage des variables pour rendre le code lisible, la logique de la fonction apparaît clairement :</p>
+<p><img src="/images/sonnette/Pasted_image_20260103115815.png" alt=""></p>
+<p>La ligne 36:</p>
+<div class="highlight"><pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>uVar5 <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#d2a8ff;font-weight:bold">FUN_40831f40</span>((<span style="color:#ff7b72">int</span>)<span style="color:#ff7b72;font-weight:bold">&amp;</span>stack0x00000004,DAT_40814a5c);
+</span></span></code></pre></div><p>Semble être un strcmp qui compare l&rsquo;entrée utilisateur (le pointeur à stack0x00000004 ) et  le password (DAT_40814a5c).</p>
+<p>On aurait donc le code suivant simplifié et annoté:</p>
+<div class="highlight"><pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#d2a8ff;font-weight:bold">printf</span>(<span style="color:#a5d6ff">&#34;please input password::&#34;</span>);
+</span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic">// ... lecture de l&#39;entrée utilisateur ...
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic">// Comparaison de l&#39;entrée utilisateur avec le vrai mot de passe
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"></span>is_valid <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#d2a8ff;font-weight:bold">check_password</span>((<span style="color:#ff7b72">int</span>)<span style="color:#ff7b72;font-weight:bold">&amp;</span>user_input, encrypted_password_ptr);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72">if</span> (is_valid <span style="color:#ff7b72;font-weight:bold">!=</span> <span style="color:#a5d6ff">0</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#d2a8ff;font-weight:bold">printf</span>(<span style="color:#a5d6ff">&#34;password err</span><span style="color:#79c0ff">\n</span><span style="color:#a5d6ff">&#34;</span>);
+</span></span><span style="display:flex;"><span>....
+</span></span></code></pre></div><p>en double cliquant sur la variable DAT_40814a5c, on arrive l&rsquo;adresse physique <code>0x40847D50</code> où est stocké le mot de passe de référence.</p>
+<p><img src="/images/sonnette/Pasted_image_20260103120122.png" alt=""></p>
+<h4 id="le-secret-chiffré">
+  Le secret &ldquo;chiffré&rdquo;
+  <a class="heading-link" href="#le-secret-chiffr%c3%a9">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h4>
+<p>En se rendant à l&rsquo;adresse 0x40847D50 on s&rsquo;attend à voir le mot de passe en clair (ASCII).
+Mais surprise :</p>
+<p><img src="/images/sonnette/Pasted_image_20260103120257.png" alt=""></p>
+<p>Les valeurs (<code>8F 8F 8C...</code>) ne correspondent à aucun texte lisible. Les octets sont trop élevés (supérieurs à <code>0x7F</code>) pour de l&rsquo;ASCII standard. Cela peut indiquer une <strong>obfuscation</strong>.</p>
+<p>Face à ces données brutes, j&rsquo;ai demandé de l&rsquo;aide à ChatGPT pour identifier le motif. L&rsquo;IA a rapidement mis en évidence que la chaîne est simplement &ldquo;inversée&rdquo; (Bitwise NOT).
+Pour déchiffrer le mot de passe, il suffit d&rsquo;effectuer l&rsquo;opération mathématique : <code>0xFF - Valeur</code>.</p>
+<ul>
+<li>Exemple : <code>0xFF - 0x8F = 0x70</code> (&lsquo;p&rsquo;)</li>
+</ul>
+<p>En appliquant cette logique à toute la suite d&rsquo;octets,on trouve le mot de passe final: <em><strong>pps_password</strong></em>.</p>
+<h3 id="dive-into-uart">
+  Dive into UART
+  <a class="heading-link" href="#dive-into-uart">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<p>De retour sur la console UART, je redémarre la sonnette. Au prompt du mot de passe, je saisis : <code>pps_password</code>.</p>
+<p><strong>Succès !</strong> L&rsquo;accès au shell est déverrouillé. Le prompt change pour <code>pps #</code>.
+<img src="/images/sonnette/Pasted_image_20260106001548.png" alt=""></p>
+<p>Cependant, en essayant des commandes classiques (<code>ls</code>, <code>pwd</code>), je me rends vite compte qu&rsquo;il ne s&rsquo;agit pas d&rsquo;un shell Linux standard, mais du shell interactif de <strong>U-Boot</strong></p>
+<p>Une méthode pour obtenir un accès shell root sur un système embarqué consiste à modifier les variables d&rsquo;environnement au démarrage afin de forcer l&rsquo;exécution d&rsquo;un shell (<code>/bin/sh</code>) à la place du programme initial.</p>
+<p>Je commence par afficher la configuration actuelle via la commande <code>printenv</code> :</p>
+<p><img src="/images/sonnette/Pasted_image_20260105234627.png" alt="">
+L&rsquo;analyse des variables <code>bootargs</code> nous montre les paramètres passés au noyau. Je tente alors de les modifier pour injecter l&rsquo;init manuellement :</p>
+<p><img src="/images/sonnette/Pasted_image_20260105234712.png" alt=""></p>
+<p>Malheureusement, la sonnette freeze au démarrage, ce qui laisse supposer que le système d&rsquo;exploitation n&rsquo;est pas un Linux standard ou qu&rsquo;il ne possède pas de binaire <code>/bin/sh</code> accessible.</p>
+<p>Il va falloir trouver une autre porte d&rsquo;entrée.</p>
+<h3 id="avoir-un-shell">
+  Avoir un Shell
+  <a class="heading-link" href="#avoir-un-shell">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<p>On a donc toujours pas de réel shell sur l&rsquo;appareil! Il faut aller plus loin!</p>
+<p><img src="/images/sonnette/agl7ze.jpg" alt=""></p>
+<p>Je branche ma sonnette connecté et je la configure sur mon réseau WIFI.
+Une fois connectée à mon point d&rsquo;accès Wi-Fi, je récupère son adresse IP et lance un scan de ports complet.</p>
+<p><img src="/images/sonnette/Pasted_image_20260105222315.png" alt=""></p>
+<p>Un port  est ouvert dessus : le  <strong>8090</strong>. Dans la documentation rien n&rsquo;y fait mention.
+En tentant d&rsquo;y accéder via un navigateur, je reçois une erreur générique, mais le serveur répond.</p>
+<p><img src="/images/sonnette/Pasted_image_20260105222610.png" alt=""></p>
+<p>J&rsquo;utilise ensuite l&rsquo;outil <code>gobuster</code> pour énumérer les URLs accessibles sur ce serveur web.</p>
+<p><img src="/images/sonnette/Pasted_image_20260105222834.png" alt=""></p>
+<p>Le serveur HTTP de la sonnette gère mal les connexions multiples et renvoie une réponse inattendue, provoquant une erreur d&rsquo;affichage dans Gobuster :</p>
+<div class="highlight"><pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-html" data-lang="html"><span style="display:flex;"><span>Unsolicited response received on idle HTTP channel starting with &#34;HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nConnection: close\r\n\r\n&lt;<span style="color:#7ee787">html</span>&gt;&lt;<span style="color:#7ee787">body</span>&gt;&lt;<span style="color:#7ee787">h</span>&gt;Enjoy your smart home camera!&lt;/<span style="color:#7ee787">h</span>&gt;&lt;<span style="color:#7ee787">br</span>/&gt;&lt;<span style="color:#7ee787">br</span>/&gt;&lt;<span style="color:#7ee787">ul</span> style<span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#a5d6ff">\&#34;list-style-type:circle\&#34;</span>&gt;&lt;<span style="color:#7ee787">li</span>&gt;&lt;<span style="color:#7ee787">a</span> href<span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#a5d6ff">\&#34;/flash/upgrade/release_package\&#34;</span>&gt; upgrading from upgrade.bin &lt;/<span style="color:#7ee787">a</span>&gt;&lt;/<span style="color:#7ee787">li</span>&gt;&lt;<span style="color:#7ee787">li</span>&gt;&lt;<span style="color:#7ee787">a</span> href<span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#a5d6ff">\&#34;/flash/upgrade/percent\&#34;</span>&gt; view upgrading percent &lt;/<span style="color:#7ee787">a</span>&gt;&lt;/<span style="color:#7ee787">li</span>&gt;&lt;<span style="color:#7ee787">li</span>&gt;&lt;<span style="color:#7ee787">a</span> href<span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#a5d6ff">\&#34;/devices/deviceinfo\&#34;</span>&gt; view device information &lt;/<span style="color:#7ee787">a</span>&gt;&lt;/<span style="color:#7ee787">li</span>&gt;&lt;<span style="color:#7ee787">li</span>&gt;&lt;<span style="color:#7ee787">a</span> href<span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#a5d6ff">\&#34;/sys/reboot\&#34;</span>&gt; reboot device &lt;/<span style="color:#7ee787">a</span>&gt;&lt;/<span style="color:#7ee787">li</span>&gt;&lt;<span style="color:#7ee787">li</span>&gt;&lt;<span style="color:#7ee787">a</span> href<span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#a5d6ff">\&#34;/sys/sleep\&#34;</span>&gt; sleep device&lt;/<span style="color:#7ee787">a</span>&gt;&lt;/<span style="color:#7ee787">li</span>&gt;&lt;<span style="color:#7ee787">li</span>&gt;&lt;<span style="color:#7ee787">a</span> href<span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#a5d6ff">\&#34;/sys/active\&#34;</span>&gt; active device&lt;/<span style="color:#7ee787">a</span>&gt;&lt;/<span style="color:#7ee787">li</span>&gt;&lt;<span style="color:#7ee787">li</span>&gt;&lt;<span style="color:#7ee787">a</span> href<span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#a5d6ff">\&#34;/sys/console\&#34;</span>&gt; ....
+</span></span></code></pre></div><p>Dans le bloc de code HTML brut recraché par l&rsquo;erreur, le serveur fait fuiter la liste complète des actions disponibles sous forme de liens :</p>
+<ul>
+<li><code>/flash/upgrade/release_package</code></li>
+<li><code>/sys/reboot</code></li>
+<li><code>/log/upload</code></li>
+<li><code>/sys/console</code></li>
+</ul>
+<p>L&rsquo;URL <code>http://192.168.1.139:8090/sys/console</code> semble prometteuse!
+Cependant, en tentant d&rsquo;y accéder, le navigateur demande une authentification <strong>HTTP Basic Auth</strong>.</p>
+<p><img src="/images/sonnette/Pasted_image_20260105223104.png" alt=""></p>
+<p>Les identifiants <code>admin:admin</code>, <code>root:password</code>&hellip;  échouent. Il va falloir retourner dans le firmware pour trouver ces accès.</p>
+<h4 id="reverse-engineering-de-la-partition-appimg">
+  Reverse Engineering de la partition <code>app.img</code>
+  <a class="heading-link" href="#reverse-engineering-de-la-partition-appimg">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h4>
+<p>Nous savons que <code>u-boot.bin</code> contenait le mot de passe du bootloader. Les identifiants de l&rsquo;application Web doivent logiquement se trouver dans la partition système : <strong><code>app.img</code></strong>.</p>
+<p>J&rsquo;extrais donc cette partition et je l&rsquo;analyse avec Ghidra. Mon objectif est de trouver où le serveur Web vérifie l&rsquo;en-tête &ldquo;Authorization&rdquo;.</p>
+<p>Plutôt que de chercher manuellement dans des milliers de lignes de code assembleur, je vais plutôt utiliser  l&rsquo;analyse assistée par IA via le <strong>Model Context Protocol (MCP)</strong>.</p>
+<p>Le <strong>Model Context Protocol (MCP)</strong> est un standard ouvert qui permet de connecter des assistants d&rsquo;intelligence artificielle (comme Claude) à des outils locaux et des contextes de données. Concrètement, cela permet à l&rsquo;IA ne pas se contenter de &ldquo;chat&rdquo;, mais de lire directement le code décompilé dans Ghidra et d&rsquo;y exécuter des recherches.</p>
+<h4 id="recherche-des-identifiants-assistée-par-ia-mcp">
+  <strong>Recherche des identifiants assistée par IA (MCP)</strong>
+  <a class="heading-link" href="#recherche-des-identifiants-assist%c3%a9e-par-ia-mcp">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h4>
+<p>Pour réaliser cette interface entre l&rsquo;IA et Ghidra, j&rsquo;utilise donc deux briques  :</p>
+<ol>
+<li>
+<p><strong>L&rsquo;extension GhidraMCP :</strong> <code>https://github.com/LaurieWired/GhidraMCP</code>
+Ce plugin transforme l&rsquo;instance de Ghidra en un serveur local. L&rsquo;IA s&rsquo;y connecte et peut ainsi invoquer directement les fonctions de l&rsquo;API de Ghidra pour effectuer des tâches complexes, comme rechercher des strings, analyser des références ou décompiler une fonction, le tout sans intervention manuelle.</p>
+</li>
+<li>
+<p><strong>Le Client Claude Desktop (Linux) :</strong> L&rsquo;application officielle Claude n&rsquo;étant pas nativement disponible sous Linux, j&rsquo;utilise: <code>https://github.com/aaddrick/claude-desktop-debian</code></p>
+</li>
+</ol>
+<p>Plugin GhidraMCP sur Ghidra:
+<img src="/images/sonnette/Pasted_image_20260106001939.png" alt=""></p>
+<p>Le prompt que j&rsquo;ai ensuite utilisé sur Claude est le suivant:</p>
+<div class="highlight"><pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-html" data-lang="html"><span style="display:flex;"><span>Agis comme un expert en rétro-ingénierie. Je suspecte que des identifiants &#34;Basic Auth&#34; (HTTP) sont codés en dur dans ce binaire. Utilise les outils Ghidra pour mener l&#39;enquête en suivant ces étapes :
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>1. Recherche de chaînes suspectes : Cherche toutes les chaînes de caractères (strings) contenant &#34;Authorization&#34;, &#34;Basic &#34;, &#34;user&#34;, &#34;password&#34;, &#34;login&#34; ou &#34;auth&#34;.
+</span></span><span style="display:flex;"><span>2. Analyse des références (XREFs) : Pour chaque chaîne pertinente trouvée, identifie la fonction qui l&#39;utilise.
+</span></span><span style="display:flex;"><span>3. Décompilation : Décompile la fonction (ou les fonctions) qui manipulent ces chaînes pour comprendre le contexte. Regarde comment la chaîne est construite.
+</span></span><span style="display:flex;"><span>4. Détection Base64 : Le Basic Auth étant souvent sous la forme `base64(user:pass)`, cherche si des chaînes étranges (alphanumériques longues terminant par `=` ou `==`) sont passées à une fonction de décodage ou concaténées après &#34;Basic &#34;. Résume tes trouvailles : indique le nom de la fonction, l&#39;adresse mémoire, et les valeurs potentielles du user/pass si elles sont lisibles.
+</span></span></code></pre></div><p>Claude prend alors le contrôle de l&rsquo;API Ghidra, scanne la mémoire à la recherche des chaînes spécifiées et analyse le graphe d&rsquo;appel des fonctions pour comprendre comment ces chaînes sont utilisées.</p>
+<p><img src="/images/sonnette/Pasted_image_20260105224843.png" alt=""></p>
+<p>Finalement l&rsquo;IA identifie trois paires d&rsquo;identifiants potentiels codés en dur dans le binaire :</p>
+<p><img src="/images/sonnette/Pasted_image_20260105225011.png" alt=""></p>
+<p>Je teste ces identifiants sur la page de login du port 8090 (<code>/sys/console</code>). Les deux premiers ne fonctionnent pas. Cependant, le troisième couple fonctionne :
+<code>WeEyE / &amp;$ChuTian_91</code></p>
+<p><img src="/images/sonnette/Pasted_image_20260105225218.png" alt=""></p>
+<p>La page web affiche alors un message  : <code>=====device console success=====</code>.</p>
+<p>Je m&rsquo;attendais à voir apparaître un terminal interactif directement dans le navigateur, mais rien ne se passe.</p>
+<p>Je tente alors de me reconnecter à l&rsquo;interface UART.</p>
+<p>Et là, à l&rsquo;instant où la connexion série s&rsquo;établit, je tombe directement sur un shell actif!</p>
+<p><img src="/images/sonnette/Pasted_image_20260105225747.png" alt=""></p>
+<p>A suivre&hellip;</p>
+
+      </div>
+
+
+      <footer>
+        
+
+
+        <div id="disqus_thread"></div>
+<script>
+  window.disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "yourdiscussshortname" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+    
+    document.addEventListener('themeChanged', function (e) { 
+        if (document.readyState == 'complete') {
+          DISQUS.reset({ reload: true, config: disqus_config });
+        }
+    });
+</script>
+        
+        
+        
+        
+        
+        
+      </footer>
+    </article>
+
+    
+  </section>
+
+    </div>
+
+    <footer class="footer">
+  <section class="container">
+    ©
+    
+      2025 -
+    
+    2026
+     RedFish 
+    ·
+    
+    Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> & <a href="https://github.com/luizdepra/hugo-coder/" target="_blank" rel="noopener">Coder</a>.
+    
+  </section>
+</footer>
+
+  </main>
+
+  
+
+  
+  
+  <script src="/js/coder.min.6ae284be93d2d19dad1f02b0039508d9aab3180a12a06dcc71b0b0ef7825a317.js" integrity="sha256-auKEvpPS0Z2tHwKwA5UI2aqzGAoSoG3McbCw73gloxc="></script>
+  
+
+  
+
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</body>
+</html>

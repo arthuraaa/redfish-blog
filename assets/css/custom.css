@@ -1,0 +1,32 @@
+/* ON RESET TOUT (inchangé) */
+.avatar {
+    width: auto !important;
+    height: auto !important;
+    border-radius: 0 !important;
+    overflow: visible !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    display: flex !important;
+    justify-content: center !important;
+}
+
+/* ON APPLIQUE LE STYLE SUR L'IMAGE */
+.avatar img {
+    /* 1. La taille (inchangée) */
+    width: 300px !important;
+    height: auto !important;
+
+    /* 2. La forme (inchangée) */
+    border-radius: 25px !important;
+
+    /* 3. LE NÉON TRÈS LÉGER */
+    /* Bordure fine et pas totalement opaque */
+    border: 1.5px solid rgba(255, 50, 50, 0.6) !important;
+
+    /* L'astuce : on combine deux ombres.
+       - La première fait une petite lueur rouge douce tout autour (0 0 10px...)
+       - La deuxième garde l'effet de profondeur noire vers le bas (0 10px 25px...)
+    */
+    box-shadow: 0 0 10px rgba(255, 50, 50, 0.3),
+                0 10px 25px rgba(0, 0, 0, 0.7) !important;
+}

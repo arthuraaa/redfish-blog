@@ -14,13 +14,19 @@ shortname = "yourdiscussshortname"
 [markup.highlight]
 style = "github-dark"
 
+
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true
+
+
 [params]
   author = "RedFish"
-  info = "Cybersecurity Enthusiast and DevOps Explorer"
+  info = "Pentester | Cybersecurity Enthusiast"
   description = "RedFish's personal website and cybersecurity journey"
-  keywords = "blog,cybersecurity,ctf,devops,personal"
-  avatarurl = "images/avatar.jpg"
-  # gravatar = "your@email.com"
+  keywords = "blog,cybersecurity,ctf,personal"
+  avatarurl = "images/avatar3.jpg"
 
   faviconSVG = "/img/favicon.svg"
   favicon_32 = "/img/favicon-32x32.png"
@@ -33,6 +39,8 @@ style = "github-dark"
   colorScheme = "auto"
   hidecolorschemetoggle = false
 
+customCSS = ["css/custom.css"]
+
   # customCSS = ["css/custom.css"]
   # customSCSS = ["scss/custom.scss"]
   # customJS = ["js/custom.js"]
@@ -44,29 +52,30 @@ style = "github-dark"
   author = "authors"
 
 # Social links
-[[params.social]]
-  name = "Github"
-  icon = "fa-brands fa-github fa-2x"
-  weight = 1
-  url = "https://github.com/arthuraaa"
+# LinkedIn
+  [[params.social]]
+    name = "LinkedIn"
+    icon = "fa fa-linkedin"
+    url = "https://fr.linkedin.com/in/arthur-pannier-7749ab1a0"
 
-[[params.social]]
-  name = "HackTheBox"
-  icon = "fa-solid fa-user-secret fa-2x"
-  weight = 2
-  url = "https://ctf.hackthebox.com/user/profile/19430"  # <-- À remplacer par ton vrai lien HTB !
+  # Root-Me (Icône Terminal)
+  [[params.social]]
+    name = "Root-Me"
+    icon = "fas fa-terminal"
+    url = "https://www.root-me.org/RedFish-331132"
 
-[[params.social]]
-  name = "RootMe"
-  icon = "fa-solid fa-lock fa-2x"
-  weight = 3
-  url = "https://www.root-me.org/your-rootme-username"  # <-- À remplacer aussi par ton vrai lien RootMe !
+  # Hack The Box (Icône Cube)
+  [[params.social]]
+    name = "Hack The Box"
+    icon = "fas fa-cube"
+    url = "https://app.hackthebox.com/users/247961"
 
-[[params.social]]
-  name = "Twitter"
-  icon = "fa-brands fa-x-twitter fa-2x"
-  weight = 4
-  url = "https://twitter.com/johndoe/"  # <-- Si tu veux ton Twitter, sinon on peut le supprimer
+  # YesWeHack (Icône Bug)
+  [[params.social]]
+    name = "YesWeHack"
+    icon = "fas fa-bug"
+    url = "https://yeswehack.com/hunters/RedFish"
+
 
 # Menu links
 [[menu.main]]

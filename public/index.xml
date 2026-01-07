@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>RedFish</title>
+    <link>http://www.axolol.fr/</link>
+    <description>Recent content on RedFish</description>
+    <generator>Hugo</generator>
+    <language>en</language>
+    <lastBuildDate>Wed, 07 Jan 2026 00:25:35 +0100</lastBuildDate>
+    <atom:link href="http://www.axolol.fr/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Autopsie d&#39;une sonnette connectée</title>
+      <link>http://www.axolol.fr/posts/autopsie-sonnette-connectee/</link>
+      <pubDate>Wed, 07 Jan 2026 00:25:35 +0100</pubDate>
+      <guid>http://www.axolol.fr/posts/autopsie-sonnette-connectee/</guid>
+      <description>&lt;h3 id=&#34;avant-propos&#34;&gt;&#xA;  &lt;strong&gt;Avant-propos&lt;/strong&gt;&#xA;  &lt;a class=&#34;heading-link&#34; href=&#34;#avant-propos&#34;&gt;&#xA;    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;&#xA;    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;&#xA;  &lt;/a&gt;&#xA;&lt;/h3&gt;&#xA;&lt;p&gt;Profitant de quelques jours de congés à Noël, j&amp;rsquo;ai décidé d&amp;rsquo;approfondir mes connaissances en &lt;em&gt;hardware hacking&lt;/em&gt; en m&amp;rsquo;attaquant à la sonnette &lt;strong&gt;DiO Bell B01&lt;/strong&gt;. L&amp;rsquo;objectif était de comprendre son fonctionnement interne et de tenter d&amp;rsquo;obtenir un accès complet (root).&lt;/p&gt;&#xA;&lt;p&gt;&lt;em&gt;&lt;strong&gt;Ce rapport est avant tout un journal d&amp;rsquo;expérimentation avec ses réussites et ses ratés. Il existe sûrement des méthodes plus optimisées pour arriver au même résultat, mais l&amp;rsquo;essentiel ici était d&amp;rsquo;apprendre.&lt;/strong&gt;&lt;/em&gt;&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>À propos</title>
+      <link>http://www.axolol.fr/about/</link>
+      <pubDate>Thu, 17 Apr 2025 00:00:00 +0000</pubDate>
+      <guid>http://www.axolol.fr/about/</guid>
+      <description>&lt;p&gt;Moi c’est Arthur alias &lt;strong&gt;RedFish&lt;/strong&gt;, Pentester passionné par la sécurité offensive et les challenges CTF.&#xA;Ce blog est avant tout mon carnet de notes technique pour mes writeups et retours d&amp;rsquo;expérience.&lt;/p&gt;&#xA;&lt;p&gt;Retrouve-moi ici :&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;&lt;i class=&#34;fab fa-linkedin&#34;&gt;&lt;/i&gt; &lt;a href=&#34;https://fr.linkedin.com/in/arthur-pannier-7749ab1a0&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;LinkedIn&lt;/a&gt;&lt;/li&gt;&#xA;&lt;li&gt;&lt;i class=&#34;fas fa-terminal&#34;&gt;&lt;/i&gt; &lt;a href=&#34;https://www.root-me.org/RedFish-331132&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Root-Me&lt;/a&gt;&lt;/li&gt;&#xA;&lt;li&gt;&lt;i class=&#34;fas fa-cube&#34;&gt;&lt;/i&gt; &lt;a href=&#34;https://app.hackthebox.com/users/247961&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Hack The Box&lt;/a&gt;&lt;/li&gt;&#xA;&lt;li&gt;&lt;i class=&#34;fas fa-bug&#34;&gt;&lt;/i&gt; &lt;a href=&#34;https://yeswehack.com/hunters/RedFish&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;YesWeHack&lt;/a&gt;&lt;/li&gt;&#xA;&lt;/ul&gt;</description>
+    </item>
+    <item>
+      <title>HTB - First Writeup</title>
+      <link>http://www.axolol.fr/posts/htb-first-writeup/</link>
+      <pubDate>Thu, 17 Apr 2025 00:00:00 +0000</pubDate>
+      <guid>http://www.axolol.fr/posts/htb-first-writeup/</guid>
+      <description>&lt;h1 id=&#34;introduction&#34;&gt;&#xA;  Introduction&#xA;  &lt;a class=&#34;heading-link&#34; href=&#34;#introduction&#34;&gt;&#xA;    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;&#xA;    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;&#xA;  &lt;/a&gt;&#xA;&lt;/h1&gt;&#xA;&lt;p&gt;Write-up du challenge&amp;hellip;&lt;/p&gt;&#xA;&lt;h1 id=&#34;enumeration&#34;&gt;&#xA;  Enumeration&#xA;  &lt;a class=&#34;heading-link&#34; href=&#34;#enumeration&#34;&gt;&#xA;    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;&#xA;    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;&#xA;  &lt;/a&gt;&#xA;&lt;/h1&gt;&#xA;&lt;p&gt;nmap, gobuster&amp;hellip;&lt;/p&gt;&#xA;&lt;h1 id=&#34;exploitation&#34;&gt;&#xA;  Exploitation&#xA;  &lt;a class=&#34;heading-link&#34; href=&#34;#exploitation&#34;&gt;&#xA;    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;&#xA;    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;&#xA;  &lt;/a&gt;&#xA;&lt;/h1&gt;&#xA;&lt;p&gt;&amp;hellip;&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>
