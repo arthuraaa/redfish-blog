@@ -34,7 +34,7 @@ En observant la carte, on remarque 4 trous alignés qui semblent correspondre à
 ![](/images/sonnette/Pasted_image_20260105214928.png)
 #### Identifier la masse (GND)
 
-Pour cela, nous allons utiliser un multimètre en mode **"Continuité"**. Dans ce mode, le multimètre sonne lorsque la resistance entre les connecteurs est à 0.
+Pour cela, nous allons utiliser un multimètre en mode **"Continuité"**. Dans ce mode, le multimètre sonne lorsque la r"sistance entre les connecteurs est à 0.
 - On place la sonde noire du multimètre sur une masse connue de l'appareil par exemple  le pôle négatif de l'alimentation).
 - Avec la sonde rouge, on teste les 4 broches inconnues une par une.
 
@@ -56,7 +56,7 @@ Pour communiquer avec l'interface UART de l'appareil, un adaptateur USB vers TTL
 N'en ayant pas sous la main, je vais utiliser un Arduino UNO. Pour ce faire, il faut transformer l'Arduino en convertisseur "passif" sans que son propre processeur n'interfère avec les signaux. La manipulation consiste à relier la broche **RESET** de l'Arduino à la broche **GND**. Cela a pour effet de maintenir le microcontrôleur principal en état de redémarrage permanent, le rendant inactif.
 
 
-On passe ensuite au câblage des  connecteurs. Les pins RX/TX sur le PCB de l'Arduino correspondant aux lignes du convertisseur USB. On branche donc : 
+On passe ensuite au câblage des  connecteurs. Les pins RX/TX sur le PCB de l'Arduino correspondent aux lignes du convertisseur USB. On branche donc : 
 * La pin **RX** de la sonnette sur le **RX** de l'Arduino (Pin 0). 
 * La pin **TX** de la sonnette sur le **TX** de l'Arduino (Pin 1).
 
@@ -84,7 +84,7 @@ En regardant de plus près la carte électronique, un bouton "Reset" est accessi
 
 Le message "key down, to startup uboot" s'affiche, confirmant que le bouton Reset correspond bien à la touche d'interruption attendue par le système.
 
-Cependant, on ne semble pas pouvoir accéder à un shell directemement. Un mot de passe est demandé par l'appareil lors du processus de boot: "please input password::".
+Cependant, on ne semble pas pouvoir accéder à un shell directement. Un mot de passe est demandé par l'appareil lors du processus de boot: "please input password::".
 
 ![](/images/sonnette/Pasted_image_20260103085039.png)
 
@@ -101,7 +101,7 @@ La ligne suivante nous donne plus d'informations sur l'os et la puce de la sonne
 
 Le processeur est identifié comme un **Hi3518EV300**. Il s'agit d'une puce fabriquée par **HiSilicon** (une filiale de Huawei), très courante dans le monde des caméras IP.
 
-En  cherchant les mots de passes couramment utilisé par la marque HiSillicon, je suis tombé sur le github suivant: 
+En  cherchant les mots de passe couramment utilisé par la marque HiSillicon, je suis tombé sur le github suivant: 
 
 https://gist.github.com/gabonator/74cdd6ab4f733ff047356198c781f27d
 
@@ -115,7 +115,7 @@ En cherchant d'autres vecteurs d'attaque  je suis tombé sur une vidéo de **Mat
 L'objectif est de corrompre la lecture des données pile au moment où U-Boot tente de charger le noyau Linux (Kernel) depuis la mémoire Flash vers la RAM.  Si U-boot n'arrive pas a lire le noyau correctement, il se met en mode sécurité et permet d'accéder à la console interactive que l'on cherche a atteindre.
 
 **La pratique :**
-Pour se faire, il relie la pin Data Out (DO) de la puce mémoire flash au GND pile au moment du chargement du noyau.
+Pour ce faire, il relie la pin Data Out (DO) de la puce mémoire flash au GND pile au moment du chargement du noyau.
 
 Sur ma sonnette, la mémoire flash est la QH64A.
 En regardant la datasheet, on identifie la pin Data Out (pin 2).
@@ -133,6 +133,7 @@ je  fais ensuite toucher le fil DO sur le GND  un peu avant qu'il me demande d'e
 
 
 En court-circuitant la mémoire Flash juste avant le chargement du noyau, des erreurs apparaissent bien dans la console. 
+
 ![](/images/sonnette/UART_test_bypass.png)
 
 Le système affiche les valeurs des registres (signe d'un crash), mais au lieu de me donner la main sur un shell, la puce finit systématiquement par redémarrer le CPU.
@@ -143,7 +144,7 @@ Malgré de multiples tentatives en variant le timing, aucun shell n'a pu être o
 ### Cette fois-ci c'est la bonne !
 Les tentatives précédentes pour contourner le mot de passe ayant échoué, nous passons à la méthode forte : l'extraction directe du firmware pour y dénicher le sésame.
 
-Pour ce faire, j'utilise un programmateur universel **T48**. C'est un outil matériel qui se branche en USB et permet de lire et écrire le contenu brut ("Dump") de milliers de de puces mémoire.
+Pour ce faire, j'utilise un programmateur universel **T48**. C'est un outil matériel qui se branche en USB et permet de lire et écrire le contenu brut ("Dump") de milliers de puces mémoire.
 
 Afin d'interagir avec la mémoire sans avoir à la dessouder, j'utilise une pince de test, qui vient se fixer directement sur les broches du composant. La pince est reliée au T48, ce qui permet d'interfacer la puce avec le logiciel de gestion **Xgpro**.
 

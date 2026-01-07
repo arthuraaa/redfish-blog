@@ -2,54 +2,54 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>http://localhost:1313/authors/</loc>
+    <loc>http://www.axolol.fr/authors/</loc>
     <lastmod>2026-01-07T00:25:35+01:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/posts/autopsie-sonnette-connectee/</loc>
+    <loc>http://www.axolol.fr/posts/autopsie-sonnette-connectee/</loc>
     <lastmod>2026-01-07T00:25:35+01:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/categories/</loc>
+    <loc>http://www.axolol.fr/categories/</loc>
     <lastmod>2026-01-07T00:25:35+01:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/tags/hacking/</loc>
+    <loc>http://www.axolol.fr/tags/hacking/</loc>
     <lastmod>2026-01-07T00:25:35+01:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/tags/hardware/</loc>
+    <loc>http://www.axolol.fr/tags/hardware/</loc>
     <lastmod>2026-01-07T00:25:35+01:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/posts/</loc>
+    <loc>http://www.axolol.fr/posts/</loc>
     <lastmod>2026-01-07T00:25:35+01:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/</loc>
+    <loc>http://www.axolol.fr/</loc>
     <lastmod>2026-01-07T00:25:35+01:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/authors/redfish/</loc>
+    <loc>http://www.axolol.fr/authors/redfish/</loc>
     <lastmod>2026-01-07T00:25:35+01:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/tags/</loc>
+    <loc>http://www.axolol.fr/tags/</loc>
     <lastmod>2026-01-07T00:25:35+01:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/tags/uart/</loc>
+    <loc>http://www.axolol.fr/tags/uart/</loc>
     <lastmod>2026-01-07T00:25:35+01:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/categories/writeup/</loc>
+    <loc>http://www.axolol.fr/categories/writeup/</loc>
     <lastmod>2026-01-07T00:25:35+01:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/about/</loc>
+    <loc>http://www.axolol.fr/about/</loc>
     <lastmod>2025-04-17T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/tags/htb/</loc>
+    <loc>http://www.axolol.fr/tags/htb/</loc>
     <lastmod>2025-04-17T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/posts/htb-first-writeup/</loc>
+    <loc>http://www.axolol.fr/posts/htb-first-writeup/</loc>
     <lastmod>2025-04-17T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/tags/pwn/</loc>
+    <loc>http://www.axolol.fr/tags/pwn/</loc>
     <lastmod>2025-04-17T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/tags/web/</loc>
+    <loc>http://www.axolol.fr/tags/web/</loc>
     <lastmod>2025-04-17T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/series/</loc>
+    <loc>http://www.axolol.fr/series/</loc>
   </url>
 </urlset>

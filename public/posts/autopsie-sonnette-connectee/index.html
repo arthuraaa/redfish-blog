@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+<head>
   <title>
   Autopsie d&#39;une sonnette connectée · RedFish
 </title>
@@ -22,7 +22,7 @@
   <meta name="twitter:title" content="Autopsie d&#39;une sonnette connectée">
   <meta name="twitter:description" content="Analyse et root d&#39;une sonnette DiO Bell B01">
 
-<meta property="og:url" content="http://localhost:1313/posts/autopsie-sonnette-connectee/">
+<meta property="og:url" content="http://www.axolol.fr/posts/autopsie-sonnette-connectee/">
   <meta property="og:site_name" content="RedFish">
   <meta property="og:title" content="Autopsie d&#39;une sonnette connectée">
   <meta property="og:description" content="Analyse et root d&#39;une sonnette DiO Bell B01">
@@ -38,7 +38,7 @@
 
 
 
-<link rel="canonical" href="http://localhost:1313/posts/autopsie-sonnette-connectee/">
+<link rel="canonical" href="http://www.axolol.fr/posts/autopsie-sonnette-connectee/">
 
 
 <link rel="preload" href="/fonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin>
@@ -48,7 +48,7 @@
 
   
   
-  <link rel="stylesheet" href="/css/coder.css" media="screen">
+  <link rel="stylesheet" href="/css/coder.min.4b392a85107b91dbdabc528edf014a6ab1a30cd44cafcd5325c8efe796794fca.css" integrity="sha256-SzkqhRB7kdvavFKO3wFKarGjDNRMr81TJcjv55Z5T8o=" crossorigin="anonymous" media="screen" />
 
 
 
@@ -58,7 +58,7 @@
   
     
     
-    <link rel="stylesheet" href="/css/coder-dark.css" media="screen">
+    <link rel="stylesheet" href="/css/coder-dark.min.a00e6364bacbc8266ad1cc81230774a1397198f8cfb7bcba29b7d6fcb54ce57f.css" integrity="sha256-oA5jZLrLyCZq0cyBIwd0oTlxmPjPt7y6KbfW/LVM5X8=" crossorigin="anonymous" media="screen" />
   
 
 
@@ -66,7 +66,7 @@
  
   
     
-    <link rel="stylesheet" href="/css/custom.css" media="screen">
+    <link rel="stylesheet" href="/css/custom.min.2803245832877bb7ca208c9e145ce41e2279c9534bf142e70b8ae9fa98ce1851.css" integrity="sha256-KAMkWDKHe7fKIIyeFFzkHiJ5yVNL8ULnC4rp&#43;pjOGFE=" crossorigin="anonymous" media="screen" />
   
 
 
@@ -111,7 +111,7 @@
     <nav class="navigation">
   <section class="container">
     
-    <a class="navigation-title" href="http://localhost:1313/">
+    <a class="navigation-title" href="http://www.axolol.fr/">
       RedFish
     </a>
     
@@ -146,7 +146,7 @@
       <header>
         <div class="post-title">
           <h1 class="title">
-            <a class="title-link" href="http://localhost:1313/posts/autopsie-sonnette-connectee/">
+            <a class="title-link" href="http://www.axolol.fr/posts/autopsie-sonnette-connectee/">
               Autopsie d&#39;une sonnette connectée
             </a>
           </h1>
@@ -224,7 +224,7 @@
     <span class="sr-only">Link to heading</span>
   </a>
 </h4>
-<p>Pour cela, nous allons utiliser un multimètre en mode <strong>&ldquo;Continuité&rdquo;</strong>. Dans ce mode, le multimètre sonne lorsque la resistance entre les connecteurs est à 0.</p>
+<p>Pour cela, nous allons utiliser un multimètre en mode <strong>&ldquo;Continuité&rdquo;</strong>. Dans ce mode, le multimètre sonne lorsque la r&quot;sistance entre les connecteurs est à 0.</p>
 <ul>
 <li>On place la sonde noire du multimètre sur une masse connue de l&rsquo;appareil par exemple  le pôle négatif de l&rsquo;alimentation).</li>
 <li>Avec la sonde rouge, on teste les 4 broches inconnues une par une.</li>
@@ -252,7 +252,7 @@
 </h3>
 <p>Pour communiquer avec l&rsquo;interface UART de l&rsquo;appareil, un adaptateur USB vers TTL est normalement requis. Ce module sert de pont entre le port USB de l&rsquo;ordinateur et les broches série de la cible.</p>
 <p>N&rsquo;en ayant pas sous la main, je vais utiliser un Arduino UNO. Pour ce faire, il faut transformer l&rsquo;Arduino en convertisseur &ldquo;passif&rdquo; sans que son propre processeur n&rsquo;interfère avec les signaux. La manipulation consiste à relier la broche <strong>RESET</strong> de l&rsquo;Arduino à la broche <strong>GND</strong>. Cela a pour effet de maintenir le microcontrôleur principal en état de redémarrage permanent, le rendant inactif.</p>
-<p>On passe ensuite au câblage des  connecteurs. Les pins RX/TX sur le PCB de l&rsquo;Arduino correspondant aux lignes du convertisseur USB. On branche donc :</p>
+<p>On passe ensuite au câblage des  connecteurs. Les pins RX/TX sur le PCB de l&rsquo;Arduino correspondent aux lignes du convertisseur USB. On branche donc :</p>
 <ul>
 <li>La pin <strong>RX</strong> de la sonnette sur le <strong>RX</strong> de l&rsquo;Arduino (Pin 0).</li>
 <li>La pin <strong>TX</strong> de la sonnette sur le <strong>TX</strong> de l&rsquo;Arduino (Pin 1).</li>
@@ -268,7 +268,7 @@
 <p>En regardant de plus près la carte électronique, un bouton &ldquo;Reset&rdquo; est accessible. En le maintenant appuyé lors du démarrage, le comportement change et les logs deviennent beaucoup plus verbeux.
 <img src="/images/sonnette/Pasted_image_20260105235830.png" alt=""></p>
 <p>Le message &ldquo;key down, to startup uboot&rdquo; s&rsquo;affiche, confirmant que le bouton Reset correspond bien à la touche d&rsquo;interruption attendue par le système.</p>
-<p>Cependant, on ne semble pas pouvoir accéder à un shell directemement. Un mot de passe est demandé par l&rsquo;appareil lors du processus de boot: &ldquo;please input password::&rdquo;.</p>
+<p>Cependant, on ne semble pas pouvoir accéder à un shell directement. Un mot de passe est demandé par l&rsquo;appareil lors du processus de boot: &ldquo;please input password::&rdquo;.</p>
 <p><img src="/images/sonnette/Pasted_image_20260103085039.png" alt=""></p>
 <p>J&rsquo;ai testé plusieurs mots de passe par défaut couramment utilisés par les fabricants (&ldquo;admin&rdquo;, &ldquo;password&rdquo;, &ldquo;root&rdquo;, &ldquo;123456&rdquo;&hellip;),  sans succès&hellip;.</p>
 <p>Les logs indiquent  que le démarrage est géré par <strong>U-Boot</strong>. Puisque l&rsquo;accès console est verrouillé, nous allons devoir investiguer plus en profondeur pour contourner cette authentification.</p>
@@ -282,7 +282,7 @@
 <p>La ligne suivante nous donne plus d&rsquo;informations sur l&rsquo;os et la puce de la sonnette:</p>
 <p><img src="/images/sonnette/Pasted_image_20260103090756.png" alt=""></p>
 <p>Le processeur est identifié comme un <strong>Hi3518EV300</strong>. Il s&rsquo;agit d&rsquo;une puce fabriquée par <strong>HiSilicon</strong> (une filiale de Huawei), très courante dans le monde des caméras IP.</p>
-<p>En  cherchant les mots de passes couramment utilisé par la marque HiSillicon, je suis tombé sur le github suivant:</p>
+<p>En  cherchant les mots de passe couramment utilisé par la marque HiSillicon, je suis tombé sur le github suivant:</p>
 <p><a href="https://gist.github.com/gabonator/74cdd6ab4f733ff047356198c781f27d"  class="external-link" target="_blank" rel="noopener">https://gist.github.com/gabonator/74cdd6ab4f733ff047356198c781f27d</a></p>
 <p>Plus d&rsquo;une cinquantaine de mots de passe y sont répertoriés pour les appareils HiSilicon. Malheureusement, après les avoir testés un par un, aucun ne fonctionne sur la sonnette.</p>
 <h3 id="la-méthode-fault-injection">
@@ -296,7 +296,7 @@
 <p><strong>Le principe :</strong>
 L&rsquo;objectif est de corrompre la lecture des données pile au moment où U-Boot tente de charger le noyau Linux (Kernel) depuis la mémoire Flash vers la RAM.  Si U-boot n&rsquo;arrive pas a lire le noyau correctement, il se met en mode sécurité et permet d&rsquo;accéder à la console interactive que l&rsquo;on cherche a atteindre.</p>
 <p><strong>La pratique :</strong>
-Pour se faire, il relie la pin Data Out (DO) de la puce mémoire flash au GND pile au moment du chargement du noyau.</p>
+Pour ce faire, il relie la pin Data Out (DO) de la puce mémoire flash au GND pile au moment du chargement du noyau.</p>
 <p>Sur ma sonnette, la mémoire flash est la QH64A.
 En regardant la datasheet, on identifie la pin Data Out (pin 2).</p>
 <p><img src="/images/sonnette/Pasted_image_20260103201857.png" alt=""></p>
@@ -304,8 +304,8 @@ En regardant la datasheet, on identifie la pin Data Out (pin 2).</p>
 <p><img src="/images/sonnette/PXL_20251227_142550521.jpg" alt=""></p>
 <p>je  fais ensuite toucher le fil DO sur le GND  un peu avant qu&rsquo;il me demande d&rsquo;entrer mon mot de passe.</p>
 <p><img src="/images/sonnette/PXL_20251227_142210710.jpg" alt=""></p>
-<p>En court-circuitant la mémoire Flash juste avant le chargement du noyau, des erreurs apparaissent bien dans la console.
-<img src="/images/sonnette/UART_test_bypass.png" alt=""></p>
+<p>En court-circuitant la mémoire Flash juste avant le chargement du noyau, des erreurs apparaissent bien dans la console.</p>
+<p><img src="/images/sonnette/UART_test_bypass.png" alt=""></p>
 <p>Le système affiche les valeurs des registres (signe d&rsquo;un crash), mais au lieu de me donner la main sur un shell, la puce finit systématiquement par redémarrer le CPU.</p>
 <p>Malgré de multiples tentatives en variant le timing, aucun shell n&rsquo;a pu être obtenu. La méthode de l&rsquo;injection de fautes ne semble donc pas fonctionner ici&hellip;.</p>
 <h3 id="cette-fois-ci-cest-la-bonne-">
@@ -316,7 +316,7 @@ En regardant la datasheet, on identifie la pin Data Out (pin 2).</p>
   </a>
 </h3>
 <p>Les tentatives précédentes pour contourner le mot de passe ayant échoué, nous passons à la méthode forte : l&rsquo;extraction directe du firmware pour y dénicher le sésame.</p>
-<p>Pour ce faire, j&rsquo;utilise un programmateur universel <strong>T48</strong>. C&rsquo;est un outil matériel qui se branche en USB et permet de lire et écrire le contenu brut (&ldquo;Dump&rdquo;) de milliers de de puces mémoire.</p>
+<p>Pour ce faire, j&rsquo;utilise un programmateur universel <strong>T48</strong>. C&rsquo;est un outil matériel qui se branche en USB et permet de lire et écrire le contenu brut (&ldquo;Dump&rdquo;) de milliers de puces mémoire.</p>
 <p>Afin d&rsquo;interagir avec la mémoire sans avoir à la dessouder, j&rsquo;utilise une pince de test, qui vient se fixer directement sur les broches du composant. La pince est reliée au T48, ce qui permet d&rsquo;interfacer la puce avec le logiciel de gestion <strong>Xgpro</strong>.</p>
 <p>Je branche donc la pince sur la puce mémoire de l&rsquo;appareil.
 <img src="/images/sonnette/PXL_20251229_182745034.jpg" alt=""></p>
@@ -571,7 +571,7 @@ Ce plugin transforme l&rsquo;instance de Ghidra en un serveur local. L&rsquo;IA 
 
   
   
-  <script src="/js/coder.js"></script>
+  <script src="/js/coder.min.6ae284be93d2d19dad1f02b0039508d9aab3180a12a06dcc71b0b0ef7825a317.js" integrity="sha256-auKEvpPS0Z2tHwKwA5UI2aqzGAoSoG3McbCw73gloxc="></script>
   
 
   
