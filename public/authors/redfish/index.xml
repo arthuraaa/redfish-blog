@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>RedFish</title>
-    <link>http://www.axolol.fr/authors/redfish/</link>
+    <link>http://localhost:1313/authors/redfish/</link>
     <description>Recent content on RedFish</description>
     <generator>Hugo</generator>
     <language>en</language>
     <lastBuildDate>Wed, 07 Jan 2026 00:25:35 +0100</lastBuildDate>
-    <atom:link href="http://www.axolol.fr/authors/redfish/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://localhost:1313/authors/redfish/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Autopsie d&#39;une sonnette connectée</title>
-      <link>http://www.axolol.fr/posts/autopsie-sonnette-connectee/</link>
+      <link>http://localhost:1313/posts/autopsie-sonnette-connectee/</link>
       <pubDate>Wed, 07 Jan 2026 00:25:35 +0100</pubDate>
-      <guid>http://www.axolol.fr/posts/autopsie-sonnette-connectee/</guid>
+      <guid>http://localhost:1313/posts/autopsie-sonnette-connectee/</guid>
       <description>&lt;h3 id=&#34;avant-propos&#34;&gt;&#xA;  &lt;strong&gt;Avant-propos&lt;/strong&gt;&#xA;  &lt;a class=&#34;heading-link&#34; href=&#34;#avant-propos&#34;&gt;&#xA;    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;&#xA;    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;&#xA;  &lt;/a&gt;&#xA;&lt;/h3&gt;&#xA;&lt;p&gt;Profitant de quelques jours de congés à Noël, j&amp;rsquo;ai décidé d&amp;rsquo;approfondir mes connaissances en &lt;em&gt;hardware hacking&lt;/em&gt; en m&amp;rsquo;attaquant à la sonnette &lt;strong&gt;DiO Bell B01&lt;/strong&gt;. L&amp;rsquo;objectif était de comprendre son fonctionnement interne et de tenter d&amp;rsquo;obtenir un accès complet (root).&lt;/p&gt;&#xA;&lt;p&gt;&lt;em&gt;&lt;strong&gt;Ce rapport est avant tout un journal d&amp;rsquo;expérimentation avec ses réussites et ses ratés. Il existe sûrement des méthodes plus optimisées pour arriver au même résultat, mais l&amp;rsquo;essentiel ici était d&amp;rsquo;apprendre.&lt;/strong&gt;&lt;/em&gt;&lt;/p&gt;</description>
     </item>
   </channel>

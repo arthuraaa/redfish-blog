@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Categories on RedFish</title>
-    <link>http://www.axolol.fr/categories/</link>
+    <link>http://localhost:1313/categories/</link>
     <description>Recent content in Categories on RedFish</description>
     <generator>Hugo</generator>
     <language>en</language>
     <lastBuildDate>Wed, 07 Jan 2026 00:25:35 +0100</lastBuildDate>
-    <atom:link href="http://www.axolol.fr/categories/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://localhost:1313/categories/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Writeup</title>
-      <link>http://www.axolol.fr/categories/writeup/</link>
+      <link>http://localhost:1313/categories/writeup/</link>
       <pubDate>Wed, 07 Jan 2026 00:25:35 +0100</pubDate>
-      <guid>http://www.axolol.fr/categories/writeup/</guid>
+      <guid>http://localhost:1313/categories/writeup/</guid>
       <description></description>
     </item>
   </channel>
