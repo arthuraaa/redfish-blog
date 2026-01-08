@@ -35,7 +35,7 @@ En observant la carte, on remarque 4 trous alignés qui semblent correspondre à
 
 #### Identifier la masse (GND)
 
-Pour cela, nous allons utiliser un multimètre en mode **"Continuité"**. Dans ce mode, le multimètre sonne lorsque la r"sistance entre les connecteurs est à 0.
+Pour cela, nous allons utiliser un multimètre en mode **"Continuité"**. Dans ce mode, le multimètre sonne lorsque la résistance entre les connecteurs est à 0.
 - On place la sonde noire du multimètre sur une masse connue de l'appareil par exemple  le pôle négatif de l'alimentation).
 - Avec la sonde rouge, on teste les 4 broches inconnues une par une.
 
