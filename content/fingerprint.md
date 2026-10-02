@@ -1267,8 +1267,20 @@ draft: false
 
             const resolved = await Promise.all(rowPromises);
 
-            // Identifiant consolidé : hash FNV-1a de toutes les valeurs collectées
-            const jsonAll = JSON.stringify(resolved.map(([k, v]) => [k, v === undefined ? null : v]));
+            // Identifiant consolidé : hash FNV-1a des attributs STABLES uniquement.
+            // On exclut tout ce qui peut légitimement varier d'une session à l'autre
+            // pour le même navigateur : batterie, réseau, timing, taille/position de
+            // fenêtre, stockage utilisé, permissions, périphériques branchés, extensions...
+            const volatileKeys = new Set([
+                'adBlock', 'antiTracking', 'audioOutput', 'battery', 'bluetoothAvailability',
+                'connection', 'connectionExtra', 'gamepads', 'mediaDevices', 'navigationInfo',
+                'notificationPermission', 'performanceMemory', 'permissions', 'resultState',
+                'screenAvailableHeight', 'screenAvailableLeft', 'screenAvailableTop',
+                'screenAvailableWidth', 'screenExtra', 'screenLeft', 'screenTop', 'storageApis',
+                'storageEstimate', 'timerResolution', 'webrtcLocalIps'
+            ]);
+            const stableRows = resolved.filter(([k]) => !volatileKeys.has(k));
+            const jsonAll = JSON.stringify(stableRows.map(([k, v]) => [k, v === undefined ? null : v]));
             let h = 0x811c9dc5;
             for (let i = 0; i < jsonAll.length; i++) {
                 h ^= jsonAll.charCodeAt(i);
@@ -1277,22 +1289,24 @@ draft: false
             const fpId = ('00000000' + (h >>> 0).toString(16)).slice(-8);
             let previousId = null;
             try {
-                previousId = localStorage.getItem('__fp_demo_id');
-                localStorage.setItem('__fp_demo_id', fpId);
+                previousId = localStorage.getItem('__fp_stable_id');
+                localStorage.setItem('__fp_stable_id', fpId);
             } catch (e) {}
 
             const banner = document.createElement('div');
             banner.className = 'fp-row';
             const bannerName = document.createElement('div');
             bannerName.className = 'fp-name';
-            bannerName.textContent = '🆔 EMPREINTE CONSOLIDÉE (hash de tous les attributs)';
+            bannerName.textContent = '🆔 EMPREINTE CONSOLIDÉE (hash des ' + stableRows.length + ' attributs stables)';
             const bannerValue = document.createElement('pre');
             bannerValue.className = 'fp-value';
-            bannerValue.textContent = fpId + (previousId
-                ? (previousId === fpId
-                    ? '  — 🔁 visiteur reconnu (déjà vu lors d\'une visite précédente : ' + previousId + ')'
-                    : '  — config modifiée depuis la dernière visite (ID précédent : ' + previousId + ')')
-                : '  — première visite de votre part');
+            bannerValue.textContent = fpId
+                + '  — ' + stableRows.length + '/' + resolved.length + ' attributs utilisés (exclut les attributs volatils : batterie, réseau, fenêtre, timing...)'
+                + (previousId
+                    ? (previousId === fpId
+                        ? '\n🔁 visiteur reconnu (déjà vu lors d\'une visite précédente : ' + previousId + ')'
+                        : '\nconfig modifiée depuis la dernière visite (ID précédent : ' + previousId + ')')
+                    : '\npremière visite de votre part');
             banner.appendChild(bannerName);
             banner.appendChild(bannerValue);
 
