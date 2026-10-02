@@ -19,19 +19,19 @@ draft: false
 </style>
 
 <div class="fp-tool">
-    <p class="fp-info">Comme <b>AmIunique</b> : cette page collecte les attributs que votre navigateur expose volontairement ou non (canvas, WebGL, audio, polices, capteurs...). Aucune donnée n'est envoyée sur un serveur : tout reste dans votre navigateur, vous pouvez le vérifier dans le code source.</p>
-    <button onclick="runFingerprint()">🔄 Re-run</button>
-    <button class="fp-copy-btn" id="fp-copy-btn" onclick="copyFingerprint()">📋 Copy JSON</button>
-    <div id="fp-status">⏳ Collecte des données...</div>
-    <div id="fp-results"></div>
-</div>
-
-<div class="fp-tool">
 <p class="fp-info">Informations déduites de votre adresse IP publique (requête vers un service de géolocalisation IP) et, si vous l'autorisez, de la géolocalisation GPS de votre appareil. C'est ce qu'un site quelconque peut déduire sur vous sans aucun script intrusif.</p>
 <div id="geo-status">⏳ Résolution de l'IP publique...</div>
 <div id="ip-results"></div>
 <button onclick="requestGps()">📍 Révéler ma position GPS précise</button>
 <div id="gps-results"></div>
+</div>
+
+<div class="fp-tool">
+    <p class="fp-info">Comme <b>AmIunique</b> : cette page collecte les attributs que votre navigateur expose volontairement ou non (canvas, WebGL, audio, polices, capteurs...), classés du plus surprenant au plus classique. Aucune donnée n'est envoyée sur un serveur : tout reste dans votre navigateur, vous pouvez le vérifier dans le code source.</p>
+    <button onclick="runFingerprint()">🔄 Re-run</button>
+    <button class="fp-copy-btn" id="fp-copy-btn" onclick="copyFingerprint()">📋 Copy JSON</button>
+    <div id="fp-status">⏳ Collecte des données...</div>
+    <div id="fp-results"></div>
 </div>
 
 <script>
@@ -61,22 +61,7 @@ draft: false
 
     // JavaScript attributes
     browserInfo.jsAttributes = {
-        // 1 - User agent
-        userAgent: navigator.userAgent,
-
-        // 2 - Platform
-        platform: navigator.platform,
-
-        // 3 - Cookies enabled
-        cookiesEnabled: navigator.cookieEnabled,
-
-        // 4 - Timezone
-        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-
-        // 5 - Content language
-        contentLanguage: navigator.language,
-
-        // 6 - Canvas (fingerprint)
+        // 1 - Canvas (fingerprint)
         canvas: (() => {
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
@@ -92,396 +77,7 @@ draft: false
             return canvas.toDataURL();
         })(),
 
-        // 7 - List of fonts (JS)
-        fonts: (() => {
-            const fontList = ['cursive', 'monospace', 'serif', 'sans-serif', 'fantasy', 'default', 'Arial', 'Arial Black', 'Arial Narrow', 'Arial Rounded MT Bold', 'Book Antiqua', 'Bookman Old Style', 'Bradley Hand ITC', 'Bodoni MT', 'Calibri', 'Century', 'Century Gothic', 'Casual', 'Comic Sans MS', 'Consolas', 'Copperplate Gothic Bold', 'Courier', 'Courier New', 'English Text MT', 'Felix Titling', 'Futura', 'Garamond', 'Geneva', 'Georgia', 'Gentium', 'Haettenschweiler', 'Helvetica', 'Impact', 'Jokerman', 'King', 'Kootenay', 'Latha', 'Liberation Serif', 'Lucida Console', 'Lalit', 'Lucida Grande', 'Magneto', 'Mistral', 'Modena', 'Monotype Corsiva', 'MV Boli', 'OCR A Extended', 'Onyx', 'Palatino Linotype', 'Papyrus', 'Parchment', 'Pericles', 'Playbill', 'Segoe Print', 'Shruti', 'Tahoma', 'TeX', 'Times', 'Times New Roman', 'Trebuchet MS', 'Verdana', 'Verona', 'Arial Cyr', 'Comic Sans MS', 'Arial Black', 'Chiller', 'Arial Narrow', 'Arial Rounded MT Bold', 'Baskerville Old Face', 'Berlin Sans FB', 'Blackadder ITC', 'Lucida Console', 'Symbol', 'Times New Roman', 'Webdings', 'Agency FB', 'Vijaya', 'Algerian', 'Arial Unicode MS', 'Bodoni MT Poster Compressed', 'Bookshelf Symbol 7', 'Calibri', 'Cambria', 'Cambria Math', 'Kartika', 'MS Mincho', 'MS Outlook', 'MT Extra', 'Segoe UI', 'Aharoni', 'Aparajita', 'Amienne', 'cursive', 'Academy Engraved LET', 'LCD', 'LuzSans-Book', 'sans-serif', 'ZWAdobeF', 'Eurostile', 'SimSun-PUA', 'Blackletter686 BT', 'Myriad Web Pro Condensed', 'Matisse ITC', 'Bell Gothic Std Black', 'David Transparent', 'Adobe Caslon Pro', 'AR BERKLEY', 'Australian Sunrise', 'Myriad Web Pro', 'Gentium Basic', 'Highlight LET', 'Adobe Myungjo Std M', 'GothicE', 'HP PSG', 'DejaVu Sans', 'Arno Pro', 'Futura Bk', 'DejaVu Sans Condensed', 'Euro Sign', 'Neurochrome', 'Bell Gothic Std Light', 'Jokerman Alts LET', 'Adobe Fan Heiti Std B', 'Baby Kruffy', 'Tubular', 'Woodcut', 'HGHeiseiKakugothictaiW3', 'YD2002', 'Tahoma Small Cap', 'Helsinki', 'Bickley Script', 'Unicorn', 'X-Files', 'GENISO', 'Frutiger SAIN Bd v.1', 'Opus', 'ZDingbats', 'ABSALOM', 'Vagabond', 'Year supply of fairy cakes', 'Myriad Condensed Web', 'Segoe Media Center', 'Coronet', 'Helsinki Metronome', 'Segoe Condensed', 'Weltron Urban', 'AcadEref', 'DecoType Naskh', 'Freehand521 BT', 'Opus Chords Sans', 'Enviro', 'SWGamekeys MT', 'Croobie', 'Arial Narrow Special G1', 'AVGmdBU', 'Candles', 'Futura Bk BT', 'Andy', 'QuickType', 'WP Arabic Sihafa', 'DigifaceWide', 'ELEGANCE', 'BRAZIL', 'Pepita MT', 'Nina', 'Geneva', 'OCR B MT', 'Futura', 'Blade Runner Movie Font', 'Allegro BT', 'Lucida Blackletter', 'AGA Arabesque', 'AdLib BT', 'Clarendon', 'Monotype Sorts', 'Alibi', 'Bremen Bd BT', 'mono', 'News Gothic MT', 'AvantGarde Bk BT', 'chs_boot', 'fantasy', 'Palatino', 'BernhardFashion BT', 'Courier New', 'CloisterBlack BT', 'Scriptina', 'Tahoma', 'BernhardMod BT', 'Virtual DJ', 'Nokia Smiley', 'Boulder', 'Andale Mono IPA', 'Belwe Lt BT', 'Calligrapher', 'Belwe Cn BT', 'Tanseek Pro Arabic', 'FuturaBlack BT', 'Abadi MT Condensed', 'Mangal', 'Chaucer', 'Belwe Bd BT', 'Liberation Serif', 'DomCasual BT', 'Bitstream Vera Sans', 'URW Gothic L', 'GeoSlab703 Lt BT', 'Bitstream Vera Sans Mono', 'Nimbus Mono L', 'Heather', 'Antique Olive', 'Clarendon Cn BT', 'Amazone BT', 'Bitstream Vera Serif', 'Utopia', 'Americana BT', 'Map Symbols', 'Bitstream Charter', 'Aurora Cn BT', 'CG Omega', 'Lohit Punjabi', 'Balloon XBd BT', 'Akhbar MT', 'Courier 10 Pitch', 'Benguiat Bk BT', 'Market', 'Cursor', 'Bodoni Bk BT', 'Letter Gothic', 'Luxi Sans', 'Brush455 BT', 'Sydnie', 'Lohit Hindi', 'Lithograph', 'Albertus', 'DejaVu LGC Serif', 'Lydian BT', 'Antique Olive Compact', 'KacstArt', 'Incised901 Bd BT', 'Clarendon Extended', 'Lohit Telugu', 'Incised901 Lt BT', 'GiovanniITCTT', 'KacstOneFixed', 'Folio XBd BT', 'Edda', 'Loma', 'Formal436 BT', 'Fine Hand', 'Garuda', 'Impress BT', 'RefSpecialty', 'Sazanami Mincho', 'Staccato555 BT', 'VL Gothic', 'Hkmer OS', 'WP BoxDrawing', 'Clarendon Blk BT', 'Droid Sans', 'CommonBullets', 'Sherwood', 'Helvetica', 'CopprplGoth Bd BT', 'Smudger Alts LET', 'BPG Rioni', 'CopprplGoth BT', 'Guitar Pro 5', 'Estrangelo TurAbdin', 'Dauphin', 'Arial Tur', 'English111 Vivace BT', 'Steamer', 'OzHandicraft BT', 'Futura Lt BT', 'Liberation Sans Narrow', 'Futura XBlk BT', 'Candy Round BTN Cond', 'GoudyHandtooled BT', 'GrilledCheese BTN Cn', 'GoudyOlSt BT', 'Galeforce BTN', 'Kabel Bk BT', 'Sneakerhead BTN Shadow', 'OCR-A BT', 'Denmark', 'OCR-B 10 BT', 'Swiss921 BT', 'PosterBodoni BT', 'Arial (Arabic)', 'Serifa BT', 'FlemishScript BT', 'Arial', 'American Typewriter', 'Arial Black', 'Apple Symbols', 'Arial Narrow', 'AppleMyungjo', 'Arial Rounded MT Bold', 'Zapfino', 'Arial Unicode MS', 'BlairMdITC TT-Medium', 'Century Gothic', 'Cracked', 'Papyrus', 'KufiStandardGK', 'Plantagenet Cherokee', 'Courier', 'Helvetica', 'Baskerville Old Face', 'Apple Casual', 'Type Embellishments One LET', 'Bookshelf Symbol 7', 'Abadi MT Condensed Extra Bold', 'Calibri', 'Calibri Bold', 'Calisto MT', 'Chalkduster', 'Cambria', 'Franklin Gothic Book Italic', 'Century', 'Geneva CY', 'Franklin Gothic Book', 'Helvetica Light', 'Gill Sans MT', 'Academy Engraved LET', 'MT Extra', 'Bank Gothic', 'Eurostile', 'Bodoni SvtyTwo SC ITC TT-Book', 'Tekton Pro', 'Courier CE', 'Maestro', 'BO Futura BoldOblique', 'Lucida Bright Demibold', 'New', 'AGaramond', 'Charcoal', 'DIN-Black', 'Lucida Sans Demibold', 'Stone Sans OS ITC TT-Bold', 'AGaramond Italic', 'Bickham Script Pro Regular', 'Adobe Arabic Bold', 'AGaramond Semibold', 'Al Bayan Bold', 'Doremi', 'AGaramond SemiboldItalic', 'Arno Pro Bold', 'Casual', 'B Futura Bold', 'Frutiger 47LightCn', 'Gadget', 'HelveticaNeueLT Std Bold', 'Frutiger 57Cn', 'DejaVu Serif Italic Condensed', 'Myriad Pro Black It', 'Frutiger 67BoldCn', 'Gentium Basic Bold', 'Sand', 'GillSans', 'H Futura Heavy', 'Liberation Mono Bold', 'GillSans Bold', 'Cambria Math', 'Courier Final Draft', 'HelveticaNeue BlackCond', 'cursive', 'Techno', 'HelveticaNeue BlackCondObl', 'Gabriola', 'JazzText Extended', 'HelveticaNeue BlackExt', 'sans-serif', 'Textile', 'HelveticaNeue BlackExtObl fantasy', 'HelveticaNeue BoldCond', 'Palatino Linotype Bold', 'HelveticaNeue BoldCondObl', 'BIRTH OF A HERO', 'HelveticaNeue BoldExt', 'Bleeding Cowboys', 'HelveticaNeue BoldExtObl', 'ChopinScript', 'HelveticaNeue ExtBlackCond', 'LCD', 'HelveticaNeue ExtBlackCondObl', 'Myriad Web Pro Condensed', 'HelveticaNeue HeavyCond', 'Scriptina', 'HelveticaNeue HeavyCondObl', 'OpenSymbol', 'HelveticaNeue HeavyExt', 'Virtual DJ', 'HelveticaNeue HeavyExtObl', 'Guitar Pro 5', 'HelveticaNeue LightCondObl', 'Nueva Std', 'HelveticaNeue ThinCond', 'Chicago', 'HelveticaNeue ThinCondObl', 'Nueva Std Bold', 'Brush Script MT', 'Capitals', 'Myriad Web Pro', 'Avant Garde', 'B Avant Garde Demi', 'Nueva Std Bold Italic', 'BI Avant Garde DemiOblique', 'MaestroTimes', 'Univers BoldExtObl', 'APC Courier', 'Myriad Web Pro Bold', 'Liberation Serif', 'Myriad Pro Light', 'Carta', 'DIN-Bold', 'DIN-Light', 'Myriad Web Pro Condensed Italic', 'DIN-Medium', 'Tekton Pro Oblique', 'DIN-Regular', 'AScore', 'HelveticaNeue UltraLigCondObl', 'Opus', 'HelveticaNeue UltraLigExt', 'Myriad Pro Light It', 'HelveticaNeue UltraLigExtObl', 'Opus Chords Sans', 'HO Futura HeavyOblique', 'Opus Japanese Chords', 'L Frutiger Light', 'VT100', 'L Futura Light', 'Helsinki', 'LO Futura LightOblique', 'Helsinki Metronome', 'Myriad Pro Black', 'New York', 'O Futura BookOblique', 'R Frutiger Roman', 'Reprise', 'TradeGothic', 'Warnock Pro Bold Caption', 'Univers 45 Light', 'Warnock Pro', 'XBO Futura ExtraBoldOblique', 'Univers 45 LightOblique', 'Liberation Mono', 'Univers 55 Oblique', 'UC LCD', 'Univers 57 Condensed', 'Warnock Pro Bold', 'Univers ExtraBlack', 'Warnock Pro Light Ital Subhead', 'Univers LightUltraCondensed', 'Matrix Ticker', 'Univers UltraCondensed', 'Fang Song'];
-            const availableFonts = [];
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            fontList.forEach(font => {
-                ctx.font = `12px ${font}`;
-                if (ctx.font.indexOf(font) !== -1) {
-                    availableFonts.push(font);
-                }
-            });
-            return availableFonts;
-        })(),
-
-        // 8 - Use of Adblock
-        adBlock: (() => {
-            const adBlockEnabled = document.createElement('div');
-            adBlockEnabled.innerHTML = '&nbsp;';
-            adBlockEnabled.className = 'adsbox';
-            document.body.appendChild(adBlockEnabled);
-            const isAdBlockEnabled = adBlockEnabled.offsetHeight === 0;
-            document.body.removeChild(adBlockEnabled);
-            return isAdBlockEnabled;
-        })(),
-
-        // 9 - Do Not Track
-        doNotTrack: navigator.doNotTrack || navigator.msDoNotTrack || 'Not supported',
-
-        // 10 - Navigator properties
-        navigatorProperties: Object.keys(navigator).length,
-
-        // 11 - BuildID
-        buildID: navigator.buildID || 'Not supported',
-
-        // 12 - Product
-        product: navigator.product || 'Not supported',
-
-        // 13 - Product sub
-        productSub: navigator.productSub || 'Not supported',
-
-        // 14 - Vendor
-        vendor: navigator.vendor || 'Not supported',
-
-        // 15 - Vendor sub
-        vendorSub: navigator.vendorSub || 'Not supported',
-
-        // 16 - Hardware concurrency
-        hardwareConcurrency: navigator.hardwareConcurrency || 'Not supported',
-
-        // 17 - Java enabled
-        javaEnabled: navigator.javaEnabled(),
-
-        // 18 - Device memory
-        deviceMemory: navigator.deviceMemory || 'Not supported',
-
-        // 19 - List of plugins
-        plugins: Array.from(navigator.plugins).map(plugin => plugin.name) || 'Not supported',
-
-        // 20 - Screen width
-        screenWidth: screen.width,
-
-        // 21 - Screen height
-        screenHeight: screen.height,
-
-        // 22 - Screen depth
-        screenDepth: screen.colorDepth,
-
-        // 23 - Screen available top
-        screenAvailableTop: screen.availTop !== undefined ? screen.availTop : 'Not supported',
-
-        // 24 - Screen available left
-        screenAvailableLeft: screen.availLeft !== undefined ? screen.availLeft : 'Not supported',
-
-        // 25 - Screen available height
-        screenAvailableHeight: screen.availHeight !== undefined ? screen.availHeight : 'Not supported',
-
-        // 26 - Screen available width
-        screenAvailableWidth: screen.availWidth !== undefined ? screen.availWidth : 'Not supported',
-
-        // 27 - Screen left
-        screenLeft: window.screenLeft !== undefined ? window.screenLeft : 'Not supported',
-
-        // 28 - Screen top
-        screenTop: window.screenTop !== undefined ? window.screenTop : 'Not supported',
-
-        // 29 - Permissions
-        permissions: (async () => {
-            if (navigator.permissions) {
-                const permissions = {};
-                const types = ['geolocation', 'notifications', 'camera', 'microphone', 'midi', 'payment-handler', 'push'];
-                for (const type of types) {
-                    try {
-                        const result = await navigator.permissions.query({ name: type });
-                        permissions[type] = result.state;
-                    } catch (e) {
-                        permissions[type] = 'Not supported';
-                    }
-                }
-                return permissions;
-            } else {
-                return 'Permissions API not supported';
-            }
-        })(),
-
-        // 30 - WebGL Vendor
-        webGLVendor: (() => {
-            try {
-                const canvas = document.createElement('canvas');
-                const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-                const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
-                return debugInfo ? gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL) : 'Not supported';
-            } catch (e) {
-                return 'Not supported';
-            }
-        })(),
-
-        // 31 - WebGL Renderer
-        webGLRenderer: (() => {
-            try {
-                const canvas = document.createElement('canvas');
-                const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-                const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
-                return debugInfo ? gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL) : 'Not supported';
-            } catch (e) {
-                return 'Not supported';
-            }
-        })(),
-
-        // 32 - WebGL Data
-        webGLData: (() => {
-            try {
-                const canvas = document.createElement('canvas');
-                const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-                return gl ? 'WebGL supported' : 'Not supported';
-            } catch (e) {
-                return 'Not supported';
-            }
-        })(),
-
-        // 33 - WebGL Parameters
-        webGLParameters: (() => {
-            try {
-                const canvas = document.createElement('canvas');
-                const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-                const parameters = [
-                    'ARRAY_BUFFER_BINDING',
-                    'ELEMENT_ARRAY_BUFFER_BINDING',
-                    'CURRENT_PROGRAM',
-                    'CURRENT_VERTEX_ATTRIB',
-                    'DEPTH_BITS',
-                    'STENCIL_BITS'
-                ];
-                const values = {};
-                parameters.forEach(param => {
-                    values[param] = gl.getParameter(gl[param]);
-                });
-                return values;
-            } catch (e) {
-                return 'Not supported';
-            }
-        })(),
-
-        // 34 - Use of local storage
-        localStorage: !!window.localStorage ? 'Supported' : 'Not supported',
-
-        // 35 - Use of session storage
-        sessionStorage: !!window.sessionStorage ? 'Supported' : 'Not supported',
-
-        // 36 - Use of IndexedDB
-        indexedDB: !!window.indexedDB ? 'Supported' : 'Not supported',
-
-        // 37 - Audio formats
-        audioFormats: (() => {
-            const formats = [
-                'audio/aac', 'audio/flac', 'audio/mpeg', 'audio/ogg; codecs="flac"',
-                'audio/ogg; codecs="vorbis"', 'audio/ogg; codecs="opus"',
-                'audio/wav; codecs="1"', 'audio/webm; codecs="vorbis"',
-                'audio/webm; codecs="opus"', 'audio/mp4; codecs="mp4a_40_2"'
-            ];
-            const canPlay = {};
-            formats.forEach(format => {
-                canPlay[format] = document.createElement('audio').canPlayType(format);
-            });
-            return canPlay;
-        })(),
-
-        // 38 - Audio context
-        audioContext: (() => {
-            try {
-                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                return {
-                    sampleRate: audioCtx.sampleRate,
-                    state: audioCtx.state
-                };
-            } catch (e) {
-                return 'Not supported';
-            }
-        })(),
-
-        // 39 - Frequency analyser
-        frequencyAnalyser: (() => {
-            try {
-                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                const analyser = audioCtx.createAnalyser();
-                return {
-                    channelCount: analyser.channelCount,
-                    channelCountMode: analyser.channelCountMode,
-                    channelInterpretation: analyser.channelInterpretation,
-                    fftSize: analyser.fftSize,
-                    frequencyBinCount: analyser.frequencyBinCount,
-                    maxDecibels: analyser.maxDecibels,
-                    minDecibels: analyser.minDecibels,
-                    numberOfInputs: analyser.numberOfInputs,
-                    numberOfOutputs: analyser.numberOfOutputs,
-                    smoothingTimeConstant: analyser.smoothingTimeConstant
-                };
-            } catch (e) {
-                return 'Not supported';
-            }
-        })(),
-
-        // 40 - Audio data
-        audioData: (() => {
-            try {
-                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                return audioCtx;
-            } catch (e) {
-                return 'Not supported';
-            }
-        })(),
-
-        // 41 - Video formats
-        videoFormats: (() => {
-            const formats = [
-                'video/mp4; codecs="flac"', 'video/ogg; codecs="theora"',
-                'video/ogg; codecs="opus"', 'video/webm; codecs="vp9, opus"',
-                'video/webm; codecs="vp8, vorbis"'
-            ];
-            const canPlay = {};
-            formats.forEach(format => {
-                canPlay[format] = document.createElement('video').canPlayType(format);
-            });
-            return canPlay;
-        })(),
-
-        // 42 - Media devices
-        mediaDevices: (async () => {
-            try {
-                const devices = await navigator.mediaDevices.enumerateDevices();
-                return devices.map(device => `${device.kind}: ${device.label || 'Unnamed'}`);
-            } catch (e) {
-                return 'Not supported';
-            }
-        })(),
-
-        // 43 - Accelerometer
-        accelerometer: (() => {
-            try {
-                if (window.DeviceMotionEvent) {
-                    return 'Supported';
-                }
-            } catch (e) {
-                return 'Not supported';
-            }
-            return 'Not supported';
-        })(),
-
-        // 44 - Gyroscope
-        gyroscope: (() => {
-            try {
-                if (window.DeviceOrientationEvent) {
-                    return 'Supported';
-                }
-            } catch (e) {
-                return 'Not supported';
-            }
-            return 'Not supported';
-        })(),
-
-        // 45 - Proximity sensor
-        proximitySensor: 'Not supported', // No direct API for proximity sensor in most browsers
-
-        // 46 - Keyboard layout
-        keyboardLayout: 'Not supported', // No direct API for keyboard layout in most browsers
-
-        // 47 - Battery
-        battery: (async () => {
-            try {
-                if (navigator.getBattery) {
-                    const battery = await navigator.getBattery();
-                    return {
-                        charging: battery.charging,
-                        level: battery.level,
-                        chargingTime: battery.chargingTime,
-                        dischargingTime: battery.dischargingTime
-                    };
-                }
-            } catch (e) {
-                return 'Not supported';
-            }
-            return 'Not supported';
-        })(),
-
-        // 48 - Connection
-        connection: navigator.connection ? {
-            effectiveType: navigator.connection.effectiveType,
-            downlink: navigator.connection.downlink,
-            rtt: navigator.connection.rtt
-        } : 'Not supported',
-
-        // 49 - Key
-        key: 'No value',
-
-        // 50 - Location bar
-        locationBar: window.outerWidth ? 'Supported' : 'Not supported',
-
-        // 51 - Menu bar
-        menuBar: window.outerWidth ? 'Supported' : 'Not supported',
-
-        // 52 - Personal bar
-        personalBar: window.outerWidth ? 'Supported' : 'Not supported',
-
-        // 53 - Status bar
-        statusBar: window.outerWidth ? 'Supported' : 'Not supported',
-
-        // 54 - Tool bar
-        toolBar: window.outerWidth ? 'Supported' : 'Not supported',
-
-        // 55 - Result state
-        resultState: 'No value',
-
-        // 56 - List of fonts (Flash)
-        fontsFlash: 'Flash not detected',
-
-        // 57 - Screen resolution (Flash)
-        screenResolutionFlash: 'Flash not detected',
-
-        // 58 - Language (Flash)
-        languageFlash: 'Flash not detected',
-
-        // 59 - Platform (Flash)
-        platformFlash: 'Flash not detected',
-
-        // ===== Tests supplémentaires =====
-
-        // 60 - User-Agent Client Hints (nouveau standard, remplace progressivement l'UA)
-        userAgentData: navigator.userAgentData ? {
-            brands: navigator.userAgentData.brands,
-            mobile: navigator.userAgentData.mobile,
-            platform: navigator.userAgentData.platform
-        } : 'Not supported',
-
-        // 61 - Client Hints haute entropie (architecture CPU, version complète, modèle...)
-        highEntropyHints: (async () => {
-            try {
-                if (navigator.userAgentData && navigator.userAgentData.getHighEntropyValues) {
-                    return await navigator.userAgentData.getHighEntropyValues(
-                        ['architecture', 'bitness', 'model', 'platformVersion', 'uaFullVersion', 'fullVersionList']
-                    );
-                }
-            } catch (e) {}
-            return 'Not supported';
-        })(),
-
-        // 62 - WebGL2 : version, extensions complètes et paramètres GPU
-        webGL2Info: (() => {
-            try {
-                const canvas = document.createElement('canvas');
-                const gl = canvas.getContext('webgl2');
-                if (!gl) return 'Not supported';
-                const params = {};
-                ['MAX_TEXTURE_SIZE', 'MAX_RENDERBUFFER_SIZE', 'MAX_VERTEX_ATTRIBS', 'MAX_VARYING_VECTORS',
-                 'MAX_VERTEX_UNIFORM_VECTORS', 'MAX_FRAGMENT_UNIFORM_VECTORS', 'MAX_TEXTURE_IMAGE_UNITS',
-                 'MAX_COMBINED_TEXTURE_IMAGE_UNITS', 'ALIASED_LINE_WIDTH_RANGE', 'ALIASED_POINT_SIZE_RANGE',
-                 'MAX_VIEWPORT_DIMS', 'SAMPLES'].forEach(p => {
-                    try { params[p] = gl.getParameter(gl[p]); } catch (e) { params[p] = 'Error'; }
-                });
-                return {
-                    version: gl.getParameter(gl.VERSION),
-                    shadingLanguageVersion: gl.getParameter(gl.SHADING_LANGUAGE_VERSION),
-                    extensions: gl.getSupportedExtensions(),
-                    parameters: params
-                };
-            } catch (e) {
-                return 'Not supported';
-            }
-        })(),
-
-        // 63 - WebGL image hash : rendu d'un triangle + hash de l'image (varie selon le GPU/driver)
+        // 2 - WebGL image hash : rendu d'un triangle + hash de l'image (varie selon le GPU/driver)
         webGLImageHash: (() => {
             try {
                 const canvas = document.createElement('canvas');
@@ -520,30 +116,103 @@ draft: false
             }
         })(),
 
-        // 64 - Canvas emoji : le rendu des emoji varie selon l'OS (moteur de rendu système)
-        emojiFingerprint: (() => {
+        // 3 - WebGL Vendor
+        webGLVendor: (() => {
             try {
                 const canvas = document.createElement('canvas');
-                canvas.width = 140; canvas.height = 40;
-                const ctx = canvas.getContext('2d');
-                ctx.textBaseline = 'alphabetic';
-                ctx.font = '30px Arial';
-                ctx.fillStyle = '#f60';
-                ctx.fillRect(0, 0, 140, 40);
-                ctx.fillStyle = '#069';
-                ctx.fillText('😀克隆🇫🇷👍', 2, 30);
-                const url = canvas.toDataURL();
-                let hash = 0;
-                for (let i = 0; i < url.length; i++) {
-                    hash = ((hash << 5) - hash + url.charCodeAt(i)) | 0;
-                }
-                return hash;
+                const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+                const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+                return debugInfo ? gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL) : 'Not supported';
             } catch (e) {
                 return 'Not supported';
             }
         })(),
 
-        // 65 - Audio fingerprint classique : rendu OfflineAudioContext (oscillateur + compresseur) et somme du buffer
+        // 4 - WebGL Renderer
+        webGLRenderer: (() => {
+            try {
+                const canvas = document.createElement('canvas');
+                const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+                const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+                return debugInfo ? gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL) : 'Not supported';
+            } catch (e) {
+                return 'Not supported';
+            }
+        })(),
+
+        // 5 - WebGL Parameters
+        webGLParameters: (() => {
+            try {
+                const canvas = document.createElement('canvas');
+                const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+                const parameters = [
+                    'ARRAY_BUFFER_BINDING',
+                    'ELEMENT_ARRAY_BUFFER_BINDING',
+                    'CURRENT_PROGRAM',
+                    'CURRENT_VERTEX_ATTRIB',
+                    'DEPTH_BITS',
+                    'STENCIL_BITS'
+                ];
+                const values = {};
+                parameters.forEach(param => {
+                    values[param] = gl.getParameter(gl[param]);
+                });
+                return values;
+            } catch (e) {
+                return 'Not supported';
+            }
+        })(),
+
+        // 6 - WebGL2 : version, extensions complètes et paramètres GPU
+        webGL2Info: (() => {
+            try {
+                const canvas = document.createElement('canvas');
+                const gl = canvas.getContext('webgl2');
+                if (!gl) return 'Not supported';
+                const params = {};
+                ['MAX_TEXTURE_SIZE', 'MAX_RENDERBUFFER_SIZE', 'MAX_VERTEX_ATTRIBS', 'MAX_VARYING_VECTORS',
+                 'MAX_VERTEX_UNIFORM_VECTORS', 'MAX_FRAGMENT_UNIFORM_VECTORS', 'MAX_TEXTURE_IMAGE_UNITS',
+                 'MAX_COMBINED_TEXTURE_IMAGE_UNITS', 'ALIASED_LINE_WIDTH_RANGE', 'ALIASED_POINT_SIZE_RANGE',
+                 'MAX_VIEWPORT_DIMS', 'SAMPLES'].forEach(p => {
+                    try { params[p] = gl.getParameter(gl[p]); } catch (e) { params[p] = 'Error'; }
+                });
+                return {
+                    version: gl.getParameter(gl.VERSION),
+                    shadingLanguageVersion: gl.getParameter(gl.SHADING_LANGUAGE_VERSION),
+                    extensions: gl.getSupportedExtensions(),
+                    parameters: params
+                };
+            } catch (e) {
+                return 'Not supported';
+            }
+        })(),
+
+        // 7 - WebGL Data
+        webGLData: (() => {
+            try {
+                const canvas = document.createElement('canvas');
+                const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+                return gl ? 'WebGL supported' : 'Not supported';
+            } catch (e) {
+                return 'Not supported';
+            }
+        })(),
+
+        // 8 - WebGPU : infos du GPU (vendor, architecture, device)
+        webgpuInfo: (async () => {
+            try {
+                if (navigator.gpu) {
+                    const adapter = await navigator.gpu.requestAdapter();
+                    if (!adapter) return 'No adapter';
+                    if (adapter.info && Object.keys(adapter.info).length) return adapter.info;
+                    if (adapter.requestAdapterInfo) return await adapter.requestAdapterInfo();
+                    return 'WebGPU supported (no info)';
+                }
+            } catch (e) {}
+            return 'Not supported';
+        })(),
+
+        // 9 - Audio fingerprint classique : rendu OfflineAudioContext (oscillateur + compresseur) et somme du buffer
         audioFingerprint: (async () => {
             try {
                 const ctx = new OfflineAudioContext(1, 44100, 44100);
@@ -569,24 +238,81 @@ draft: false
             }
         })(),
 
-        // 66 - ClientRects : dimensions au pixel près d'éléments HTML rendus (police + moteur de rendu)
-        clientRects: (() => {
+        // 10 - Audio data
+        audioData: (() => {
             try {
-                const container = document.createElement('div');
-                container.style.cssText = 'position:absolute;left:-9999px;font-size:36px;';
-                container.innerHTML = '<span style="font-family:serif">http://nyan.cat</span><b style="font-size:8px">iii</b>';
-                document.body.appendChild(container);
-                const range = document.createRange();
-                range.selectNode(container);
-                const rects = Array.from(range.getClientRects()).map(r => `${r.width.toFixed(2)}x${r.height.toFixed(2)}`).join(', ');
-                document.body.removeChild(container);
-                return rects;
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                return audioCtx;
             } catch (e) {
                 return 'Not supported';
             }
         })(),
 
-        // 67 - Détection des polices par mesure de largeur (technique plus fiable que ctx.font)
+        // 11 - Audio context
+        audioContext: (() => {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                return {
+                    sampleRate: audioCtx.sampleRate,
+                    state: audioCtx.state
+                };
+            } catch (e) {
+                return 'Not supported';
+            }
+        })(),
+
+        // 12 - Frequency analyser
+        frequencyAnalyser: (() => {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const analyser = audioCtx.createAnalyser();
+                return {
+                    channelCount: analyser.channelCount,
+                    channelCountMode: analyser.channelCountMode,
+                    channelInterpretation: analyser.channelInterpretation,
+                    fftSize: analyser.fftSize,
+                    frequencyBinCount: analyser.frequencyBinCount,
+                    maxDecibels: analyser.maxDecibels,
+                    minDecibels: analyser.minDecibels,
+                    numberOfInputs: analyser.numberOfInputs,
+                    numberOfOutputs: analyser.numberOfOutputs,
+                    smoothingTimeConstant: analyser.smoothingTimeConstant
+                };
+            } catch (e) {
+                return 'Not supported';
+            }
+        })(),
+
+        // 13 - Audio formats
+        audioFormats: (() => {
+            const formats = [
+                'audio/aac', 'audio/flac', 'audio/mpeg', 'audio/ogg; codecs="flac"',
+                'audio/ogg; codecs="vorbis"', 'audio/ogg; codecs="opus"',
+                'audio/wav; codecs="1"', 'audio/webm; codecs="vorbis"',
+                'audio/webm; codecs="opus"', 'audio/mp4; codecs="mp4a_40_2"'
+            ];
+            const canPlay = {};
+            formats.forEach(format => {
+                canPlay[format] = document.createElement('audio').canPlayType(format);
+            });
+            return canPlay;
+        })(),
+
+        // 14 - Video formats
+        videoFormats: (() => {
+            const formats = [
+                'video/mp4; codecs="flac"', 'video/ogg; codecs="theora"',
+                'video/ogg; codecs="opus"', 'video/webm; codecs="vp9, opus"',
+                'video/webm; codecs="vp8, vorbis"'
+            ];
+            const canPlay = {};
+            formats.forEach(format => {
+                canPlay[format] = document.createElement('video').canPlayType(format);
+            });
+            return canPlay;
+        })(),
+
+        // 15 - Détection des polices par mesure de largeur (technique plus fiable que ctx.font)
         fontsByMeasure: (() => {
             try {
                 const candidates = ['Arial', 'Verdana', 'Times New Roman', 'Courier New', 'Georgia', 'Comic Sans MS',
@@ -611,7 +337,83 @@ draft: false
             }
         })(),
 
-        // 68 - Voix de synthèse vocale (très révélateur de l'OS et des langues installées)
+        // 16 - List of fonts (JS)
+        fonts: (() => {
+            const fontList = ['cursive', 'monospace', 'serif', 'sans-serif', 'fantasy', 'default', 'Arial', 'Arial Black', 'Arial Narrow', 'Arial Rounded MT Bold', 'Book Antiqua', 'Bookman Old Style', 'Bradley Hand ITC', 'Bodoni MT', 'Calibri', 'Century', 'Century Gothic', 'Casual', 'Comic Sans MS', 'Consolas', 'Copperplate Gothic Bold', 'Courier', 'Courier New', 'English Text MT', 'Felix Titling', 'Futura', 'Garamond', 'Geneva', 'Georgia', 'Gentium', 'Haettenschweiler', 'Helvetica', 'Impact', 'Jokerman', 'King', 'Kootenay', 'Latha', 'Liberation Serif', 'Lucida Console', 'Lalit', 'Lucida Grande', 'Magneto', 'Mistral', 'Modena', 'Monotype Corsiva', 'MV Boli', 'OCR A Extended', 'Onyx', 'Palatino Linotype', 'Papyrus', 'Parchment', 'Pericles', 'Playbill', 'Segoe Print', 'Shruti', 'Tahoma', 'TeX', 'Times', 'Times New Roman', 'Trebuchet MS', 'Verdana', 'Verona', 'Arial Cyr', 'Comic Sans MS', 'Arial Black', 'Chiller', 'Arial Narrow', 'Arial Rounded MT Bold', 'Baskerville Old Face', 'Berlin Sans FB', 'Blackadder ITC', 'Lucida Console', 'Symbol', 'Times New Roman', 'Webdings', 'Agency FB', 'Vijaya', 'Algerian', 'Arial Unicode MS', 'Bodoni MT Poster Compressed', 'Bookshelf Symbol 7', 'Calibri', 'Cambria', 'Cambria Math', 'Kartika', 'MS Mincho', 'MS Outlook', 'MT Extra', 'Segoe UI', 'Aharoni', 'Aparajita', 'Amienne', 'cursive', 'Academy Engraved LET', 'LCD', 'LuzSans-Book', 'sans-serif', 'ZWAdobeF', 'Eurostile', 'SimSun-PUA', 'Blackletter686 BT', 'Myriad Web Pro Condensed', 'Matisse ITC', 'Bell Gothic Std Black', 'David Transparent', 'Adobe Caslon Pro', 'AR BERKLEY', 'Australian Sunrise', 'Myriad Web Pro', 'Gentium Basic', 'Highlight LET', 'Adobe Myungjo Std M', 'GothicE', 'HP PSG', 'DejaVu Sans', 'Arno Pro', 'Futura Bk', 'DejaVu Sans Condensed', 'Euro Sign', 'Neurochrome', 'Bell Gothic Std Light', 'Jokerman Alts LET', 'Adobe Fan Heiti Std B', 'Baby Kruffy', 'Tubular', 'Woodcut', 'HGHeiseiKakugothictaiW3', 'YD2002', 'Tahoma Small Cap', 'Helsinki', 'Bickley Script', 'Unicorn', 'X-Files', 'GENISO', 'Frutiger SAIN Bd v.1', 'Opus', 'ZDingbats', 'ABSALOM', 'Vagabond', 'Year supply of fairy cakes', 'Myriad Condensed Web', 'Segoe Media Center', 'Coronet', 'Helsinki Metronome', 'Segoe Condensed', 'Weltron Urban', 'AcadEref', 'DecoType Naskh', 'Freehand521 BT', 'Opus Chords Sans', 'Enviro', 'SWGamekeys MT', 'Croobie', 'Arial Narrow Special G1', 'AVGmdBU', 'Candles', 'Futura Bk BT', 'Andy', 'QuickType', 'WP Arabic Sihafa', 'DigifaceWide', 'ELEGANCE', 'BRAZIL', 'Pepita MT', 'Nina', 'Geneva', 'OCR B MT', 'Futura', 'Blade Runner Movie Font', 'Allegro BT', 'Lucida Blackletter', 'AGA Arabesque', 'AdLib BT', 'Clarendon', 'Monotype Sorts', 'Alibi', 'Bremen Bd BT', 'mono', 'News Gothic MT', 'AvantGarde Bk BT', 'chs_boot', 'fantasy', 'Palatino', 'BernhardFashion BT', 'Courier New', 'CloisterBlack BT', 'Scriptina', 'Tahoma', 'BernhardMod BT', 'Virtual DJ', 'Nokia Smiley', 'Boulder', 'Andale Mono IPA', 'Belwe Lt BT', 'Calligrapher', 'Belwe Cn BT', 'Tanseek Pro Arabic', 'FuturaBlack BT', 'Abadi MT Condensed', 'Mangal', 'Chaucer', 'Belwe Bd BT', 'Liberation Serif', 'DomCasual BT', 'Bitstream Vera Sans', 'URW Gothic L', 'GeoSlab703 Lt BT', 'Bitstream Vera Sans Mono', 'Nimbus Mono L', 'Heather', 'Antique Olive', 'Clarendon Cn BT', 'Amazone BT', 'Bitstream Vera Serif', 'Utopia', 'Americana BT', 'Map Symbols', 'Bitstream Charter', 'Aurora Cn BT', 'CG Omega', 'Lohit Punjabi', 'Balloon XBd BT', 'Akhbar MT', 'Courier 10 Pitch', 'Benguiat Bk BT', 'Market', 'Cursor', 'Bodoni Bk BT', 'Letter Gothic', 'Luxi Sans', 'Brush455 BT', 'Sydnie', 'Lohit Hindi', 'Lithograph', 'Albertus', 'DejaVu LGC Serif', 'Lydian BT', 'Antique Olive Compact', 'KacstArt', 'Incised901 Bd BT', 'Clarendon Extended', 'Lohit Telugu', 'Incised901 Lt BT', 'GiovanniITCTT', 'KacstOneFixed', 'Folio XBd BT', 'Edda', 'Loma', 'Formal436 BT', 'Fine Hand', 'Garuda', 'Impress BT', 'RefSpecialty', 'Sazanami Mincho', 'Staccato555 BT', 'VL Gothic', 'Hkmer OS', 'WP BoxDrawing', 'Clarendon Blk BT', 'Droid Sans', 'CommonBullets', 'Sherwood', 'Helvetica', 'CopprplGoth Bd BT', 'Smudger Alts LET', 'BPG Rioni', 'CopprplGoth BT', 'Guitar Pro 5', 'Estrangelo TurAbdin', 'Dauphin', 'Arial Tur', 'English111 Vivace BT', 'Steamer', 'OzHandicraft BT', 'Futura Lt BT', 'Liberation Sans Narrow', 'Futura XBlk BT', 'Candy Round BTN Cond', 'GoudyHandtooled BT', 'GrilledCheese BTN Cn', 'GoudyOlSt BT', 'Galeforce BTN', 'Kabel Bk BT', 'Sneakerhead BTN Shadow', 'OCR-A BT', 'Denmark', 'OCR-B 10 BT', 'Swiss921 BT', 'PosterBodoni BT', 'Arial (Arabic)', 'Serifa BT', 'FlemishScript BT', 'Arial', 'American Typewriter', 'Arial Black', 'Apple Symbols', 'Arial Narrow', 'AppleMyungjo', 'Arial Rounded MT Bold', 'Zapfino', 'Arial Unicode MS', 'BlairMdITC TT-Medium', 'Century Gothic', 'Cracked', 'Papyrus', 'KufiStandardGK', 'Plantagenet Cherokee', 'Courier', 'Helvetica', 'Baskerville Old Face', 'Apple Casual', 'Type Embellishments One LET', 'Bookshelf Symbol 7', 'Abadi MT Condensed Extra Bold', 'Calibri', 'Calibri Bold', 'Calisto MT', 'Chalkduster', 'Cambria', 'Franklin Gothic Book Italic', 'Century', 'Geneva CY', 'Franklin Gothic Book', 'Helvetica Light', 'Gill Sans MT', 'Academy Engraved LET', 'MT Extra', 'Bank Gothic', 'Eurostile', 'Bodoni SvtyTwo SC ITC TT-Book', 'Tekton Pro', 'Courier CE', 'Maestro', 'BO Futura BoldOblique', 'Lucida Bright Demibold', 'New', 'AGaramond', 'Charcoal', 'DIN-Black', 'Lucida Sans Demibold', 'Stone Sans OS ITC TT-Bold', 'AGaramond Italic', 'Bickham Script Pro Regular', 'Adobe Arabic Bold', 'AGaramond Semibold', 'Al Bayan Bold', 'Doremi', 'AGaramond SemiboldItalic', 'Arno Pro Bold', 'Casual', 'B Futura Bold', 'Frutiger 47LightCn', 'Gadget', 'HelveticaNeueLT Std Bold', 'Frutiger 57Cn', 'DejaVu Serif Italic Condensed', 'Myriad Pro Black It', 'Frutiger 67BoldCn', 'Gentium Basic Bold', 'Sand', 'GillSans', 'H Futura Heavy', 'Liberation Mono Bold', 'GillSans Bold', 'Cambria Math', 'Courier Final Draft', 'HelveticaNeue BlackCond', 'cursive', 'Techno', 'HelveticaNeue BlackCondObl', 'Gabriola', 'JazzText Extended', 'HelveticaNeue BlackExt', 'sans-serif', 'Textile', 'HelveticaNeue BlackExtObl fantasy', 'HelveticaNeue BoldCond', 'Palatino Linotype Bold', 'HelveticaNeue BoldCondObl', 'BIRTH OF A HERO', 'HelveticaNeue BoldExt', 'Bleeding Cowboys', 'HelveticaNeue BoldExtObl', 'ChopinScript', 'HelveticaNeue ExtBlackCond', 'LCD', 'HelveticaNeue ExtBlackCondObl', 'Myriad Web Pro Condensed', 'HelveticaNeue HeavyCond', 'Scriptina', 'HelveticaNeue HeavyCondObl', 'OpenSymbol', 'HelveticaNeue HeavyExt', 'Virtual DJ', 'HelveticaNeue HeavyExtObl', 'Guitar Pro 5', 'HelveticaNeue LightCondObl', 'Nueva Std', 'HelveticaNeue ThinCond', 'Chicago', 'HelveticaNeue ThinCondObl', 'Nueva Std Bold', 'Brush Script MT', 'Capitals', 'Myriad Web Pro', 'Avant Garde', 'B Avant Garde Demi', 'Nueva Std Bold Italic', 'BI Avant Garde DemiOblique', 'MaestroTimes', 'Univers BoldExtObl', 'APC Courier', 'Myriad Web Pro Bold', 'Liberation Serif', 'Myriad Pro Light', 'Carta', 'DIN-Bold', 'DIN-Light', 'Myriad Web Pro Condensed Italic', 'DIN-Medium', 'Tekton Pro Oblique', 'DIN-Regular', 'AScore', 'HelveticaNeue UltraLigCondObl', 'Opus', 'HelveticaNeue UltraLigExt', 'Myriad Pro Light It', 'HelveticaNeue UltraLigExtObl', 'Opus Chords Sans', 'HO Futura HeavyOblique', 'Opus Japanese Chords', 'L Frutiger Light', 'VT100', 'L Futura Light', 'Helsinki', 'LO Futura LightOblique', 'Helsinki Metronome', 'Myriad Pro Black', 'New York', 'O Futura BookOblique', 'R Frutiger Roman', 'Reprise', 'TradeGothic', 'Warnock Pro Bold Caption', 'Univers 45 Light', 'Warnock Pro', 'XBO Futura ExtraBoldOblique', 'Univers 45 LightOblique', 'Liberation Mono', 'Univers 55 Oblique', 'UC LCD', 'Univers 57 Condensed', 'Warnock Pro Bold', 'Univers ExtraBlack', 'Warnock Pro Light Ital Subhead', 'Univers LightUltraCondensed', 'Matrix Ticker', 'Univers UltraCondensed', 'Fang Song'];
+            const availableFonts = [];
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            fontList.forEach(font => {
+                ctx.font = `12px ${font}`;
+                if (ctx.font.indexOf(font) !== -1) {
+                    availableFonts.push(font);
+                }
+            });
+            return availableFonts;
+        })(),
+
+        // 17 - List of fonts (Flash)
+        fontsFlash: 'Flash not detected',
+
+        // 18 - measureText : métriques de rendu du texte (moteur de polices)
+        measureText: (() => {
+            try {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                ctx.font = '16px Arial';
+                const m1 = ctx.measureText('Hello World! https://example.com 123');
+                ctx.font = 'italic 700 20px serif';
+                const m2 = ctx.measureText('Ag 🇫🇷 Éé');
+                return [
+                    m1.width, m1.actualBoundingBoxAscent, m1.actualBoundingBoxDescent,
+                    m2.width, m2.actualBoundingBoxLeft, m2.actualBoundingBoxRight
+                ].join(',');
+            } catch (e) {
+                return 'Not supported';
+            }
+        })(),
+
+        // 19 - ClientRects : dimensions au pixel près d'éléments HTML rendus (police + moteur de rendu)
+        clientRects: (() => {
+            try {
+                const container = document.createElement('div');
+                container.style.cssText = 'position:absolute;left:-9999px;font-size:36px;';
+                container.innerHTML = '<span style="font-family:serif">http://nyan.cat</span><b style="font-size:8px">iii</b>';
+                document.body.appendChild(container);
+                const range = document.createRange();
+                range.selectNode(container);
+                const rects = Array.from(range.getClientRects()).map(r => `${r.width.toFixed(2)}x${r.height.toFixed(2)}`).join(', ');
+                document.body.removeChild(container);
+                return rects;
+            } catch (e) {
+                return 'Not supported';
+            }
+        })(),
+
+        // 20 - Canvas emoji : le rendu des emoji varie selon l'OS (moteur de rendu système)
+        emojiFingerprint: (() => {
+            try {
+                const canvas = document.createElement('canvas');
+                canvas.width = 140; canvas.height = 40;
+                const ctx = canvas.getContext('2d');
+                ctx.textBaseline = 'alphabetic';
+                ctx.font = '30px Arial';
+                ctx.fillStyle = '#f60';
+                ctx.fillRect(0, 0, 140, 40);
+                ctx.fillStyle = '#069';
+                ctx.fillText('😀克隆🇫🇷👍', 2, 30);
+                const url = canvas.toDataURL();
+                let hash = 0;
+                for (let i = 0; i < url.length; i++) {
+                    hash = ((hash << 5) - hash + url.charCodeAt(i)) | 0;
+                }
+                return hash;
+            } catch (e) {
+                return 'Not supported';
+            }
+        })(),
+
+        // 21 - Voix de synthèse vocale (très révélateur de l'OS et des langues installées)
         speechVoices: (() => {
             try {
                 return speechSynthesis.getVoices().map(v => `${v.name} (${v.lang})${v.localService ? '' : ' [remote]'}`);
@@ -620,7 +422,25 @@ draft: false
             }
         })(),
 
-        // 69 - WebRTC : fuite des IP locales (mDNS désactivé) et candidats ICE
+        // 22 - Battery
+        battery: (async () => {
+            try {
+                if (navigator.getBattery) {
+                    const battery = await navigator.getBattery();
+                    return {
+                        charging: battery.charging,
+                        level: battery.level,
+                        chargingTime: battery.chargingTime,
+                        dischargingTime: battery.dischargingTime
+                    };
+                }
+            } catch (e) {
+                return 'Not supported';
+            }
+            return 'Not supported';
+        })(),
+
+        // 23 - WebRTC : fuite des IP locales (mDNS désactivé) et candidats ICE
         webrtcLocalIps: (() => {
             return new Promise((resolve) => {
                 try {
@@ -643,88 +463,40 @@ draft: false
             });
         })(),
 
-        // 70 - Math fingerprint : la précision des fonctions mathématiques varie selon le moteur JS
-        mathFingerprint: (() => {
-            const ops = {
-                tan: Math.tan(-1e300),
-                sin: Math.sin(1e300),
-                cos: Math.cos(1e300),
-                acos: Math.acos(0.123),
-                atan: Math.atan(2),
-                log: Math.log(1e300),
-                exp: Math.exp(700),
-                sinh: Math.sinh(1),
-                pow: Math.pow(Math.PI, -100)
+        // 24 - Use of Adblock
+        adBlock: (() => {
+            const adBlockEnabled = document.createElement('div');
+            adBlockEnabled.innerHTML = '&nbsp;';
+            adBlockEnabled.className = 'adsbox';
+            document.body.appendChild(adBlockEnabled);
+            const isAdBlockEnabled = adBlockEnabled.offsetHeight === 0;
+            document.body.removeChild(adBlockEnabled);
+            return isAdBlockEnabled;
+        })(),
+
+        // 25 - Outils anti-pistage : les trackers connus sont-ils bloqués ? (uBlock, Brave...)
+        antiTracking: (async () => {
+            const targets = {
+                'google-analytics': 'https://www.google-analytics.com/analytics.js',
+                'doubleclick': 'https://securepubads.g.doubleclick.net/pagead/id.js',
+                'facebook-pixel': 'https://connect.facebook.net/en_US/fbevents.js'
             };
-            return Object.values(ops).join(',');
-        })(),
-
-        // 71 - Format des messages d'erreur JS (spécifique au navigateur)
-        errorFingerprint: (() => {
-            try {
-                null.x;
-            } catch (e) {
-                return `${e.name}: ${e.message}`;
-            }
-            return 'No error';
-        })(),
-
-        // 72 - Format de la stack trace (Chrome / Firefox / Safari ont des formats très différents)
-        stackTrace: (() => {
-            try {
-                throw new Error('fingerprint');
-            } catch (e) {
-                return {
-                    lines: e.stack.split('\n').length,
-                    format: e.stack.split('\n').slice(0, 3)
-                };
-            }
-        })(),
-
-        // 73 - Nombre de propriétés globales du window (très variable selon navigateur/version/extensions)
-        globalProperties: Object.getOwnPropertyNames(window).length,
-
-        // 74 - Prototype de Navigator : liste des propriétés/méthodes disponibles
-        navigatorPrototype: Object.getOwnPropertyNames(Navigator.prototype).join(','),
-
-        // 75 - Détection des API modernes disponibles (révèle navigateur + flags expérimentaux)
-        apisAvailable: {
-            webgpu: !!navigator.gpu,
-            webserial: !!navigator.serial,
-            webusb: !!navigator.usb,
-            webhid: !!navigator.hid,
-            webnfc: 'NDEFReader' in window,
-            bluetooth: !!navigator.bluetooth,
-            webxr: !!navigator.xr,
-            wakeLock: !!navigator.wakeLock,
-            webauthn: !!window.PublicKeyCredential,
-            paymentRequest: !!window.PaymentRequest,
-            idleDetector: !!window.IdleDetector,
-            computePressure: !!window.PressureObserver,
-            fileSystemAccess: !!window.showOpenFilePicker,
-            eyeDropper: !!window.EyeDropper,
-            contactPicker: !!window.ContactsManager,
-            virtualKeyboard: !!navigator.virtualKeyboard,
-            devicePosture: !!navigator.devicePosture,
-            browsingTopics: typeof document.browsingTopics === 'function',
-            sharedArrayBuffer: typeof SharedArrayBuffer !== 'undefined'
-        },
-
-        // 76 - WebGPU : infos du GPU (vendor, architecture, device)
-        webgpuInfo: (async () => {
-            try {
-                if (navigator.gpu) {
-                    const adapter = await navigator.gpu.requestAdapter();
-                    if (!adapter) return 'No adapter';
-                    if (adapter.info && Object.keys(adapter.info).length) return adapter.info;
-                    if (adapter.requestAdapterInfo) return await adapter.requestAdapterInfo();
-                    return 'WebGPU supported (no info)';
+            const results = {};
+            for (const [name, url] of Object.entries(targets)) {
+                const ctrl = new AbortController();
+                const timer = setTimeout(() => ctrl.abort(), 3000);
+                try {
+                    await fetch(url, { mode: 'no-cors', cache: 'no-store', signal: ctrl.signal });
+                    results[name] = 'accessible (non bloqué)';
+                } catch (e) {
+                    results[name] = 'bloqué';
                 }
-            } catch (e) {}
-            return 'Not supported';
+                clearTimeout(timer);
+            }
+            return results;
         })(),
 
-        // 77 - Écran étendu : DPR, orientation, multi-écrans, dimensions de la fenêtre
+        // 26 - Écran étendu : DPR, orientation, multi-écrans, dimensions de la fenêtre
         screenExtra: {
             devicePixelRatio: window.devicePixelRatio,
             orientation: screen.orientation ? { type: screen.orientation.type, angle: screen.orientation.angle } : 'Not supported',
@@ -733,15 +505,7 @@ draft: false
             outer: `${window.outerWidth}x${window.outerHeight}`
         },
 
-        // 78 - Support tactile
-        touchSupport: {
-            maxTouchPoints: navigator.maxTouchPoints,
-            touchEvent: 'ontouchstart' in window,
-            touchStart: typeof TouchEvent !== 'undefined',
-            pointerCoarse: window.matchMedia('(pointer: coarse)').matches
-        },
-
-        // 79 - Media queries CSS : préférences système (thème, animations, contraste, HDR...)
+        // 27 - Media queries CSS : préférences système (thème, animations, contraste, HDR...)
         cssMediaQueries: (() => {
             const queries = {
                 pointerFine: '(pointer: fine)',
@@ -765,7 +529,7 @@ draft: false
             return results;
         })(),
 
-        // 80 - Support des fonctionnalités CSS récentes (révèle la version du moteur)
+        // 28 - Support des fonctionnalités CSS récentes (révèle la version du moteur)
         cssFeatures: (() => {
             try {
                 const results = {};
@@ -782,7 +546,7 @@ draft: false
             }
         })(),
 
-        // 81 - Styles par défaut des éléments système (police des boutons/inputs selon OS)
+        // 29 - Styles par défaut des éléments système (police des boutons/inputs selon OS)
         systemStyles: (() => {
             try {
                 const button = document.createElement('button');
@@ -804,37 +568,328 @@ draft: false
             }
         })(),
 
-        // 82 - Liste des MimeTypes supportés
-        mimeTypes: Array.from(navigator.mimeTypes || []).map(m => m.type),
+        // 30 - Device memory
+        deviceMemory: navigator.deviceMemory || 'Not supported',
 
-        // 83 - PDF viewer intégré
-        pdfViewerEnabled: navigator.pdfViewerEnabled !== undefined ? navigator.pdfViewerEnabled : 'Not supported',
+        // 31 - Hardware concurrency
+        hardwareConcurrency: navigator.hardwareConcurrency || 'Not supported',
 
-        // 84 - webdriver : détection d'automatisation (Selenium, Puppeteer...)
-        webdriver: navigator.webdriver !== undefined ? navigator.webdriver : 'Not supported',
-
-        // 85 - Permission notifications
-        notificationPermission: ('Notification' in window) ? Notification.permission : 'Not supported',
-
-        // 86 - Quota de stockage : révèle approximativement la taille du disque !
-        storageEstimate: (async () => {
+        // 32 - Media Capabilities : capacités de décodage matériel (4K H264, AV1, VP9...)
+        mediaCapabilities: (async () => {
             try {
-                if (navigator.storage && navigator.storage.estimate) {
-                    const { quota, usage } = await navigator.storage.estimate();
-                    return { quotaGo: (quota / 1e9).toFixed(2), usageMo: (usage / 1e6).toFixed(2) };
+                const configs = [
+                    { type: 'file', video: { contentType: 'video/mp4; codecs="avc1.640028"', width: 3840, height: 2160, bitrate: 20000000 } },
+                    { type: 'file', video: { contentType: 'video/webm; codecs="av01.0.08M.08"', width: 1920, height: 1080, bitrate: 8000000 } },
+                    { type: 'file', video: { contentType: 'video/webm; codecs="vp09.00.10.08"', width: 1920, height: 1080, bitrate: 5000000 } }
+                ];
+                const results = {};
+                for (const cfg of configs) {
+                    const r = await navigator.mediaCapabilities.decodingInfo(cfg);
+                    results[cfg.video.contentType] = { supported: r.supported, smooth: r.smooth, powerEfficient: r.powerEfficient };
+                }
+                return results;
+            } catch (e) {
+                return 'Not supported';
+            }
+        })(),
+
+        // 33 - Support DRM (Widevine, PlayReady, FairPlay)
+        drmSupport: (async () => {
+            const systems = ['com.widevine.alpha', 'com.microsoft.playready', 'com.apple.fps.1_0', 'org.w3.clearkey'];
+            const results = {};
+            for (const system of systems) {
+                try {
+                    await navigator.requestMediaKeySystemAccess(system, [{
+                        initDataTypes: ['cenc'],
+                        videoCapabilities: [{ contentType: 'video/mp4; codecs="avc1.640028"' }]
+                    }]);
+                    results[system] = 'Supported';
+                } catch (e) {
+                    results[system] = 'Not supported';
+                }
+            }
+            return results;
+        })(),
+
+        // 34 - Manettes de jeu connectées
+        gamepads: (() => {
+            try {
+                const pads = Array.from(navigator.getGamepads()).filter(Boolean).map(g => g.id);
+                return pads.length ? pads : 'No gamepad';
+            } catch (e) {
+                return 'Not supported';
+            }
+        })(),
+
+        // 35 - WebXR : support casque VR/AR
+        xrSupport: (async () => {
+            try {
+                if (navigator.xr) {
+                    return {
+                        immersiveVr: await navigator.xr.isSessionSupported('immersive-vr'),
+                        immersiveAr: await navigator.xr.isSessionSupported('immersive-ar')
+                    };
                 }
             } catch (e) {}
             return 'Not supported';
         })(),
 
-        // 87 - Mémoire JS heap (Chrome uniquement)
-        performanceMemory: performance.memory ? {
-            jsHeapSizeLimit: performance.memory.jsHeapSizeLimit,
-            totalJSHeapSize: performance.memory.totalJSHeapSize,
-            usedJSHeapSize: performance.memory.usedJSHeapSize
+        // 36 - Accelerometer
+        accelerometer: (() => {
+            try {
+                if (window.DeviceMotionEvent) {
+                    return 'Supported';
+                }
+            } catch (e) {
+                return 'Not supported';
+            }
+            return 'Not supported';
+        })(),
+
+        // 37 - Gyroscope
+        gyroscope: (() => {
+            try {
+                if (window.DeviceOrientationEvent) {
+                    return 'Supported';
+                }
+            } catch (e) {
+                return 'Not supported';
+            }
+            return 'Not supported';
+        })(),
+
+        // 38 - Proximity sensor
+        proximitySensor: 'Not supported', // No direct API for proximity sensor in most browsers
+
+        // 39 - Capteurs génériques (API Sensors)
+        sensorsApi: (() => {
+            const sensors = ['Accelerometer', 'Gyroscope', 'Magnetometer', 'AmbientLightSensor', 'AbsoluteOrientationSensor', 'GravitySensor'];
+            const res = {};
+            sensors.forEach(s => res[s] = s in window);
+            return res;
+        })(),
+
+        // 40 - Support tactile
+        touchSupport: {
+            maxTouchPoints: navigator.maxTouchPoints,
+            touchEvent: 'ontouchstart' in window,
+            touchStart: typeof TouchEvent !== 'undefined',
+            pointerCoarse: window.matchMedia('(pointer: coarse)').matches
+        },
+
+        // 41 - Sortie audio : nombre de canaux matériels (carte son / casque)
+        audioOutput: (() => {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const dest = ctx.destination;
+                return {
+                    channelCount: dest.channelCount,
+                    maxChannelCount: dest.maxChannelCount,
+                    numberOfInputs: dest.numberOfInputs,
+                    numberOfOutputs: dest.numberOfOutputs
+                };
+            } catch (e) {
+                return 'Not supported';
+            }
+        })(),
+
+        // 42 - Media devices
+        mediaDevices: (async () => {
+            try {
+                const devices = await navigator.mediaDevices.enumerateDevices();
+                return devices.map(device => `${device.kind}: ${device.label || 'Unnamed'}`);
+            } catch (e) {
+                return 'Not supported';
+            }
+        })(),
+
+        // 43 - Math fingerprint : la précision des fonctions mathématiques varie selon le moteur JS
+        mathFingerprint: (() => {
+            const ops = {
+                tan: Math.tan(-1e300),
+                sin: Math.sin(1e300),
+                cos: Math.cos(1e300),
+                acos: Math.acos(0.123),
+                atan: Math.atan(2),
+                log: Math.log(1e300),
+                exp: Math.exp(700),
+                sinh: Math.sinh(1),
+                pow: Math.pow(Math.PI, -100)
+            };
+            return Object.values(ops).join(',');
+        })(),
+
+        // 44 - Format des messages d'erreur JS (spécifique au navigateur)
+        errorFingerprint: (() => {
+            try {
+                null.x;
+            } catch (e) {
+                return `${e.name}: ${e.message}`;
+            }
+            return 'No error';
+        })(),
+
+        // 45 - Format de la stack trace (Chrome / Firefox / Safari ont des formats très différents)
+        stackTrace: (() => {
+            try {
+                throw new Error('fingerprint');
+            } catch (e) {
+                return {
+                    lines: e.stack.split('\n').length,
+                    format: e.stack.split('\n').slice(0, 3)
+                };
+            }
+        })(),
+
+        // 46 - WebAssembly : features du moteur (SIMD)
+        webassemblyFeatures: {
+            supported: typeof WebAssembly === 'object',
+            simd: (() => {
+                try {
+                    return WebAssembly.validate(new Uint8Array([0, 97, 115, 109, 1, 0, 0, 0, 1, 5, 1, 96, 0, 1, 123, 3, 2, 1, 0, 10, 10, 1, 8, 0, 65, 0, 253, 15, 253, 98, 11]));
+                } catch (e) {
+                    return 'Error';
+                }
+            })()
+        },
+
+        // 47 - Intl API : formats de nombres/dates/collation spécifiques à la locale du système
+        intlFingerprint: (() => {
+            try {
+                return {
+                    number: new Intl.NumberFormat().format(123456.789),
+                    currency: new Intl.NumberFormat(undefined, { style: 'currency', currency: 'EUR' }).format(1234.5),
+                    dateParts: new Intl.DateTimeFormat().formatToParts(new Date()).map(p => p.type).join('|'),
+                    collator: JSON.stringify(new Intl.Collator().resolvedOptions()),
+                    timezonesCount: (typeof Intl.supportedValuesOf === 'function') ? Intl.supportedValuesOf('timeZone').length : 'Not supported'
+                };
+            } catch (e) {
+                return 'Not supported';
+            }
+        })(),
+
+        // 48 - Timezone : offsets janvier/juillet (détection DST et fuseau réel malgré le spoof)
+        timezoneOffsets: (() => {
+            const year = new Date().getFullYear();
+            const jan = new Date(year, 0, 1).getTimezoneOffset();
+            const jul = new Date(year, 6, 1).getTimezoneOffset();
+            return { january: jan, july: jul, dst: jan !== jul };
+        })(),
+
+        // 49 - Timezone
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+
+        // 50 - Disposition clavier réelle (Chrome, nécessite focus sur la page)
+        keyboardMap: (async () => {
+            try {
+                if (navigator.keyboard && navigator.keyboard.getLayoutMap) {
+                    const map = await navigator.keyboard.getLayoutMap();
+                    return ['KeyQ', 'KeyW', 'KeyY', 'Semicolon', 'Backquote'].map(k => `${k}:${map.get(k)}`).join(' ');
+                }
+            } catch (e) {}
+            return 'Not supported';
+        })(),
+
+        // 51 - Keyboard layout
+        keyboardLayout: 'Not supported', // No direct API for keyboard layout in most browsers
+
+        // 52 - Key
+        key: 'No value',
+
+        // 53 - Prototype de Navigator : liste des propriétés/méthodes disponibles
+        navigatorPrototype: Object.getOwnPropertyNames(Navigator.prototype).join(','),
+
+        // 54 - Nombre de propriétés globales du window (très variable selon navigateur/version/extensions)
+        globalProperties: Object.getOwnPropertyNames(window).length,
+
+        // 55 - Détection des API modernes disponibles (révèle navigateur + flags expérimentaux)
+        apisAvailable: {
+            webgpu: !!navigator.gpu,
+            webserial: !!navigator.serial,
+            webusb: !!navigator.usb,
+            webhid: !!navigator.hid,
+            webnfc: 'NDEFReader' in window,
+            bluetooth: !!navigator.bluetooth,
+            webxr: !!navigator.xr,
+            wakeLock: !!navigator.wakeLock,
+            webauthn: !!window.PublicKeyCredential,
+            paymentRequest: !!window.PaymentRequest,
+            idleDetector: !!window.IdleDetector,
+            computePressure: !!window.PressureObserver,
+            fileSystemAccess: !!window.showOpenFilePicker,
+            eyeDropper: !!window.EyeDropper,
+            contactPicker: !!window.ContactsManager,
+            virtualKeyboard: !!navigator.virtualKeyboard,
+            devicePosture: !!navigator.devicePosture,
+            browsingTopics: typeof document.browsingTopics === 'function',
+            sharedArrayBuffer: typeof SharedArrayBuffer !== 'undefined'
+        },
+
+        // 56 - Storage Access / Privacy Sandbox (Topics, Protected Audience, attribution)
+        privacyApis: ({
+            hasStorageAccess: typeof document.hasStorageAccess === 'function',
+            storageBuckets: !!(navigator.storage && navigator.storage.getBucket),
+            protectedAudience: !!navigator.protectedAudience,
+            attributionReporting: typeof window.attributionReporting !== 'undefined',
+            privateStateTokens: typeof document.hasPrivateToken === 'function'
+        }),
+
+        // 57 - API Crypto
+        cryptoSupport: {
+            subtle: !!crypto.subtle,
+            randomUUID: typeof crypto.randomUUID === 'function',
+            getRandomValues: typeof crypto.getRandomValues === 'function'
+        },
+
+        // 58 - UA dans un Web Worker : permet de détecter un spoof d'User-Agent incohérent
+        workerUserAgent: (() => {
+            return new Promise((resolve) => {
+                try {
+                    const code = "postMessage({ua: navigator.userAgent, platform: navigator.platform, hardwareConcurrency: navigator.hardwareConcurrency})";
+                    const worker = new Worker(URL.createObjectURL(new Blob([code], { type: 'application/javascript' })));
+                    worker.onmessage = (e) => {
+                        resolve({
+                            sameUA: e.data.ua === navigator.userAgent,
+                            workerUA: e.data.ua,
+                            workerPlatform: e.data.platform
+                        });
+                    };
+                    worker.onerror = () => resolve('Not supported');
+                } catch (e) {
+                    resolve('Not supported');
+                }
+            });
+        })(),
+
+        // 59 - Détection du moteur / navigateur (indices classiques)
+        engineDetection: {
+            chromium: !!window.chrome,
+            firefox: typeof InstallTrigger !== 'undefined',
+            opera: (!!window.opr && !!window.opr.addons) || !!window.opera,
+            edgeChromium: navigator.userAgent.indexOf('Edg/') > -1,
+            ieLegacy: !!document.documentMode
+        },
+
+        // 60 - User-Agent Client Hints (nouveau standard, remplace progressivement l'UA)
+        userAgentData: navigator.userAgentData ? {
+            brands: navigator.userAgentData.brands,
+            mobile: navigator.userAgentData.mobile,
+            platform: navigator.userAgentData.platform
         } : 'Not supported',
 
-        // 88 - Résolution des timers (précision variable anti-fingerprinting / rAF period)
+        // 61 - Client Hints haute entropie (architecture CPU, version complète, modèle...)
+        highEntropyHints: (async () => {
+            try {
+                if (navigator.userAgentData && navigator.userAgentData.getHighEntropyValues) {
+                    return await navigator.userAgentData.getHighEntropyValues(
+                        ['architecture', 'bitness', 'model', 'platformVersion', 'uaFullVersion', 'fullVersionList']
+                    );
+                }
+            } catch (e) {}
+            return 'Not supported';
+        })(),
+
+        // 62 - Résolution des timers (précision variable anti-fingerprinting / rAF period)
         timerResolution: (() => {
             return new Promise(resolve => {
                 let settled = false;
@@ -868,197 +923,14 @@ draft: false
             });
         })(),
 
-        // 89 - UA dans un Web Worker : permet de détecter un spoof d'User-Agent incohérent
-        workerUserAgent: (() => {
-            return new Promise((resolve) => {
-                try {
-                    const code = "postMessage({ua: navigator.userAgent, platform: navigator.platform, hardwareConcurrency: navigator.hardwareConcurrency})";
-                    const worker = new Worker(URL.createObjectURL(new Blob([code], { type: 'application/javascript' })));
-                    worker.onmessage = (e) => {
-                        resolve({
-                            sameUA: e.data.ua === navigator.userAgent,
-                            workerUA: e.data.ua,
-                            workerPlatform: e.data.platform
-                        });
-                    };
-                    worker.onerror = () => resolve('Not supported');
-                } catch (e) {
-                    resolve('Not supported');
-                }
-            });
-        })(),
-
-        // 90 - Intl API : formats de nombres/dates/collation spécifiques à la locale du système
-        intlFingerprint: (() => {
-            try {
-                return {
-                    number: new Intl.NumberFormat().format(123456.789),
-                    currency: new Intl.NumberFormat(undefined, { style: 'currency', currency: 'EUR' }).format(1234.5),
-                    dateParts: new Intl.DateTimeFormat().formatToParts(new Date()).map(p => p.type).join('|'),
-                    collator: JSON.stringify(new Intl.Collator().resolvedOptions()),
-                    timezonesCount: (typeof Intl.supportedValuesOf === 'function') ? Intl.supportedValuesOf('timeZone').length : 'Not supported'
-                };
-            } catch (e) {
-                return 'Not supported';
-            }
-        })(),
-
-        // 91 - Disposition clavier réelle (Chrome, nécessite focus sur la page)
-        keyboardMap: (async () => {
-            try {
-                if (navigator.keyboard && navigator.keyboard.getLayoutMap) {
-                    const map = await navigator.keyboard.getLayoutMap();
-                    return ['KeyQ', 'KeyW', 'KeyY', 'Semicolon', 'Backquote'].map(k => `${k}:${map.get(k)}`).join(' ');
-                }
-            } catch (e) {}
-            return 'Not supported';
-        })(),
-
-        // 92 - Manettes de jeu connectées
-        gamepads: (() => {
-            try {
-                const pads = Array.from(navigator.getGamepads()).filter(Boolean).map(g => g.id);
-                return pads.length ? pads : 'No gamepad';
-            } catch (e) {
-                return 'Not supported';
-            }
-        })(),
-
-        // 93 - WebXR : support casque VR/AR
-        xrSupport: (async () => {
-            try {
-                if (navigator.xr) {
-                    return {
-                        immersiveVr: await navigator.xr.isSessionSupported('immersive-vr'),
-                        immersiveAr: await navigator.xr.isSessionSupported('immersive-ar')
-                    };
-                }
-            } catch (e) {}
-            return 'Not supported';
-        })(),
-
-        // 94 - Media Capabilities : capacités de décodage matériel (4K H264, AV1, VP9...)
-        mediaCapabilities: (async () => {
-            try {
-                const configs = [
-                    { type: 'file', video: { contentType: 'video/mp4; codecs="avc1.640028"', width: 3840, height: 2160, bitrate: 20000000 } },
-                    { type: 'file', video: { contentType: 'video/webm; codecs="av01.0.08M.08"', width: 1920, height: 1080, bitrate: 8000000 } },
-                    { type: 'file', video: { contentType: 'video/webm; codecs="vp09.00.10.08"', width: 1920, height: 1080, bitrate: 5000000 } }
-                ];
-                const results = {};
-                for (const cfg of configs) {
-                    const r = await navigator.mediaCapabilities.decodingInfo(cfg);
-                    results[cfg.video.contentType] = { supported: r.supported, smooth: r.smooth, powerEfficient: r.powerEfficient };
-                }
-                return results;
-            } catch (e) {
-                return 'Not supported';
-            }
-        })(),
-
-        // 95 - Support DRM (Widevine, PlayReady, FairPlay)
-        drmSupport: (async () => {
-            const systems = ['com.widevine.alpha', 'com.microsoft.playready', 'com.apple.fps.1_0', 'org.w3.clearkey'];
-            const results = {};
-            for (const system of systems) {
-                try {
-                    await navigator.requestMediaKeySystemAccess(system, [{
-                        initDataTypes: ['cenc'],
-                        videoCapabilities: [{ contentType: 'video/mp4; codecs="avc1.640028"' }]
-                    }]);
-                    results[system] = 'Supported';
-                } catch (e) {
-                    results[system] = 'Not supported';
-                }
-            }
-            return results;
-        })(),
-
-        // 96 - API Crypto
-        cryptoSupport: {
-            subtle: !!crypto.subtle,
-            randomUUID: typeof crypto.randomUUID === 'function',
-            getRandomValues: typeof crypto.getRandomValues === 'function'
-        },
-
-        // 97 - Capteurs génériques (API Sensors)
-        sensorsApi: (() => {
-            const sensors = ['Accelerometer', 'Gyroscope', 'Magnetometer', 'AmbientLightSensor', 'AbsoluteOrientationSensor', 'GravitySensor'];
-            const res = {};
-            sensors.forEach(s => res[s] = s in window);
-            return res;
-        })(),
-
-        // 98 - Connection : infos supplémentaires (type réseau, économie de données)
-        connectionExtra: navigator.connection ? {
-            type: navigator.connection.type !== undefined ? navigator.connection.type : 'Not supported',
-            saveData: navigator.connection.saveData !== undefined ? navigator.connection.saveData : 'Not supported'
+        // 63 - Mémoire JS heap (Chrome uniquement)
+        performanceMemory: performance.memory ? {
+            jsHeapSizeLimit: performance.memory.jsHeapSizeLimit,
+            totalJSHeapSize: performance.memory.totalJSHeapSize,
+            usedJSHeapSize: performance.memory.usedJSHeapSize
         } : 'Not supported',
 
-        // 99 - Timezone : offsets janvier/juillet (détection DST et fuseau réel malgré le spoof)
-        timezoneOffsets: (() => {
-            const year = new Date().getFullYear();
-            const jan = new Date(year, 0, 1).getTimezoneOffset();
-            const jul = new Date(year, 6, 1).getTimezoneOffset();
-            return { january: jan, july: jul, dst: jan !== jul };
-        })(),
-
-        // 100 - Storage Access / Privacy Sandbox (Topics, Protected Audience, attribution)
-        privacyApis: ({
-            hasStorageAccess: typeof document.hasStorageAccess === 'function',
-            storageBuckets: !!(navigator.storage && navigator.storage.getBucket),
-            protectedAudience: !!navigator.protectedAudience,
-            attributionReporting: typeof window.attributionReporting !== 'undefined',
-            privateStateTokens: typeof document.hasPrivateToken === 'function'
-        }),
-
-        // 101 - measureText : métriques de rendu du texte (moteur de polices)
-        measureText: (() => {
-            try {
-                const canvas = document.createElement('canvas');
-                const ctx = canvas.getContext('2d');
-                ctx.font = '16px Arial';
-                const m1 = ctx.measureText('Hello World! https://example.com 123');
-                ctx.font = 'italic 700 20px serif';
-                const m2 = ctx.measureText('Ag 🇫🇷 Éé');
-                return [
-                    m1.width, m1.actualBoundingBoxAscent, m1.actualBoundingBoxDescent,
-                    m2.width, m2.actualBoundingBoxLeft, m2.actualBoundingBoxRight
-                ].join(',');
-            } catch (e) {
-                return 'Not supported';
-            }
-        })(),
-
-        // 102 - Sortie audio : nombre de canaux matériels (carte son / casque)
-        audioOutput: (() => {
-            try {
-                const ctx = new (window.AudioContext || window.webkitAudioContext)();
-                const dest = ctx.destination;
-                return {
-                    channelCount: dest.channelCount,
-                    maxChannelCount: dest.maxChannelCount,
-                    numberOfInputs: dest.numberOfInputs,
-                    numberOfOutputs: dest.numberOfOutputs
-                };
-            } catch (e) {
-                return 'Not supported';
-            }
-        })(),
-
-        // 103 - WebAssembly : features du moteur (SIMD)
-        webassemblyFeatures: {
-            supported: typeof WebAssembly === 'object',
-            simd: (() => {
-                try {
-                    return WebAssembly.validate(new Uint8Array([0, 97, 115, 109, 1, 0, 0, 0, 1, 5, 1, 96, 0, 1, 123, 3, 2, 1, 0, 10, 10, 1, 8, 0, 65, 0, 253, 15, 253, 98, 11]));
-                } catch (e) {
-                    return 'Error';
-                }
-            })()
-        },
-
-        // 104 - Largeur de scrollbar (dépend OS / navigateur / mobile)
+        // 64 - Largeur de scrollbar (dépend OS / navigateur / mobile)
         scrollbarWidth: (() => {
             try {
                 const outer = document.createElement('div');
@@ -1072,25 +944,53 @@ draft: false
             }
         })(),
 
-        // 105 - Détection du moteur / navigateur (indices classiques)
-        engineDetection: {
-            chromium: !!window.chrome,
-            firefox: typeof InstallTrigger !== 'undefined',
-            opera: (!!window.opr && !!window.opr.addons) || !!window.opera,
-            edgeChromium: navigator.userAgent.indexOf('Edg/') > -1,
-            ieLegacy: !!document.documentMode
-        },
+        // 65 - Screen resolution (Flash)
+        screenResolutionFlash: 'Flash not detected',
 
-        // 106 - Permissions Policy : features autorisées pour ce document (Chrome)
-        featurePolicy: (() => {
+        // 66 - Language (Flash)
+        languageFlash: 'Flash not detected',
+
+        // 67 - Platform (Flash)
+        platformFlash: 'Flash not detected',
+
+        // ===== Tests supplémentaires =====
+
+        // 68 - Liste des MimeTypes supportés
+        mimeTypes: Array.from(navigator.mimeTypes || []).map(m => m.type),
+
+        // 69 - List of plugins
+        plugins: Array.from(navigator.plugins).map(plugin => plugin.name) || 'Not supported',
+
+        // 70 - PDF viewer intégré
+        pdfViewerEnabled: navigator.pdfViewerEnabled !== undefined ? navigator.pdfViewerEnabled : 'Not supported',
+
+        // 71 - Java enabled
+        javaEnabled: navigator.javaEnabled(),
+
+        // 72 - webdriver : détection d'automatisation (Selenium, Puppeteer...)
+        webdriver: navigator.webdriver !== undefined ? navigator.webdriver : 'Not supported',
+
+        // 73 - Use of local storage
+        localStorage: !!window.localStorage ? 'Supported' : 'Not supported',
+
+        // 74 - Use of session storage
+        sessionStorage: !!window.sessionStorage ? 'Supported' : 'Not supported',
+
+        // 75 - Use of IndexedDB
+        indexedDB: !!window.indexedDB ? 'Supported' : 'Not supported',
+
+        // 76 - Quota de stockage : révèle approximativement la taille du disque !
+        storageEstimate: (async () => {
             try {
-                if (document.featurePolicy) return document.featurePolicy.allowedFeatures();
-                if (document.permissionsPolicy) return document.permissionsPolicy.allowedFeatures();
+                if (navigator.storage && navigator.storage.estimate) {
+                    const { quota, usage } = await navigator.storage.estimate();
+                    return { quotaGo: (quota / 1e9).toFixed(2), usageMo: (usage / 1e6).toFixed(2) };
+                }
             } catch (e) {}
             return 'Not supported';
         })(),
 
-        // 107 - Cookie Store API + persistance du stockage
+        // 77 - Cookie Store API + persistance du stockage
         storageApis: (async () => {
             const res = { cookieStore: !!window.cookieStore };
             try {
@@ -1101,7 +1001,7 @@ draft: false
             return res;
         })(),
 
-        // 108 - PWA installées liées au site
+        // 78 - PWA installées liées au site
         relatedApps: (async () => {
             try {
                 if (navigator.getInstalledRelatedApps) {
@@ -1112,7 +1012,7 @@ draft: false
             return 'Not supported';
         })(),
 
-        // 109 - Disponibilité Bluetooth
+        // 79 - Disponibilité Bluetooth
         bluetoothAvailability: (async () => {
             try {
                 if (navigator.bluetooth && navigator.bluetooth.getAvailability) {
@@ -1122,49 +1022,10 @@ draft: false
             return 'Not supported';
         })(),
 
-        // 110 - Outils anti-pistage : les trackers connus sont-ils bloqués ? (uBlock, Brave...)
-        antiTracking: (async () => {
-            const targets = {
-                'google-analytics': 'https://www.google-analytics.com/analytics.js',
-                'doubleclick': 'https://securepubads.g.doubleclick.net/pagead/id.js',
-                'facebook-pixel': 'https://connect.facebook.net/en_US/fbevents.js'
-            };
-            const results = {};
-            for (const [name, url] of Object.entries(targets)) {
-                const ctrl = new AbortController();
-                const timer = setTimeout(() => ctrl.abort(), 3000);
-                try {
-                    await fetch(url, { mode: 'no-cors', cache: 'no-store', signal: ctrl.signal });
-                    results[name] = 'accessible (non bloqué)';
-                } catch (e) {
-                    results[name] = 'bloqué';
-                }
-                clearTimeout(timer);
-            }
-            return results;
-        })(),
-
-        // 111 - Navigation : historique, type de navigation, encodage
-        navigationInfo: {
-            historyLength: history.length,
-            navigationType: (() => {
-                try {
-                    return performance.getEntriesByType('navigation')[0].type;
-                } catch (e) {
-                    return 'Not supported';
-                }
-            })(),
-            visibilityState: document.visibilityState,
-            characterSet: document.characterSet
-        },
-
-        // 112 - Liste complète des langues préférées
-        languages: Array.from(navigator.languages || [navigator.language]),
-
-        // 113 - Vibration (mobile)
+        // 80 - Vibration (mobile)
         vibrationSupport: ('vibrate' in navigator) ? 'Supported' : 'Not supported',
 
-        // 114 - Permissions étendues (API récentes du navigateur)
+        // 81 - Permissions étendues (API récentes du navigateur)
         permissionsExtended: (async () => {
             if (!navigator.permissions) return 'Not supported';
             const names = ['clipboard-read', 'clipboard-write', 'midi', 'persistent-storage',
@@ -1180,6 +1041,145 @@ draft: false
             }
             return out;
         })()
+        // 82 - Permissions Policy : features autorisées pour ce document (Chrome)
+        featurePolicy: (() => {
+            try {
+                if (document.featurePolicy) return document.featurePolicy.allowedFeatures();
+                if (document.permissionsPolicy) return document.permissionsPolicy.allowedFeatures();
+            } catch (e) {}
+            return 'Not supported';
+        })(),
+
+        // 83 - Permissions
+        permissions: (async () => {
+            if (navigator.permissions) {
+                const permissions = {};
+                const types = ['geolocation', 'notifications', 'camera', 'microphone', 'midi', 'payment-handler', 'push'];
+                for (const type of types) {
+                    try {
+                        const result = await navigator.permissions.query({ name: type });
+                        permissions[type] = result.state;
+                    } catch (e) {
+                        permissions[type] = 'Not supported';
+                    }
+                }
+                return permissions;
+            } else {
+                return 'Permissions API not supported';
+            }
+        })(),
+
+        // 84 - Permission notifications
+        notificationPermission: ('Notification' in window) ? Notification.permission : 'Not supported',
+
+        // 85 - Connection
+        connection: navigator.connection ? {
+            effectiveType: navigator.connection.effectiveType,
+            downlink: navigator.connection.downlink,
+            rtt: navigator.connection.rtt
+        } : 'Not supported',
+
+        // 86 - Connection : infos supplémentaires (type réseau, économie de données)
+        connectionExtra: navigator.connection ? {
+            type: navigator.connection.type !== undefined ? navigator.connection.type : 'Not supported',
+            saveData: navigator.connection.saveData !== undefined ? navigator.connection.saveData : 'Not supported'
+        } : 'Not supported',
+
+        // 87 - Screen left
+        screenLeft: window.screenLeft !== undefined ? window.screenLeft : 'Not supported',
+
+        // 88 - Screen top
+        screenTop: window.screenTop !== undefined ? window.screenTop : 'Not supported',
+
+        // 89 - Screen width
+        screenWidth: screen.width,
+
+        // 90 - Screen height
+        screenHeight: screen.height,
+
+        // 91 - Screen depth
+        screenDepth: screen.colorDepth,
+
+        // 92 - Screen available top
+        screenAvailableTop: screen.availTop !== undefined ? screen.availTop : 'Not supported',
+
+        // 93 - Screen available left
+        screenAvailableLeft: screen.availLeft !== undefined ? screen.availLeft : 'Not supported',
+
+        // 94 - Screen available height
+        screenAvailableHeight: screen.availHeight !== undefined ? screen.availHeight : 'Not supported',
+
+        // 95 - Screen available width
+        screenAvailableWidth: screen.availWidth !== undefined ? screen.availWidth : 'Not supported',
+
+        // 96 - Do Not Track
+        doNotTrack: navigator.doNotTrack || navigator.msDoNotTrack || 'Not supported',
+
+        // 97 - Navigation : historique, type de navigation, encodage
+        navigationInfo: {
+            historyLength: history.length,
+            navigationType: (() => {
+                try {
+                    return performance.getEntriesByType('navigation')[0].type;
+                } catch (e) {
+                    return 'Not supported';
+                }
+            })(),
+            visibilityState: document.visibilityState,
+            characterSet: document.characterSet
+        },
+
+        // 98 - Result state
+        resultState: 'No value',
+
+        // 99 - Location bar
+        locationBar: window.outerWidth ? 'Supported' : 'Not supported',
+
+        // 100 - Menu bar
+        menuBar: window.outerWidth ? 'Supported' : 'Not supported',
+
+        // 101 - Personal bar
+        personalBar: window.outerWidth ? 'Supported' : 'Not supported',
+
+        // 102 - Status bar
+        statusBar: window.outerWidth ? 'Supported' : 'Not supported',
+
+        // 103 - Tool bar
+        toolBar: window.outerWidth ? 'Supported' : 'Not supported',
+
+        // 104 - BuildID
+        buildID: navigator.buildID || 'Not supported',
+
+        // 105 - Product
+        product: navigator.product || 'Not supported',
+
+        // 106 - Product sub
+        productSub: navigator.productSub || 'Not supported',
+
+        // 107 - Vendor
+        vendor: navigator.vendor || 'Not supported',
+
+        // 108 - Vendor sub
+        vendorSub: navigator.vendorSub || 'Not supported',
+
+        // 109 - Navigator properties
+        navigatorProperties: Object.keys(navigator).length,
+
+        // 110 - Liste complète des langues préférées
+        languages: Array.from(navigator.languages || [navigator.language]),
+
+        // 111 - Content language
+        contentLanguage: navigator.language,
+
+        // 112 - Cookies enabled
+        cookiesEnabled: navigator.cookieEnabled,
+
+        // 113 - Platform
+        platform: navigator.platform,
+
+        // 114 - User agent
+        userAgent: navigator.userAgent,
+
     };
 
     window.__fpRaw = browserInfo;
@@ -1310,7 +1310,20 @@ draft: false
             banner.appendChild(bannerName);
             banner.appendChild(bannerValue);
 
-            // L'empreinte consolidée reste visible en haut de la liste
+            // Liste des attributs exclus du hash (affichés mais non pris en compte)
+            const excludedRow = document.createElement('div');
+            excludedRow.className = 'fp-row';
+            const exName = document.createElement('div');
+            exName.className = 'fp-name';
+            exName.textContent = '🚫 ' + volatileKeys.size + ' attributs exclus de l\'empreinte (volatils)';
+            const exValue = document.createElement('pre');
+            exValue.className = 'fp-value';
+            exValue.textContent = resolved.filter(([k]) => volatileKeys.has(k)).map(([k]) => k).join(', ');
+            excludedRow.appendChild(exName);
+            excludedRow.appendChild(exValue);
+
+            // L'empreinte consolidée et la liste d'exclusion restent en haut de la liste
+            container.prepend(excludedRow);
             container.prepend(banner);
 
             try {
