@@ -1040,7 +1040,7 @@ draft: false
                 }
             }
             return out;
-        })()
+        })(),
         // 82 - Permissions Policy : features autorisées pour ce document (Chrome)
         featurePolicy: (() => {
             try {
