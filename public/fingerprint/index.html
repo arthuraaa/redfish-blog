@@ -1337,138 +1337,148 @@
 
 
 </script>
-<pre><code>(function() {
-    async function safeStringify(value) {
-        try {
-            const s = JSON.stringify(value, null, 2);
-            return s === undefined ? String(value) : s;
-        } catch (e) {
-            try { return String(value); } catch (e2) { return '[Unserializable]'; }
-        }
-    }
-
-    async function renderFingerprint() {
-        const status = document.getElementById('fp-status');
-        const container = document.getElementById('fp-results');
-        if (!status || !container) return;
-        status.textContent = '⏳ Collecte des données...';
-        container.innerHTML = '';
-
-        const data = window.__fpRaw;
-        if (!data) {
-            status.textContent = '❌ Le script de collecte n\'a pas pu s\'exécuter sur ce navigateur (voir console).';
-            return;
-        }
-        const rows = [];
-        for (const [key, value] of Object.entries(data)) {
-            if (key === 'jsAttributes') {
-                for (const [k2, v2] of Object.entries(value)) rows.push([k2, v2]);
-            } else {
-                rows.push([key, value]);
+<script>
+    (function() {
+        async function safeStringify(value) {
+            try {
+                const s = JSON.stringify(value, null, 2);
+                return s === undefined ? String(value) : s;
+            } catch (e) {
+                try { return String(value); } catch (e2) { return '[Unserializable]'; }
             }
         }
 
-        const withTimeout = (promise, ms, label) =&gt; Promise.race([
-            promise,
-            new Promise(res =&gt; setTimeout(() =&gt; res('⏱️ timeout (' + label + ')'), ms))
-        ]);
+        async function renderFingerprint() {
+            const status = document.getElementById('fp-status');
+            const container = document.getElementById('fp-results');
+            if (!status || !container) return;
+            status.textContent = '⏳ Collecte des données...';
+            container.innerHTML = '';
 
-        const resolved = await Promise.all(rows.map(async ([key, value]) =&gt; {
-            if (value &amp;&amp; typeof value.then === 'function') {
-                try {
-                    value = await withTimeout(Promise.resolve(value), 6000, key);
-                } catch (e) {
-                    value = 'Error: ' + e.message;
+            const data = window.__fpRaw;
+            if (!data) {
+                status.textContent = '❌ Le script de collecte n\'a pas pu s\'exécuter sur ce navigateur (voir console).';
+                return;
+            }
+            const rows = [];
+            for (const [key, value] of Object.entries(data)) {
+                if (key === 'jsAttributes') {
+                    for (const [k2, v2] of Object.entries(value)) rows.push([k2, v2]);
+                } else {
+                    rows.push([key, value]);
                 }
             }
-            return [key, value];
-        }));
 
-        const full = {};
+            const withTimeout = (promise, ms, label) => Promise.race([
+                promise,
+                new Promise(res => setTimeout(() => res('⏱️ timeout (' + label + ')'), ms))
+            ]);
 
-        // Identifiant consolidé : hash FNV-1a de toutes les valeurs collectées
-        const jsonAll = JSON.stringify(resolved.map(([k, v]) =&gt; [k, v === undefined ? null : v]));
-        let h = 0x811c9dc5;
-        for (let i = 0; i &lt; jsonAll.length; i++) {
-            h ^= jsonAll.charCodeAt(i);
-            h = Math.imul(h, 0x01000193);
-        }
-        const fpId = ('00000000' + (h &gt;&gt;&gt; 0).toString(16)).slice(-8);
-        let previousId = null;
-        try {
-            previousId = localStorage.getItem('__fp_demo_id');
-            localStorage.setItem('__fp_demo_id', fpId);
-        } catch (e) {}
+            const total = rows.length;
+            const full = {};
+            let done = 0;
 
-        const banner = document.createElement('div');
-        banner.className = 'fp-row';
-        const bannerName = document.createElement('div');
-        bannerName.className = 'fp-name';
-        bannerName.textContent = '🆔 EMPREINTE CONSOLIDÉE (hash de tous les attributs)';
-        const bannerValue = document.createElement('pre');
-        bannerValue.className = 'fp-value';
-        bannerValue.textContent = fpId + (previousId
-            ? (previousId === fpId
-                ? '  — 🔁 visiteur reconnu (déjà vu lors d\'une visite précédente : ' + previousId + ')'
-                : '  — config modifiée depuis la dernière visite (ID précédent : ' + previousId + ')')
-            : '  — première visite de votre part');
-        banner.appendChild(bannerName);
-        banner.appendChild(bannerValue);
+            // Lancement de tous les tests en parallèle ; chaque résultat s'affiche dès qu'il est prêt
+            const rowPromises = rows.map(async ([key, value]) => {
+                if (value && typeof value.then === 'function') {
+                    try {
+                        value = await withTimeout(Promise.resolve(value), 6000, key);
+                    } catch (e) {
+                        value = 'Error: ' + e.message;
+                    }
+                }
+                return [key, value];
+            });
 
-        const fragments = document.createDocumentFragment();
-        for (const [key, value] of resolved) {
-            full[key] = value;
-            const text = await safeStringify(value);
-            const display = text.length &gt; 600
-                ? text.slice(0, 600) + '\n… (' + text.length + ' caractères — voir Copy JSON)'
-                : text;
-            const row = document.createElement('div');
-            row.className = 'fp-row';
-            const name = document.createElement('div');
-            name.className = 'fp-name';
-            name.textContent = key;
-            const pre = document.createElement('pre');
-            pre.className = 'fp-value';
-            pre.textContent = display;
-            row.appendChild(name);
-            row.appendChild(pre);
-            fragments.appendChild(row);
-        }
-        container.appendChild(banner);
-        container.appendChild(fragments);
+            const renderOne = async ([key, value]) => {
+                full[key] = value;
+                const text = await safeStringify(value);
+                const display = text.length > 600
+                    ? text.slice(0, 600) + '\n… (' + text.length + ' caractères — voir Copy JSON)'
+                    : text;
+                const row = document.createElement('div');
+                row.className = 'fp-row';
+                const name = document.createElement('div');
+                name.className = 'fp-name';
+                name.textContent = key;
+                const pre = document.createElement('pre');
+                pre.className = 'fp-value';
+                pre.textContent = display;
+                row.appendChild(name);
+                row.appendChild(pre);
+                container.appendChild(row);
+                done++;
+                status.textContent = '⏳ ' + done + '/' + total + ' attributs collectés...';
+            };
 
-        try {
-            window.__fpJson = JSON.stringify(full, (k, v) =&gt; v === undefined ? 'undefined' : v, 2);
-        } catch (e) {
-            let parts = [];
-            for (const [key, value] of resolved) {
-                parts.push('&quot;' + key + '&quot;: ' + await safeStringify(value));
+            const rendered = rowPromises.map(p => p.then(renderOne).catch(() => {}));
+            await Promise.all(rendered);
+
+            const resolved = await Promise.all(rowPromises);
+
+            // Identifiant consolidé : hash FNV-1a de toutes les valeurs collectées
+            const jsonAll = JSON.stringify(resolved.map(([k, v]) => [k, v === undefined ? null : v]));
+            let h = 0x811c9dc5;
+            for (let i = 0; i < jsonAll.length; i++) {
+                h ^= jsonAll.charCodeAt(i);
+                h = Math.imul(h, 0x01000193);
             }
-            window.__fpJson = '{\n' + parts.join(',\n') + '\n}';
+            const fpId = ('00000000' + (h >>> 0).toString(16)).slice(-8);
+            let previousId = null;
+            try {
+                previousId = localStorage.getItem('__fp_demo_id');
+                localStorage.setItem('__fp_demo_id', fpId);
+            } catch (e) {}
+
+            const banner = document.createElement('div');
+            banner.className = 'fp-row';
+            const bannerName = document.createElement('div');
+            bannerName.className = 'fp-name';
+            bannerName.textContent = '🆔 EMPREINTE CONSOLIDÉE (hash de tous les attributs)';
+            const bannerValue = document.createElement('pre');
+            bannerValue.className = 'fp-value';
+            bannerValue.textContent = fpId + (previousId
+                ? (previousId === fpId
+                    ? '  — 🔁 visiteur reconnu (déjà vu lors d\'une visite précédente : ' + previousId + ')'
+                    : '  — config modifiée depuis la dernière visite (ID précédent : ' + previousId + ')')
+                : '  — première visite de votre part');
+            banner.appendChild(bannerName);
+            banner.appendChild(bannerValue);
+
+            // L'empreinte consolidée reste visible en haut de la liste
+            container.prepend(banner);
+
+            try {
+                window.__fpJson = JSON.stringify(full, (k, v) => v === undefined ? 'undefined' : v, 2);
+            } catch (e) {
+                let parts = [];
+                for (const [key, value] of resolved) {
+                    parts.push('"' + key + '": ' + await safeStringify(value));
+                }
+                window.__fpJson = '{\n' + parts.join(',\n') + '\n}';
+            }
+            status.textContent = '✅ ' + resolved.length + ' attributs collectés — voilà exactement ce qu\'un traqueur peut voir sur vous.';
         }
-        status.textContent = '✅ ' + resolved.length + ' attributs collectés — voilà exactement ce qu\'un traqueur peut voir sur vous.';
-    }
 
-    window.runFingerprint = renderFingerprint;
+        window.runFingerprint = renderFingerprint;
 
-    window.copyFingerprint = function() {
-        const btn = document.getElementById('fp-copy-btn');
-        navigator.clipboard.writeText(window.__fpJson || '').then(() =&gt; {
-            const originalText = btn.textContent;
-            btn.textContent = '✓ Copied!';
-            setTimeout(() =&gt; { btn.textContent = originalText; }, 2000);
-        }).catch(err =&gt; alert('Failed to copy: ' + err));
-    };
+        window.copyFingerprint = function() {
+            const btn = document.getElementById('fp-copy-btn');
+            navigator.clipboard.writeText(window.__fpJson || '').then(() => {
+                const originalText = btn.textContent;
+                btn.textContent = '✓ Copied!';
+                setTimeout(() => { btn.textContent = originalText; }, 2000);
+            }).catch(err => alert('Failed to copy: ' + err));
+        };
 
-    window.addEventListener('load', function() {
-        renderFingerprint().catch(function(e) {
-            const status = document.getElementById('fp-status');
-            if (status) status.textContent = '❌ Erreur pendant la collecte : ' + e.message;
+        window.addEventListener('load', function() {
+            renderFingerprint().catch(function(e) {
+                const status = document.getElementById('fp-status');
+                if (status) status.textContent = '❌ Erreur pendant la collecte : ' + e.message;
+            });
         });
-    });
-})();
-</code></pre>
-<p></script></p>
+    })();
+</script>
 <script>
     (function() {
         function addRow(container, name, value) {

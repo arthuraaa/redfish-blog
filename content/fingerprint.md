@@ -1187,6 +1187,8 @@ draft: false
 
 
 </script>
+
+<script>
     (function() {
         async function safeStringify(value) {
             try {
@@ -1223,7 +1225,12 @@ draft: false
                 new Promise(res => setTimeout(() => res('⏱️ timeout (' + label + ')'), ms))
             ]);
 
-            const resolved = await Promise.all(rows.map(async ([key, value]) => {
+            const total = rows.length;
+            const full = {};
+            let done = 0;
+
+            // Lancement de tous les tests en parallèle ; chaque résultat s'affiche dès qu'il est prêt
+            const rowPromises = rows.map(async ([key, value]) => {
                 if (value && typeof value.then === 'function') {
                     try {
                         value = await withTimeout(Promise.resolve(value), 6000, key);
@@ -1232,9 +1239,33 @@ draft: false
                     }
                 }
                 return [key, value];
-            }));
+            });
 
-            const full = {};
+            const renderOne = async ([key, value]) => {
+                full[key] = value;
+                const text = await safeStringify(value);
+                const display = text.length > 600
+                    ? text.slice(0, 600) + '\n… (' + text.length + ' caractères — voir Copy JSON)'
+                    : text;
+                const row = document.createElement('div');
+                row.className = 'fp-row';
+                const name = document.createElement('div');
+                name.className = 'fp-name';
+                name.textContent = key;
+                const pre = document.createElement('pre');
+                pre.className = 'fp-value';
+                pre.textContent = display;
+                row.appendChild(name);
+                row.appendChild(pre);
+                container.appendChild(row);
+                done++;
+                status.textContent = '⏳ ' + done + '/' + total + ' attributs collectés...';
+            };
+
+            const rendered = rowPromises.map(p => p.then(renderOne).catch(() => {}));
+            await Promise.all(rendered);
+
+            const resolved = await Promise.all(rowPromises);
 
             // Identifiant consolidé : hash FNV-1a de toutes les valeurs collectées
             const jsonAll = JSON.stringify(resolved.map(([k, v]) => [k, v === undefined ? null : v]));
@@ -1265,27 +1296,8 @@ draft: false
             banner.appendChild(bannerName);
             banner.appendChild(bannerValue);
 
-            const fragments = document.createDocumentFragment();
-            for (const [key, value] of resolved) {
-                full[key] = value;
-                const text = await safeStringify(value);
-                const display = text.length > 600
-                    ? text.slice(0, 600) + '\n… (' + text.length + ' caractères — voir Copy JSON)'
-                    : text;
-                const row = document.createElement('div');
-                row.className = 'fp-row';
-                const name = document.createElement('div');
-                name.className = 'fp-name';
-                name.textContent = key;
-                const pre = document.createElement('pre');
-                pre.className = 'fp-value';
-                pre.textContent = display;
-                row.appendChild(name);
-                row.appendChild(pre);
-                fragments.appendChild(row);
-            }
-            container.appendChild(banner);
-            container.appendChild(fragments);
+            // L'empreinte consolidée reste visible en haut de la liste
+            container.prepend(banner);
 
             try {
                 window.__fpJson = JSON.stringify(full, (k, v) => v === undefined ? 'undefined' : v, 2);
