@@ -837,23 +837,34 @@ draft: false
         // 88 - Résolution des timers (précision variable anti-fingerprinting / rAF period)
         timerResolution: (() => {
             return new Promise(resolve => {
+                let settled = false;
                 const deltas = [];
                 let last = performance.now();
+                const finish = () => {
+                    if (settled) return;
+                    settled = true;
+                    if (!deltas.length) {
+                        resolve('rAF indisponible');
+                        return;
+                    }
+                    const positive = deltas.filter(d => d > 0);
+                    resolve({
+                        rafPeriod: +(positive.reduce((a, b) => a + b, 0) / positive.length).toFixed(2),
+                        minDelta: +Math.min(...positive).toFixed(4)
+                    });
+                };
                 const tick = () => {
                     const now = performance.now();
                     deltas.push(now - last);
                     last = now;
-                    if (deltas.length < 50) {
+                    if (deltas.length < 50 && !settled) {
                         requestAnimationFrame(tick);
                     } else {
-                        const positive = deltas.filter(d => d > 0);
-                        resolve({
-                            rafPeriod: +(positive.reduce((a, b) => a + b, 0) / positive.length).toFixed(2),
-                            minDelta: +Math.min(...positive).toFixed(4)
-                        });
+                        finish();
                     }
                 };
                 requestAnimationFrame(tick);
+                setTimeout(finish, 2000);
             });
         })(),
 
@@ -1120,12 +1131,15 @@ draft: false
             };
             const results = {};
             for (const [name, url] of Object.entries(targets)) {
+                const ctrl = new AbortController();
+                const timer = setTimeout(() => ctrl.abort(), 3000);
                 try {
-                    await fetch(url, { mode: 'no-cors', cache: 'no-store' });
+                    await fetch(url, { mode: 'no-cors', cache: 'no-store', signal: ctrl.signal });
                     results[name] = 'accessible (non bloqué)';
                 } catch (e) {
                     results[name] = 'bloqué';
                 }
+                clearTimeout(timer);
             }
             return results;
         })(),
@@ -1190,7 +1204,11 @@ draft: false
             status.textContent = '⏳ Collecte des données...';
             container.innerHTML = '';
 
-            const data = window.__fpRaw || {};
+            const data = window.__fpRaw;
+            if (!data) {
+                status.textContent = '❌ Le script de collecte n\'a pas pu s\'exécuter sur ce navigateur (voir console).';
+                return;
+            }
             const rows = [];
             for (const [key, value] of Object.entries(data)) {
                 if (key === 'jsAttributes') {
@@ -1200,9 +1218,18 @@ draft: false
                 }
             }
 
+            const withTimeout = (promise, ms, label) => Promise.race([
+                promise,
+                new Promise(res => setTimeout(() => res('⏱️ timeout (' + label + ')'), ms))
+            ]);
+
             const resolved = await Promise.all(rows.map(async ([key, value]) => {
                 if (value && typeof value.then === 'function') {
-                    try { value = await value; } catch (e) { value = 'Error: ' + e.message; }
+                    try {
+                        value = await withTimeout(Promise.resolve(value), 6000, key);
+                    } catch (e) {
+                        value = 'Error: ' + e.message;
+                    }
                 }
                 return [key, value];
             }));
@@ -1260,7 +1287,15 @@ draft: false
             container.appendChild(banner);
             container.appendChild(fragments);
 
-            window.__fpJson = JSON.stringify(full, (k, v) => v === undefined ? 'undefined' : v, 2);
+            try {
+                window.__fpJson = JSON.stringify(full, (k, v) => v === undefined ? 'undefined' : v, 2);
+            } catch (e) {
+                let parts = [];
+                for (const [key, value] of resolved) {
+                    parts.push('"' + key + '": ' + await safeStringify(value));
+                }
+                window.__fpJson = '{\n' + parts.join(',\n') + '\n}';
+            }
             status.textContent = '✅ ' + resolved.length + ' attributs collectés — voilà exactement ce qu\'un traqueur peut voir sur vous.';
         }
 
@@ -1275,7 +1310,12 @@ draft: false
             }).catch(err => alert('Failed to copy: ' + err));
         };
 
-        window.addEventListener('load', renderFingerprint);
+        window.addEventListener('load', function() {
+            renderFingerprint().catch(function(e) {
+                const status = document.getElementById('fp-status');
+                if (status) status.textContent = '❌ Erreur pendant la collecte : ' + e.message;
+            });
+        });
     })();
 </script>
 
