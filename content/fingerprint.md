@@ -19,15 +19,13 @@ draft: false
 </style>
 
 <div class="fp-tool">
-<p class="fp-info">Informations déduites de votre adresse IP publique (requête vers un service de géolocalisation IP) et, si vous l'autorisez, de la géolocalisation GPS de votre appareil. C'est ce qu'un site quelconque peut déduire sur vous sans aucun script intrusif.</p>
 <div id="geo-status">⏳ Résolution de l'IP publique...</div>
 <div id="ip-results"></div>
-<button onclick="requestGps()">📍 Révéler ma position GPS précise</button>
+<button onclick="requestGps()">📍 Ma position GPS</button>
 <div id="gps-results"></div>
 </div>
 
 <div class="fp-tool">
-    <p class="fp-info">Comme <b>AmIunique</b> : cette page collecte les attributs que votre navigateur expose volontairement ou non (canvas, WebGL, audio, polices, capteurs...), classés du plus surprenant au plus classique. Aucune donnée n'est envoyée sur un serveur : tout reste dans votre navigateur, vous pouvez le vérifier dans le code source.</p>
     <button onclick="runFingerprint()">🔄 Re-run</button>
     <button class="fp-copy-btn" id="fp-copy-btn" onclick="copyFingerprint()">📋 Copy JSON</button>
     <div id="fp-status">⏳ Collecte des données...</div>
@@ -1208,7 +1206,7 @@ draft: false
 
             const data = window.__fpRaw;
             if (!data) {
-                status.textContent = '❌ Le script de collecte n\'a pas pu s\'exécuter sur ce navigateur (voir console).';
+                status.textContent = '❌ Collecte impossible (voir console)';
                 return;
             }
             const rows = [];
@@ -1301,12 +1299,12 @@ draft: false
             const bannerValue = document.createElement('pre');
             bannerValue.className = 'fp-value';
             bannerValue.textContent = fpId
-                + '  — ' + stableRows.length + '/' + resolved.length + ' attributs utilisés (exclut les attributs volatils : batterie, réseau, fenêtre, timing...)'
+                + '  — ' + stableRows.length + '/' + resolved.length + ' attributs stables'
                 + (previousId
                     ? (previousId === fpId
-                        ? '\n🔁 visiteur reconnu (déjà vu lors d\'une visite précédente : ' + previousId + ')'
-                        : '\nconfig modifiée depuis la dernière visite (ID précédent : ' + previousId + ')')
-                    : '\npremière visite de votre part');
+                        ? '\n🔁 visiteur reconnu (' + previousId + ')'
+                        : '\nconfig modifiée (avant : ' + previousId + ')')
+                    : '\npremière visite');
             banner.appendChild(bannerName);
             banner.appendChild(bannerValue);
 
@@ -1335,7 +1333,7 @@ draft: false
                 }
                 window.__fpJson = '{\n' + parts.join(',\n') + '\n}';
             }
-            status.textContent = '✅ ' + resolved.length + ' attributs collectés — voilà exactement ce qu\'un traqueur peut voir sur vous.';
+            status.textContent = '✅ ' + resolved.length + ' attributs collectés';
         }
 
         window.runFingerprint = renderFingerprint;
@@ -1454,7 +1452,7 @@ draft: false
             addRow(container, 'Coordonnées IP', info.lat + ', ' + info.lon + '  →  ' + maps);
             addRow(container, 'FAI / Organisation', (info.isp || '?') + (info.asn ? ' — AS' + info.asn : ''));
             addRow(container, 'Fuseau horaire IP vs navigateur', info.timezone + ' vs ' + browserTz + (tzMatch ? '  ✅ cohérent' : '  ⚠️ incohérent (VPN / proxy possible)'));
-            status.textContent = '✅ Localisation IP résolue. Cliquez pour comparer avec votre position GPS réelle.';
+            status.textContent = '✅ Localisation IP résolue';
         }
 
         window.requestGps = function() {
