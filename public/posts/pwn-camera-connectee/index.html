@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>
+  PWN d&#39;une caméra connectée · RedFish
+</title>
+  <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
+
+
+
+
+<meta name="author" content="RedFish">
+<meta name="description" content="Analyse et root d&#39;une caméra IP low-cost">
+<meta name="keywords" content="blog,cybersecurity,ctf,personal">
+
+
+
+	<meta name="twitter:card" content="summary">
+	<meta name="twitter:title" content="PWN d&#39;une caméra connectée">
+	<meta name="twitter:description" content="Analyse et root d&#39;une caméra IP low-cost">
+
+<meta property="og:url" content="http://www.axolol.fr/posts/pwn-camera-connectee/">
+	<meta property="og:site_name" content="RedFish">
+	<meta property="og:title" content="PWN d&#39;une caméra connectée">
+	<meta property="og:description" content="Analyse et root d&#39;une caméra IP low-cost">
+	<meta property="og:locale" content="en">
+	<meta property="og:type" content="article">
+		<meta property="article:section" content="posts">
+		<meta property="article:published_time" content="2026-10-02T00:00:00+02:00">
+		<meta property="article:modified_time" content="2026-10-02T00:00:00+02:00">
+		<meta property="article:tag" content="Hardware">
+		<meta property="article:tag" content="Hacking">
+		<meta property="article:tag" content="Firmware">
+		<meta property="article:tag" content="Squashfs">
+
+
+
+
+<link rel="canonical" href="http://www.axolol.fr/posts/pwn-camera-connectee/">
+
+
+<link rel="preload" href="/fonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
+
+
+  
+  
+  <link rel="stylesheet" href="/css/coder.min.022594d625780e2edf64581b893d32cb35c11de5d88953ea4ad3c2e45451e214.css" integrity="sha256-AiWU1iV4Di7fZFgbiT0yyzXBHeXYiVPqStPC5FRR4hQ=" crossorigin="anonymous" media="screen" />
+
+
+
+
+
+
+  
+    
+    
+    <link rel="stylesheet" href="/css/coder-dark.min.ad48f476275974885bdc03d5251e3cdbe1678c54a63ff772376b0ed2adc468dd.css" integrity="sha256-rUj0didZdIhb3APVJR482&#43;FnjFSmP/dyN2sO0q3EaN0=" crossorigin="anonymous" media="screen" />
+  
+
+
+
+ 
+  
+    
+    <link rel="stylesheet" href="/css/custom.min.2803245832877bb7ca208c9e145ce41e2279c9534bf142e70b8ae9fa98ce1851.css" integrity="sha256-KAMkWDKHe7fKIIyeFFzkHiJ5yVNL8ULnC4rp&#43;pjOGFE=" crossorigin="anonymous" media="screen" />
+  
+
+
+
+
+
+<link rel="icon" type="image/svg+xml" href="/img/favicon.svg" sizes="any">
+<link rel="icon" type="image/png" href="/img/favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="/img/favicon-16x16.png" sizes="16x16">
+
+<link rel="apple-touch-icon" href="/images/apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+
+<link rel="manifest" href="/site.webmanifest">
+<link rel="mask-icon" href="/images/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+
+
+</head>
+
+
+
+
+
+
+<body class="preload-transitions colorscheme-auto">
+  
+<div class="float-container">
+    <a id="dark-mode-toggle" class="colorscheme-toggle">
+        <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+    </a>
+</div>
+
+
+  <main class="wrapper">
+    <nav class="navigation">
+  <section class="container">
+    
+    <a class="navigation-title" href="http://www.axolol.fr/">
+      RedFish
+    </a>
+    
+    
+      <input type="checkbox" id="menu-toggle" />
+      <label class="menu-button float-right" for="menu-toggle">
+        <i class="fa-solid fa-bars fa-fw" aria-hidden="true"></i>
+      </label>
+      <ul class="navigation-list">
+        
+          
+            <li class="navigation-item">
+              <a class="navigation-link " href="/posts/">Blog</a>
+            </li>
+          
+            <li class="navigation-item">
+              <a class="navigation-link " href="/about/">About</a>
+            </li>
+          
+            <li class="navigation-item">
+              <a class="navigation-link " href="/rs/">Reverse Shell</a>
+            </li>
+          
+        
+        
+      </ul>
+    
+  </section>
+</nav>
+
+
+    <div class="content">
+      
+  <section class="container post">
+    <article>
+      <header>
+        <div class="post-title">
+          <h1 class="title">
+            <a class="title-link" href="http://www.axolol.fr/posts/pwn-camera-connectee/">
+              PWN d&#39;une caméra connectée
+            </a>
+          </h1>
+        </div>
+        <div class="post-meta">
+          <div class="date">
+            <span class="posted-on">
+              <i class="fa-solid fa-calendar" aria-hidden="true"></i>
+              <time datetime="2026-10-02T00:00:00&#43;02:00">
+                October 2, 2026
+              </time>
+            </span>
+            <span class="reading-time">
+              <i class="fa-solid fa-clock" aria-hidden="true"></i>
+              11-minute read
+            </span>
+          </div>
+          <div class="authors">
+  <i class="fa-solid fa-user" aria-hidden="true"></i>
+    <a href="/authors/redfish/">RedFish</a></div>
+
+          <div class="categories">
+  <i class="fa-solid fa-folder" aria-hidden="true"></i>
+    <a href="/categories/writeup/">Writeup</a></div>
+
+          <div class="tags">
+  <i class="fa-solid fa-tag" aria-hidden="true"></i>
+    <span class="tag">
+      <a href="/tags/hardware/">Hardware</a>
+    </span>
+      <span class="separator">•</span>
+    <span class="tag">
+      <a href="/tags/hacking/">Hacking</a>
+    </span>
+      <span class="separator">•</span>
+    <span class="tag">
+      <a href="/tags/firmware/">Firmware</a>
+    </span>
+      <span class="separator">•</span>
+    <span class="tag">
+      <a href="/tags/squashfs/">Squashfs</a>
+    </span></div>
+
+        </div>
+      </header>
+
+      <div class="post-content">
+        
+        <h3 id="avant-propos">
+  <strong>Avant-propos</strong>
+  <a class="heading-link" href="#avant-propos">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<p>Après m&rsquo;être attaqué à une sonnette connectée, j&rsquo;ai décidé de récidiver sur une <strong>caméra IP low-cost</strong> achetée quelques euros. L&rsquo;objectif était simple : obtenir un accès shell sur l&rsquo;appareil.</p>
+<p><em><strong>Ce rapport est avant tout un journal d&rsquo;expérimentation avec ses réussites et ses ratés. Il existe sûrement des méthodes plus optimisées pour arriver au même résultat, mais l&rsquo;essentiel ici était d&rsquo;apprendre.</strong></em></p>
+<h3 id="recherche-dun-port-série-uart">
+  Recherche d&rsquo;un port série (UART)
+  <a class="heading-link" href="#recherche-dun-port-s%c3%a9rie-uart">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<p>Comme pour la sonnette, le réflexe naturel est de chercher des pins d&rsquo;interface série (UART) sur la carte mère de la caméra, afin d&rsquo;obtenir un accès direct au shell.</p>
+<p>Après inspection visuelle de la carte et tests au multimètre : rien. Aucun pin UART exploitable n&rsquo;a été trouvé sur ce modèle&hellip;</p>
+<p>Il va donc falloir trouver une autre porte d&rsquo;entrée.</p>
+<h3 id="dump-du-firmware">
+  Dump du firmware
+  <a class="heading-link" href="#dump-du-firmware">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<p>Nouvelles approche : on va dumper le firmware de la caméra et essayer de le modifier pour y injecter un accès shell.</p>
+<p>Pour ce faire, on se connecte à la puce mémoire flash à l&rsquo;aide d&rsquo;un programmateur <strong>XGecu T56</strong>, puis on utilise le logiciel <strong>Xgpro</strong> pour effectuer un &ldquo;Read&rdquo; complet de la puce. Cela permet de récupérer l&rsquo;image binaire complète du firmware.</p>
+<p><img src="/images/camera/xgpro_read.png" alt=""></p>
+<p>Ici, on arrive bien à dumper le firmware de la caméra. C&rsquo;est un fichier binaire difficilement exploitable tel quel, mais on va pouvoir le manipuler.</p>
+<h4 id="tentative-1--modifier-directement-le-firmware">
+  Tentative 1 : modifier directement le firmware
+  <a class="heading-link" href="#tentative-1--modifier-directement-le-firmware">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h4>
+<p>Ma première idée a été de chercher directement dans le firmware un script qui serait lancé au démarrage et de l&rsquo;éditer afin d&rsquo;y ajouter un reverse shell.</p>
+<p>Le problème majeur ici, c&rsquo;est qu&rsquo;il faut absolument éviter de modifier la taille du firmware, sous peine de casser sa structure interne ou les vérifications d&rsquo;intégrité.</p>
+<p>Pour contourner cette contrainte, il fallait trouver une partie du code existant que l&rsquo;on pouvait remplacer par notre payload. C&rsquo;est possible par exemple dans un script shell contenant des commentaires : on peut raccourcir un commentaire et insérer notre commande malveillante à la place.</p>
+<p>En fouillant le dump, j&rsquo;ai identifié un script manifestement exécuté au boot de la caméra : on y voit notamment le montage du &ldquo;usr file system&rdquo;.</p>
+<p><img src="/images/camera/firmware_boot_script.png" alt=""></p>
+<p>Ce script contient des commentaires, parfait pour y dissimuler le payload.</p>
+<p>Le principe tient en une ligne : on remplace une partie d&rsquo;un commentaire existant par notre commande, suivie d&rsquo;un <code>#</code> qui re-commente la fin de la ligne. Le nombre de caractères reste identique, donc la taille du firmware aussi :</p>
+<div class="highlight"><pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"># AVANT — commentaire d&#39;origine</span>
+</span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"># mount usr file system --------------------</span>
+</span></span><span style="display:flex;"><span>/bin/mount -t squashfs /dev/mtdblock3 /mnt/usr
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"># APRÈS — même taille exactement, le payload se cache dans le commentaire</span>
+</span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"># mount usr file system echo hello#---------</span>
+</span></span><span style="display:flex;"><span>/bin/mount -t squashfs /dev/mtdblock3 /mnt/usr
+</span></span></code></pre></div><p>Pour valider l&rsquo;idée, j&rsquo;ai d&rsquo;abord remplacé le début d&rsquo;un commentaire par une simple commande <code>echo hello#</code> (le <code>#</code> permettant de commenter la suite de la ligne).</p>
+<p><img src="/images/camera/firmware_patch_hello.png" alt=""></p>
+<p>Cependant, après réécriture du firmware sur la puce et redémarrage : la caméra refuse de booter.</p>
+<p>Il y a donc visiblement une vérification d&rsquo;intégrité (checksum, signature ou hash) qui empêche toute modification directe du firmware. Retour à la case départ&hellip;</p>
+<h4 id="tentative-2--modifier-le-squashfs-et-reconstruire-le-firmware">
+  Tentative 2 : modifier le SquashFS et reconstruire le firmware
+  <a class="heading-link" href="#tentative-2--modifier-le-squashfs-et-reconstruire-le-firmware">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h4>
+<p>Une autre solution consiste à extraire complètement le contenu du firmware, modifier les fichiers qui nous intéressent, puis <strong>repacker</strong> le tout avant de le réinjecter dans la puce.</p>
+<p>En effet, sur ce type de caméra, l&rsquo;intégralité du système Linux embarqué (scripts de démarrage, binaires, configurations, etc.) est stockée dans une partition compressée au format <strong>SquashFS</strong>. Ce SquashFS contient tout le root filesystem : on y retrouve par exemple <code>/etc</code>, <code>/bin</code>, <code>/usr</code>, ainsi que les scripts d&rsquo;initialisation exécutés au démarrage.</p>
+<p>Voici comment ça fonctionne concrètement :</p>
+<p><strong>1️⃣ Extraction du SquashFS :</strong>
+On utilise l&rsquo;outil <code>binwalk</code> pour analyser le firmware. Binwalk est capable de repérer les signatures connues (comme celles de SquashFS) et d&rsquo;extraire automatiquement le contenu du système de fichiers compressé.</p>
+<p><img src="/images/camera/binwalk_squashfs_offset.png" alt=""></p>
+<p>On observe que le firmware contient plusieurs partitions, dont un SquashFS à l&rsquo;offset <code>2490368</code> (0x260000). C&rsquo;est cette valeur qui nous servira pour la réinjection.</p>
+<p><strong>2️⃣ Modification :</strong>
+Une fois le système de fichiers extrait, on peut naviguer dedans comme dans n&rsquo;importe quel Linux : éditer des scripts (<code>/etc/init.d/</code> ou <code>/etc/rcS</code>, etc.), remplacer des binaires ou ajouter des fichiers (comme un script de reverse shell par exemple).</p>
+<p><strong>3️⃣ Repack / reconstruction :</strong>
+Après modification, il faut reconstruire le SquashFS (en gardant le même format et la même taille globale si possible) avec <code>mksquashfs</code>. Ensuite, on réinjecte cette nouvelle image SquashFS exactement à l&rsquo;offset d&rsquo;origine dans le firmware (grâce à <code>dd</code>), pour reconstruire un firmware complet prêt à être flashé de nouveau sur la caméra.</p>
+<p><img src="/images/camera/firmware_repack.svg" alt=""></p>
+<p>⚙️ Le script suivant permet d&rsquo;automatiser toutes ces étapes (merci ChatGPT !) :</p>
+<ul>
+<li><code>--extract</code> : extrait et décompresse le SquashFS</li>
+<li><code>--rebuild</code> : reconstruit le SquashFS modifié et le replace dans le firmware</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#8b949e;font-weight:bold;font-style:italic">#!/bin/bash
+</span></span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#79c0ff">FIRMWARE</span><span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#a5d6ff">&#34;W25Q64BV_test_reprise.BIN&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#79c0ff">OUTPUT</span><span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#a5d6ff">&#34;new-firmware.bin&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#79c0ff">SQUASHFS_OFFSET</span><span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#a5d6ff">2490368</span>
+</span></span><span style="display:flex;"><span><span style="color:#79c0ff">EXTRACTED_DIR</span><span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#a5d6ff">&#34;_</span><span style="color:#a5d6ff">${</span><span style="color:#79c0ff">FIRMWARE</span><span style="color:#a5d6ff">}</span><span style="color:#a5d6ff">.extracted&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#79c0ff">SQUASHFS_IMG</span><span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#a5d6ff">&#34;new-squashfs.img&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>check_deps<span style="color:#ff7b72;font-weight:bold">()</span> <span style="color:#ff7b72;font-weight:bold">{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#ff7b72">for</span> cmd in binwalk mksquashfs truncate stat dd; <span style="color:#ff7b72">do</span>
+</span></span><span style="display:flex;"><span>        command -v <span style="color:#79c0ff">$cmd</span> &gt;/dev/null 2&gt;&amp;<span style="color:#a5d6ff">1</span> <span style="color:#ff7b72;font-weight:bold">||</span> <span style="color:#ff7b72;font-weight:bold">{</span>
+</span></span><span style="display:flex;"><span>            echo <span style="color:#a5d6ff">&#34;Erreur : </span><span style="color:#79c0ff">$cmd</span><span style="color:#a5d6ff"> non installé. Installez-le avec &#39;sudo apt install </span><span style="color:#79c0ff">$cmd</span><span style="color:#a5d6ff">&#39;.&#34;</span>
+</span></span><span style="display:flex;"><span>            exit <span style="color:#a5d6ff">1</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#ff7b72;font-weight:bold">}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#ff7b72">done</span>
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72;font-weight:bold">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>extract_firmware<span style="color:#ff7b72;font-weight:bold">()</span> <span style="color:#ff7b72;font-weight:bold">{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#ff7b72;font-weight:bold">[</span> ! -f <span style="color:#a5d6ff">&#34;</span><span style="color:#79c0ff">$FIRMWARE</span><span style="color:#a5d6ff">&#34;</span> <span style="color:#ff7b72;font-weight:bold">]</span> <span style="color:#ff7b72;font-weight:bold">&amp;&amp;</span> <span style="color:#ff7b72;font-weight:bold">{</span> echo <span style="color:#a5d6ff">&#34;Erreur : </span><span style="color:#79c0ff">$FIRMWARE</span><span style="color:#a5d6ff"> introuvable.&#34;</span>; exit 1; <span style="color:#ff7b72;font-weight:bold">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    echo <span style="color:#a5d6ff">&#34;📤 Extraction de </span><span style="color:#79c0ff">$FIRMWARE</span><span style="color:#a5d6ff">...&#34;</span>
+</span></span><span style="display:flex;"><span>    binwalk -e --run-as<span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#79c0ff">$USER</span> <span style="color:#a5d6ff">&#34;</span><span style="color:#79c0ff">$FIRMWARE</span><span style="color:#a5d6ff">&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#ff7b72;font-weight:bold">[</span> ! -d <span style="color:#a5d6ff">&#34;</span><span style="color:#79c0ff">$EXTRACTED_DIR</span><span style="color:#a5d6ff">&#34;</span> <span style="color:#ff7b72;font-weight:bold">]</span> <span style="color:#ff7b72;font-weight:bold">&amp;&amp;</span> <span style="color:#ff7b72;font-weight:bold">{</span> echo <span style="color:#a5d6ff">&#34;Erreur : Dossier </span><span style="color:#79c0ff">$EXTRACTED_DIR</span><span style="color:#a5d6ff"> non trouvé.&#34;</span>; exit 1; <span style="color:#ff7b72;font-weight:bold">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    echo <span style="color:#a5d6ff">&#34;✅ Extraction terminée. Modifiez les fichiers dans </span><span style="color:#79c0ff">$EXTRACTED_DIR</span><span style="color:#a5d6ff">/squashfs-root&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72;font-weight:bold">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>rebuild_firmware<span style="color:#ff7b72;font-weight:bold">()</span> <span style="color:#ff7b72;font-weight:bold">{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#79c0ff">ROOTFS_PATH</span><span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#a5d6ff">&#34;</span><span style="color:#79c0ff">$EXTRACTED_DIR</span><span style="color:#a5d6ff">/squashfs-root&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#ff7b72;font-weight:bold">[</span> ! -d <span style="color:#a5d6ff">&#34;</span><span style="color:#79c0ff">$ROOTFS_PATH</span><span style="color:#a5d6ff">&#34;</span> <span style="color:#ff7b72;font-weight:bold">]</span> <span style="color:#ff7b72;font-weight:bold">&amp;&amp;</span> <span style="color:#ff7b72;font-weight:bold">{</span> echo <span style="color:#a5d6ff">&#34;Erreur : </span><span style="color:#79c0ff">$ROOTFS_PATH</span><span style="color:#a5d6ff"> introuvable.&#34;</span>; exit 1; <span style="color:#ff7b72;font-weight:bold">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    echo <span style="color:#a5d6ff">&#34;🔧 Reconstruction SquashFS...&#34;</span>
+</span></span><span style="display:flex;"><span>    mksquashfs <span style="color:#a5d6ff">&#34;</span><span style="color:#79c0ff">$ROOTFS_PATH</span><span style="color:#a5d6ff">&#34;</span> <span style="color:#a5d6ff">&#34;</span><span style="color:#79c0ff">$SQUASHFS_IMG</span><span style="color:#a5d6ff">&#34;</span> -comp xz -noappend &gt; /dev/null <span style="color:#ff7b72;font-weight:bold">||</span> <span style="color:#ff7b72;font-weight:bold">{</span>
+</span></span><span style="display:flex;"><span>        echo <span style="color:#a5d6ff">&#34;Erreur lors de la reconstruction de SquashFS.&#34;</span>
+</span></span><span style="display:flex;"><span>        exit <span style="color:#a5d6ff">1</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#ff7b72;font-weight:bold">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    echo <span style="color:#a5d6ff">&#34;📦 Reconstruction du firmware final dans le dossier courant...&#34;</span>
+</span></span><span style="display:flex;"><span>    cp <span style="color:#a5d6ff">&#34;</span><span style="color:#79c0ff">$FIRMWARE</span><span style="color:#a5d6ff">&#34;</span> <span style="color:#a5d6ff">&#34;</span><span style="color:#79c0ff">$OUTPUT</span><span style="color:#a5d6ff">&#34;</span> <span style="color:#ff7b72;font-weight:bold">||</span> <span style="color:#ff7b72;font-weight:bold">{</span>
+</span></span><span style="display:flex;"><span>        echo <span style="color:#a5d6ff">&#34;Erreur : impossible de copier </span><span style="color:#79c0ff">$FIRMWARE</span><span style="color:#a5d6ff">.&#34;</span>
+</span></span><span style="display:flex;"><span>        exit <span style="color:#a5d6ff">1</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#ff7b72;font-weight:bold">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    dd <span style="color:#ff7b72">if</span><span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#a5d6ff">&#34;</span><span style="color:#79c0ff">$SQUASHFS_IMG</span><span style="color:#a5d6ff">&#34;</span> <span style="color:#79c0ff">of</span><span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#a5d6ff">&#34;</span><span style="color:#79c0ff">$OUTPUT</span><span style="color:#a5d6ff">&#34;</span> <span style="color:#79c0ff">bs</span><span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#a5d6ff">1</span> <span style="color:#79c0ff">seek</span><span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#79c0ff">$SQUASHFS_OFFSET</span> <span style="color:#79c0ff">conv</span><span style="color:#ff7b72;font-weight:bold">=</span>notrunc <span style="color:#79c0ff">status</span><span style="color:#ff7b72;font-weight:bold">=</span>none <span style="color:#ff7b72;font-weight:bold">||</span> <span style="color:#ff7b72;font-weight:bold">{</span>
+</span></span><span style="display:flex;"><span>        echo <span style="color:#a5d6ff">&#34;Erreur lors de l&#39;intégration de SquashFS.&#34;</span>
+</span></span><span style="display:flex;"><span>        exit <span style="color:#a5d6ff">1</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#ff7b72;font-weight:bold">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#79c0ff">ORIGINAL_SIZE</span><span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#ff7b72">$(</span>stat -c%s <span style="color:#a5d6ff">&#34;</span><span style="color:#79c0ff">$FIRMWARE</span><span style="color:#a5d6ff">&#34;</span><span style="color:#ff7b72">)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#79c0ff">FINAL_SIZE</span><span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#ff7b72">$(</span>stat -c%s <span style="color:#a5d6ff">&#34;</span><span style="color:#79c0ff">$OUTPUT</span><span style="color:#a5d6ff">&#34;</span><span style="color:#ff7b72">)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#ff7b72">if</span> <span style="color:#ff7b72;font-weight:bold">[</span> <span style="color:#a5d6ff">&#34;</span><span style="color:#79c0ff">$FINAL_SIZE</span><span style="color:#a5d6ff">&#34;</span> -lt <span style="color:#a5d6ff">&#34;</span><span style="color:#79c0ff">$ORIGINAL_SIZE</span><span style="color:#a5d6ff">&#34;</span> <span style="color:#ff7b72;font-weight:bold">]</span>; <span style="color:#ff7b72">then</span>
+</span></span><span style="display:flex;"><span>        echo <span style="color:#a5d6ff">&#34;📏 Padding : Ajustement à </span><span style="color:#79c0ff">$ORIGINAL_SIZE</span><span style="color:#a5d6ff"> octets...&#34;</span>
+</span></span><span style="display:flex;"><span>        truncate -s <span style="color:#a5d6ff">&#34;</span><span style="color:#79c0ff">$ORIGINAL_SIZE</span><span style="color:#a5d6ff">&#34;</span> <span style="color:#a5d6ff">&#34;</span><span style="color:#79c0ff">$OUTPUT</span><span style="color:#a5d6ff">&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#ff7b72">elif</span> <span style="color:#ff7b72;font-weight:bold">[</span> <span style="color:#a5d6ff">&#34;</span><span style="color:#79c0ff">$FINAL_SIZE</span><span style="color:#a5d6ff">&#34;</span> -gt <span style="color:#a5d6ff">&#34;</span><span style="color:#79c0ff">$ORIGINAL_SIZE</span><span style="color:#a5d6ff">&#34;</span> <span style="color:#ff7b72;font-weight:bold">]</span>; <span style="color:#ff7b72">then</span>
+</span></span><span style="display:flex;"><span>        echo <span style="color:#a5d6ff">&#34;⚠️ Erreur : Le firmware reconstruit dépasse la taille originale.&#34;</span>
+</span></span><span style="display:flex;"><span>        rm <span style="color:#a5d6ff">&#34;</span><span style="color:#79c0ff">$OUTPUT</span><span style="color:#a5d6ff">&#34;</span>
+</span></span><span style="display:flex;"><span>        exit <span style="color:#a5d6ff">1</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#ff7b72">fi</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    echo <span style="color:#a5d6ff">&#34;✅ Nouveau firmware généré : </span><span style="color:#79c0ff">$OUTPUT</span><span style="color:#a5d6ff"> (taille : </span><span style="color:#79c0ff">$ORIGINAL_SIZE</span><span style="color:#a5d6ff"> octets)&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72;font-weight:bold">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>usage<span style="color:#ff7b72;font-weight:bold">()</span> <span style="color:#ff7b72;font-weight:bold">{</span>
+</span></span><span style="display:flex;"><span>    echo <span style="color:#a5d6ff">&#34;Usage : </span><span style="color:#79c0ff">$0</span><span style="color:#a5d6ff"> [--extract | --rebuild]&#34;</span>
+</span></span><span style="display:flex;"><span>    exit <span style="color:#a5d6ff">1</span>
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72;font-weight:bold">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>check_deps
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72">case</span> <span style="color:#a5d6ff">&#34;</span><span style="color:#79c0ff">$1</span><span style="color:#a5d6ff">&#34;</span> in
+</span></span><span style="display:flex;"><span>    --extract<span style="color:#ff7b72;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>        extract_firmware
+</span></span><span style="display:flex;"><span>        ;;
+</span></span><span style="display:flex;"><span>    --rebuild<span style="color:#ff7b72;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>        rebuild_firmware
+</span></span><span style="display:flex;"><span>        ;;
+</span></span><span style="display:flex;"><span>    *<span style="color:#ff7b72;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>        usage
+</span></span><span style="display:flex;"><span>        ;;
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72">esac</span>
+</span></span></code></pre></div><p>L&rsquo;offset <code>SQUASHFS_OFFSET</code> est à récupérer grâce à <code>binwalk</code> sur le firmware d&rsquo;origine.</p>
+<p>Une fois tout le firmware décompressé, on a donc bien accès au filesystem de notre caméra.</p>
+<p><img src="/images/camera/squashfs_extract_rcs.png" alt=""></p>
+<p>Parmi les fichiers, on remarque que le script <code>init.d/rcS</code> comporte une ligne commentée :</p>
+<div class="highlight"><pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic">#telnetd &amp;</span>
+</span></span></code></pre></div><p>Cette ligne a sûrement été utilisée pour débugger la caméra en usine. On va essayer de décommenter cette ligne afin d&rsquo;avoir un serveur telnet qui tourne au démarrage de la caméra :</p>
+<div class="highlight"><pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-diff" data-lang="diff"><span style="display:flex;"><span><span style="color:#ffa198;background-color:#490202">-#telnetd &amp;
+</span></span></span><span style="display:flex;"><span><span style="color:#56d364;background-color:#0f5323">+telnetd &amp;
+</span></span></span></code></pre></div><p>Une fois le firmware reconstruit et reflashé sur la puce, <code>telnetd</code> écoutera donc dès le boot : c&rsquo;est notre <strong>premier moyen</strong> d&rsquo;obtenir un shell sur la caméra.</p>
+<p><em><strong>Remarque : la caméra ayant rendu l&rsquo;âme avant la fin du write-up, il manque quelques photos de cette partie&hellip; Heureusement, la suite nous offrira une bien meilleure piste !</strong></em></p>
+<h3 id="moyen-n2--get-a-shell-from-the-sdcard">
+  Moyen n°2 : get a shell from the sdcard
+  <a class="heading-link" href="#moyen-n2--get-a-shell-from-the-sdcard">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<p>Le reflashage du firmware fonctionne, mais il faut démonter la caméra et la brancher au programmateur à chaque fois. Autant dire que ce n&rsquo;est pas très pratique&hellip; Voyons donc un deuxième moyen, bien plus élégant : obtenir un shell <strong>uniquement en mettant du contenu sur la carte SD</strong>, sans interaction directe avec le système.</p>
+<p>Pour ce faire, on regarde quelles applications lisent et utilisent le contenu de la carte SD (&ldquo;sdcard&rdquo;). Un simple <code>grep -r -a 'sdcard'</code> dans le firmware nous donne déjà de bonnes pistes.</p>
+<p><img src="/images/camera/grep_sdcard_prerun.png" alt=""></p>
+<p>Parmi toutes les applications, le binaire <code>prerun</code> attire l&rsquo;attention. Son nom semble indiquer qu&rsquo;il doit être lancé au démarrage de la caméra.</p>
+<p>Ni une, ni deux, on passe le binaire dans <strong>Ghidra</strong>, pour un coup de reverse.</p>
+<h3 id="analyse-du-code">
+  Analyse du code
+  <a class="heading-link" href="#analyse-du-code">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<p>Dans la fonction main, une partie du code saute aux yeux :</p>
+<div class="highlight"><pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#d2a8ff;font-weight:bold">system</span>(<span style="color:#a5d6ff">&#34;/mnt/sdcard/auth_exshell.sh&#34;</span>);
+</span></span></code></pre></div><p><img src="/images/camera/ghidra_auth_exshell.png" alt=""></p>
+<p>Cela veut dire qu&rsquo;en passant certaines conditions, il est possible d&rsquo;exécuter automatiquement un script stocké sur la carte SD !</p>
+<p>Les conditions pour arriver au <code>system(&quot;/mnt/sdcard/auth_exshell.sh&quot;);</code> sont les suivantes :</p>
+<div class="highlight"><pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>undefined4 <span style="color:#d2a8ff;font-weight:bold">main</span>(<span style="color:#ff7b72">void</span>)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    ...
+</span></span><span style="display:flex;"><span>	local_14 <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#d2a8ff;font-weight:bold">access</span>(<span style="color:#a5d6ff">&#34;/mnt/sdcard/local_update.conf&#34;</span>,<span style="color:#a5d6ff">0</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#ff7b72">if</span> (local_14 <span style="color:#ff7b72;font-weight:bold">==</span> <span style="color:#a5d6ff">0</span>)
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>      local_c <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#d2a8ff;font-weight:bold">was_update_patch_had_already_used</span>(<span style="color:#a5d6ff">0</span>);
+</span></span><span style="display:flex;"><span>      <span style="color:#ff7b72">if</span> (local_c <span style="color:#ff7b72;font-weight:bold">==</span> <span style="color:#a5d6ff">0</span>)
+</span></span><span style="display:flex;"><span>      {
+</span></span><span style="display:flex;"><span>        local_14 <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#d2a8ff;font-weight:bold">local_updater</span>(<span style="color:#a5d6ff">1</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#ff7b72">if</span> (local_14 <span style="color:#ff7b72;font-weight:bold">!=</span> <span style="color:#a5d6ff">10</span>)
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>          ...
+</span></span><span style="display:flex;"><span>          local_c <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#d2a8ff;font-weight:bold">was_update_patch_had_already_used</span>(<span style="color:#a5d6ff">1</span>);
+</span></span><span style="display:flex;"><span>          ...
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>      }
+</span></span><span style="display:flex;"><span>      <span style="color:#ff7b72">else</span>
+</span></span><span style="display:flex;"><span>      {
+</span></span><span style="display:flex;"><span>        local_14 <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#d2a8ff;font-weight:bold">access</span>(<span style="color:#a5d6ff">&#34;/mnt/sdcard/auth_exshell.sh&#34;</span>,<span style="color:#a5d6ff">0</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#ff7b72">if</span> (local_14 <span style="color:#ff7b72;font-weight:bold">==</span> <span style="color:#a5d6ff">0</span>)
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>          <span style="color:#d2a8ff;font-weight:bold">system</span>(<span style="color:#a5d6ff">&#34;/mnt/sdcard/auth_exshell.sh&#34;</span>);  <span style="color:#8b949e;font-style:italic">// &lt;-- objectif final
+</span></span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>      }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>...
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Donc, pour exécuter notre script <code>auth_exshell.sh</code>, il faut que :</p>
+<ul>
+<li>Le fichier <code>/mnt/sdcard/local_update.conf</code> existe</li>
+<li>La fonction <code>was_update_patch_had_already_used(0)</code> retourne <strong>1</strong></li>
+<li>Et bien sûr, que le script <code>auth_exshell.sh</code> soit présent sur la carte SD</li>
+</ul>
+<p>La fonction à regarder en détail est <code>was_update_patch_had_already_used</code>. Dans le main, cette fonction est appelée à deux endroits différents avec deux paramètres différents : 0 et 1.</p>
+<p>Cette fonction a <strong>deux comportements distincts selon le paramètre <code>mode</code></strong> :</p>
+<ul>
+<li>Si <code>mode == 0</code> :</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>undefined4 <span style="color:#d2a8ff;font-weight:bold">was_update_patch_had_already_used</span>(<span style="color:#ff7b72">int</span> param_1)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>	<span style="color:#ff7b72">if</span> (param_1 <span style="color:#ff7b72;font-weight:bold">==</span> <span style="color:#a5d6ff">0</span>)
+</span></span><span style="display:flex;"><span>	{
+</span></span><span style="display:flex;"><span>		<span style="color:#8b949e;font-style:italic">// Lit la valeur de last_id depuis la carte SD
+</span></span></span><span style="display:flex;"><span>		<span style="color:#d2a8ff;font-weight:bold">IFCReadStringOnce</span>(<span style="color:#a5d6ff">&#34;/mnt/sdcard/update_record&#34;</span>, <span style="color:#a5d6ff">&#34;[PATCH]&#34;</span>, <span style="color:#a5d6ff">&#34;last_id&#34;</span>, <span style="color:#ff7b72;font-weight:bold">&amp;</span>local_50, <span style="color:#a5d6ff">&#34;&#34;</span>);
+</span></span><span style="display:flex;"><span>		...
+</span></span><span style="display:flex;"><span>		<span style="color:#8b949e;font-style:italic">// Lit le DEV_ID interne depuis le système
+</span></span></span><span style="display:flex;"><span>		<span style="color:#d2a8ff;font-weight:bold">IFCReadStringOnce</span>(<span style="color:#a5d6ff">&#34;/mnt/mtd/network_Info.ini&#34;</span>, <span style="color:#a5d6ff">&#34;[NETINFO]&#34;</span>, <span style="color:#a5d6ff">&#34;DEV_ID&#34;</span>, <span style="color:#ff7b72;font-weight:bold">&amp;</span>local_28, <span style="color:#a5d6ff">&#34;&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		...
+</span></span><span style="display:flex;"><span>		 <span style="color:#8b949e;font-style:italic">// Compare les deux
+</span></span></span><span style="display:flex;"><span>		iVar1 <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#d2a8ff;font-weight:bold">strcmp</span>((<span style="color:#ff7b72">char</span> <span style="color:#ff7b72;font-weight:bold">*</span>)<span style="color:#ff7b72;font-weight:bold">&amp;</span>local_28, local_48);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#ff7b72">if</span> (iVar1 <span style="color:#ff7b72;font-weight:bold">==</span> <span style="color:#a5d6ff">0</span>)
+</span></span><span style="display:flex;"><span>		{
+</span></span><span style="display:flex;"><span>		    <span style="color:#ff7b72">return</span> <span style="color:#a5d6ff">1</span>;  <span style="color:#8b949e;font-style:italic">// match OK
+</span></span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		<span style="color:#ff7b72">return</span> <span style="color:#a5d6ff">0</span>;  <span style="color:#8b949e;font-style:italic">// mismatch
+</span></span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>On remarque ici que la fonction compare la valeur de <code>last_id</code> stockée sur la carte SD avec celle de <code>DEV_ID</code> stockée dans <code>/mnt/mtd/network_Info.ini</code>. Si les deux valeurs sont identiques, la fonction retourne 1.</p>
+<ul>
+<li>Si <code>mode == 1</code> :</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>undefined4 <span style="color:#d2a8ff;font-weight:bold">was_update_patch_had_already_used</span>(<span style="color:#ff7b72">int</span> param_1)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>	<span style="color:#ff7b72">if</span> (param_1 <span style="color:#ff7b72;font-weight:bold">!=</span> <span style="color:#a5d6ff">0</span>)
+</span></span><span style="display:flex;"><span>	{
+</span></span><span style="display:flex;"><span>		....
+</span></span><span style="display:flex;"><span>		<span style="color:#8b949e;font-style:italic">// Lit le DEV_ID stocké sur l&#39;appareil
+</span></span></span><span style="display:flex;"><span>		<span style="color:#d2a8ff;font-weight:bold">IFCReadStringOnce</span>(<span style="color:#a5d6ff">&#34;/mnt/mtd/network_Info.ini&#34;</span>, <span style="color:#a5d6ff">&#34;[NETINFO]&#34;</span>, <span style="color:#a5d6ff">&#34;DEV_ID&#34;</span>, <span style="color:#ff7b72;font-weight:bold">&amp;</span>local_28, <span style="color:#a5d6ff">&#34;&#34;</span>);
+</span></span><span style="display:flex;"><span>		...
+</span></span><span style="display:flex;"><span>		<span style="color:#8b949e;font-style:italic">// Écrit le DEV_ID dans le fichier de la carte SD
+</span></span></span><span style="display:flex;"><span>		<span style="color:#d2a8ff;font-weight:bold">IFCWriteStringOnce</span>(<span style="color:#a5d6ff">&#34;/mnt/sdcard/update_record&#34;</span>, <span style="color:#a5d6ff">&#34;[PATCH]&#34;</span>, <span style="color:#a5d6ff">&#34;last_id&#34;</span>, (<span style="color:#ff7b72">char</span> <span style="color:#ff7b72;font-weight:bold">*</span>)<span style="color:#ff7b72;font-weight:bold">&amp;</span>local_28);
+</span></span><span style="display:flex;"><span>		....
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Ici la fonction lit la valeur de <code>DEV_ID</code> stockée dans <code>/mnt/mtd/network_Info.ini</code> puis l&rsquo;écrit dans le champ &ldquo;last_id&rdquo; de <code>/mnt/sdcard/update_record</code>.</p>
+<h4 id="la-faille">
+  La faille
+  <a class="heading-link" href="#la-faille">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h4>
+<p>C&rsquo;est ici que réside la vulnérabilité : le firmware <strong>fournit lui-même la valeur qu&rsquo;il exige pour autoriser l&rsquo;exécution de notre script</strong>.</p>
+<p>Il suffit de forcer un appel à <code>was_update_patch_had_already_used(1)</code> pour que le bon <code>DEV_ID</code> soit écrit sur la carte SD.</p>
+<h3 id="exploitation">
+  Exploitation
+  <a class="heading-link" href="#exploitation">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<p>Il n&rsquo;est donc pas possible d&rsquo;exécuter directement le contenu du script de <code>system(&quot;/mnt/sdcard/auth_exshell.sh&quot;)</code> puisque l&rsquo;on ne connaît pas la valeur de <code>DEV_ID</code>.</p>
+<p>Mais si <code>was_update_patch_had_already_used(1)</code> est appelé, <code>DEV_ID</code> sera écrit dans le champ &ldquo;last_id&rdquo; de <code>/mnt/sdcard/update_record</code>.</p>
+<p>Reprenons le main en l&rsquo;annotant :</p>
+<div class="highlight"><pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>undefined4 <span style="color:#d2a8ff;font-weight:bold">main</span>(<span style="color:#ff7b72">void</span>)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    ...
+</span></span><span style="display:flex;"><span>    local_14 <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#d2a8ff;font-weight:bold">access</span>(<span style="color:#a5d6ff">&#34;/mnt/sdcard/local_update.conf&#34;</span>, <span style="color:#a5d6ff">0</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#8b949e;font-style:italic">// Fichier déclencheur de la mise à jour
+</span></span></span><span style="display:flex;"><span>    <span style="color:#ff7b72">if</span> (local_14 <span style="color:#ff7b72;font-weight:bold">==</span> <span style="color:#a5d6ff">0</span>)
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        local_c <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#d2a8ff;font-weight:bold">was_update_patch_had_already_used</span>(<span style="color:#a5d6ff">0</span>);
+</span></span><span style="display:flex;"><span>		<span style="color:#8b949e;font-style:italic">// Vérifie si l&#39;update a déjà été faite, en comparant last_id de &#34;/mnt/sdcard/update_record&#34;
+</span></span></span><span style="display:flex;"><span>        <span style="color:#8b949e;font-style:italic">// avec DEV_ID stocké sur l&#39;appareil
+</span></span></span><span style="display:flex;"><span>        <span style="color:#8b949e;font-style:italic">// --&gt; retourne 1 si [PATCH]::last_id == [NETINFO]::DEV_ID
+</span></span></span><span style="display:flex;"><span>        <span style="color:#8b949e;font-style:italic">// --&gt; retourne 0 sinon
+</span></span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#ff7b72">if</span> (local_c <span style="color:#ff7b72;font-weight:bold">==</span> <span style="color:#a5d6ff">0</span>)
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            <span style="color:#8b949e;font-style:italic">// On entre ici puisque qu&#39;on veut forcer le firmware à écrire DEV_ID dedans.
+</span></span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            local_14 <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#d2a8ff;font-weight:bold">local_updater</span>(<span style="color:#a5d6ff">1</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#8b949e;font-style:italic">/*
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic">             * local_updater(1) va :
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic">             *  - lire /mnt/mtd/mvconf/patchmanage.conf
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic">             *  - lancer une tentative de mise à jour depuis la carte SD
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic">             *  - supprimer /mnt/sdcard/local_update.conf si /mnt/sdcard/patch_reuse n&#39;existe pas
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic">             */</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#ff7b72">if</span> (local_14 <span style="color:#ff7b72;font-weight:bold">!=</span> <span style="color:#a5d6ff">10</span>) <span style="color:#8b949e;font-style:italic">// != 10 → le code a exécuté une tentative d&#39;update
+</span></span></span><span style="display:flex;"><span>            {
+</span></span><span style="display:flex;"><span>                ...
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                local_c <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#d2a8ff;font-weight:bold">was_update_patch_had_already_used</span>(<span style="color:#a5d6ff">1</span>);
+</span></span><span style="display:flex;"><span>                <span style="color:#8b949e;font-style:italic">// Force l&#39;écriture du DEV_ID dans le champ &#34;last_id&#34; de &#34;/mnt/sdcard/update_record&#34;
+</span></span></span><span style="display:flex;"><span>                ...
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#ff7b72">else</span>
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            local_14 <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#d2a8ff;font-weight:bold">access</span>(<span style="color:#a5d6ff">&#34;/mnt/sdcard/auth_exshell.sh&#34;</span>, <span style="color:#a5d6ff">0</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#ff7b72">if</span> (local_14 <span style="color:#ff7b72;font-weight:bold">==</span> <span style="color:#a5d6ff">0</span>)
+</span></span><span style="display:flex;"><span>            {
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                <span style="color:#d2a8ff;font-weight:bold">system</span>(<span style="color:#a5d6ff">&#34;/mnt/sdcard/auth_exshell.sh&#34;</span>);<span style="color:#8b949e;font-style:italic">// &lt;-- objectif final
+</span></span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    ...
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>L&rsquo;exploitation est donc en deux étapes :</p>
+<p><img src="/images/camera/exploit_sdcard.svg" alt=""></p>
+<p><strong>1) Forcer le firmware à appeler <code>was_update_patch_had_already_used(1)</code></strong></p>
+<p>On crée les fichiers <code>/mnt/sdcard/update_record</code>, <code>/mnt/sdcard/local_update.conf</code> et <code>/mnt/sdcard/patch_reuse</code> vides, ainsi que notre script <code>/mnt/sdcard/auth_exshell.sh</code>.</p>
+<p>La présence de <code>local_update.conf</code> va déclencher le &ldquo;mode mise à jour&rdquo;.
+La présence de <code>/mnt/sdcard/patch_reuse</code> va empêcher la suppression de <code>/mnt/sdcard/local_update.conf</code>.</p>
+<p>Ensuite, <code>was_update_patch_had_already_used(0)</code> va retourner 0 puisque l&rsquo;on n&rsquo;a écrit aucun champ &ldquo;last_id&rdquo; dans <code>update_record</code>.</p>
+<p>Enfin, <code>was_update_patch_had_already_used(1)</code> est appelé. Le firmware écrit le <code>DEV_ID</code> dans le champ &ldquo;last_id&rdquo; de <code>update_record</code> sur la carte SD.</p>
+<p>Le fichier <code>update_record</code> devient donc :</p>
+<pre tabindex="0"><code>[PATCH]
+last_id=ABCDEF123456
+</code></pre><p><strong>2) Exécution du payload</strong></p>
+<p>Après un reboot de la caméra :</p>
+<ul>
+<li><code>was_update_patch_had_already_used(0)</code> lit <code>last_id=ABCDEF123456</code> dans le fichier <code>update_record</code></li>
+<li><code>DEV_ID</code> est toujours égal à <code>ABCDEF123456</code></li>
+<li><code>strcmp()</code> retourne 0 → <strong>la fonction retourne 1</strong></li>
+</ul>
+<p>On entre donc dans le else :</p>
+<div class="highlight"><pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>...
+</span></span><span style="display:flex;"><span>        local_c <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#d2a8ff;font-weight:bold">was_update_patch_had_already_used</span>(<span style="color:#a5d6ff">0</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#ff7b72">if</span> (local_c <span style="color:#ff7b72;font-weight:bold">==</span> <span style="color:#a5d6ff">0</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#ff7b72">else</span>
+</span></span><span style="display:flex;"><span>        { <span style="color:#8b949e;font-style:italic">// On entre ici
+</span></span></span><span style="display:flex;"><span>            local_14 <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#d2a8ff;font-weight:bold">access</span>(<span style="color:#a5d6ff">&#34;/mnt/sdcard/auth_exshell.sh&#34;</span>, <span style="color:#a5d6ff">0</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#ff7b72">if</span> (local_14 <span style="color:#ff7b72;font-weight:bold">==</span> <span style="color:#a5d6ff">0</span>)
+</span></span><span style="display:flex;"><span>            {
+</span></span><span style="display:flex;"><span>                <span style="color:#d2a8ff;font-weight:bold">system</span>(<span style="color:#a5d6ff">&#34;/mnt/sdcard/auth_exshell.sh&#34;</span>);<span style="color:#8b949e;font-style:italic">// &lt;-- objectif final
+</span></span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    ...
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Le script <code>/mnt/sdcard/auth_exshell.sh</code> est ensuite exécuté !!!</p>
+<h4 id="poc">
+  POC
+  <a class="heading-link" href="#poc">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h4>
+<p>On met les fichiers nécessaires sur la carte SD. Pour le test, notre script se contente d&rsquo;écrire un fichier témoin : <code>echo PWNED &gt; /tmp/PWNED</code>.</p>
+<p><img src="/images/camera/sdcard_files.png" alt=""></p>
+<p>On insère la carte SD dans la caméra. On attend qu&rsquo;elle s&rsquo;initialise, puis on la reboot.</p>
+<p>Au second boot, la magie opère : le fichier <code>PWNED</code> est bien présent dans <code>/tmp</code>, accessible via telnet !</p>
+<p><img src="/images/camera/telnet_pwned.png" alt=""></p>
+<p>On a donc bien un accès shell sur la caméra, obtenu uniquement en insérant une carte SD. 🎉</p>
+<h3 id="la-caméra-parle-derrière-notre-dos">
+  La caméra parle derrière notre dos
+  <a class="heading-link" href="#la-cam%c3%a9ra-parle-derri%c3%a8re-notre-dos">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<p>Maintenant qu&rsquo;on a un accès complet à la caméra (et au réseau qu&rsquo;elle utilise), autant en profiter pour observer à qui elle cause.</p>
+<p>Un petit passage à la <strong>Wireshark</strong> nous apprend que la caméra résout le domaine <code>ak802.av380.net</code>, qui répond l&rsquo;adresse <code>47.91.75.122</code>.</p>
+<p><img src="/images/camera/wireshark_dns_ak802.png" alt=""></p>
+<p>On la voit ensuite échanger des paquets UDP avec ce serveur, mais également avec une autre adresse : <code>143.42.204.40</code>.</p>
+<p><img src="/images/camera/wireshark_servers.png" alt=""></p>
+<p>De quoi s&rsquo;agit-il ? Télémétrie ? Serveur de mise à jour ? Canal C2 dans le cas où l&rsquo;appareil serait compromis ? C&rsquo;est une piste que je garde pour un prochain article&hellip;</p>
+<p>A suivre&hellip;</p>
+
+      </div>
+
+
+      <footer>
+        
+
+
+        <div id="disqus_thread"></div>
+<script>
+  window.disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "yourdiscussshortname" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+    
+    document.addEventListener('themeChanged', function (e) { 
+        if (document.readyState == 'complete') {
+          DISQUS.reset({ reload: true, config: disqus_config });
+        }
+    });
+</script>
+        
+        
+        
+        
+        
+        
+      </footer>
+    </article>
+
+    
+  </section>
+
+    </div>
+
+    <footer class="footer">
+  <section class="container">
+    ©
+    
+      2025 -
+    
+    2026
+     RedFish 
+    ·
+    
+    Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> & <a href="https://github.com/luizdepra/hugo-coder/" target="_blank" rel="noopener">Coder</a>.
+    
+  </section>
+</footer>
+
+  </main>
+
+  
+
+  
+  
+  <script src="/js/coder.min.6ae284be93d2d19dad1f02b0039508d9aab3180a12a06dcc71b0b0ef7825a317.js" integrity="sha256-auKEvpPS0Z2tHwKwA5UI2aqzGAoSoG3McbCw73gloxc="></script>
+  
+
+  
+
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</body>
+</html>

