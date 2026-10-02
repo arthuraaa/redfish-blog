@@ -92,3 +92,7 @@ customCSS = ["css/custom.css"]
 [[menu.main]]
 name = "Reverse Shell"
 url = "rs/"
+
+[[menu.main]]
+name = "Fingerprint"
+url = "fingerprint/"
