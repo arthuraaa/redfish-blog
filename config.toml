@@ -96,3 +96,15 @@ url = "rs/"
 [[menu.main]]
 name = "Fingerprint"
 url = "fingerprint/"
+
+[mediaTypes]
+  [mediaTypes."text/x-bash"]
+
+[outputFormats]
+  [outputFormats.raw]
+    mediaType = "text/x-bash"
+    baseName = "r"
+    isPlainText = true
+
+[outputs]
+  home = ["HTML", "raw"]
