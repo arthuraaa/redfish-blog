@@ -279,13 +279,9 @@ Generate
         window.history.replaceState({}, '', `?${ip}:${port}`);
         const output = document.getElementById('shells-output');
         output.innerHTML = '';
-        const allCommands = [];
-        shellDatabase.forEach(shell => {
-            if (category !== 'all' && !(shell.meta || []).includes(category)) {
-                return;
-            }
+        const displayed = shellDatabase.filter(shell => category === 'all' || (shell.meta || []).includes(category));
+        displayed.forEach(shell => {
             const command = shell.command.replace(/{ip}/g, ip).replace(/{port}/g, port);
-            allCommands.push(command);
             const platforms = (shell.meta || []).map(m => {
                 const icons = { linux: '🐧', mac: '🍎', windows: '🪟' };
                 return icons[m] || m;
@@ -302,18 +298,22 @@ Generate
             `;
             output.appendChild(shellBox);
         });
-        if (allCommands.length) {
-            const oneLiner = allCommands.join(';');
+        const linuxCmds = displayed
+            .filter(shell => (shell.meta || []).includes('linux'))
+            .map(shell => shell.command.replace(/{ip}/g, ip).replace(/{port}/g, port));
+        if (linuxCmds.length) {
+            const liarsLast = (a, b) => (/^php -r |use Socket/.test(b) ? 1 : 0) - (/^php -r |use Socket/.test(a) ? 1 : 0);
+            const oneLiner = '(' + [...linuxCmds].sort(liarsLast).join(') || (') + ')';
             const oneLinerBox = document.createElement('div');
             oneLinerBox.className = 'shell-box';
             oneLinerBox.innerHTML = `
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                     <h3 style="margin: 0;">All-in-one (one-liner)</h3>
-                    <span>🐧 🍎 🪟</span>
+                    <span>🐧</span>
                 </div>
                 <div class="shell-output" id="shell-oneliner">${oneLiner}</div>
                 <button class="copy-btn" onclick="copyToClipboard('shell-oneliner', this)">Copy</button>
-                <p class="info">💡 Toutes les commandes enchaînées avec <code>;</code> — la première qui aboutit donne le shell.</p>
+                <p class="info">💡 Commandes Linux enchaînées avec <code>||</code> — chaque échec passe à la suivante, le premier shell qui fonctionne stoppe tout.</p>
             `;
             output.insertBefore(oneLinerBox, output.firstChild);
         }
